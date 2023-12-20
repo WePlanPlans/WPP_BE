@@ -6,8 +6,8 @@ build/
 !**/src/test/**/build/
 
 *.yml
-!application.yml
 !application-prod.yml
+!application-ci.yml
 !deploy.yml
 
 ### STS ###
