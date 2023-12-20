@@ -38,7 +38,7 @@ jobs:
       # EB에 CD
       - name: Generate deployment package   # 배포패키지 생성
         run: |
-          mkdir deploy
+          mkdir -p deploy
           cp build/libs/*.jar deploy/application.jar
           cp Procfile deploy/Procfile
           cp -r .ebextensions deploy/.ebextensions
