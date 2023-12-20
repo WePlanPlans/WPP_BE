@@ -5,7 +5,11 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-src/main/resources/application.yml
+*.yml
+!application.yml
+!application-prod.yml
+!deploy.yml
+
 ### STS ###
 .apt_generated
 .classpath
