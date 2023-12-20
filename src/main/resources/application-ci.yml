@@ -4,6 +4,9 @@ spring:
     url: jdbc:mysql://localhost:3306/tentendb
     username: admin
     password: root
+  servlet:
+    multipart:
+      max-file-size: 20MB
 
   sql:
     init:
