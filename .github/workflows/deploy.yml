@@ -1,11 +1,11 @@
 name: tenten
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches:
+      - main
     paths-ignore:
       - 'README.md'  # README.md 파일 변경을 무시
-  pull_request:
-    branches: [ "main", "develop" ]
+
 
 jobs:
   build:

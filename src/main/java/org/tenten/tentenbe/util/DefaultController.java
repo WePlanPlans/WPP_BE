@@ -12,6 +12,6 @@ public class DefaultController {
 
     @GetMapping("/")
     public String home() {
-        return "<h1>studyHub<h1>";
+        return "<h1>tenten<h1>";
     }
 }
