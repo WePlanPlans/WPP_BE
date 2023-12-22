@@ -13,7 +13,7 @@ GET https://apis.data.go.kr/B551011/KorService1/searchStay1?serviceKey=nqlCoUOeb
 GET https://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=nqlCoUOebh6V0L1HYGLsIw0Xqm83%2FBL544%2BX9ZKcUBptyMk5lmcmDk7oiiRGOnZCxXOmgcjzVVppa58pSIZZKg%3D%3D&numOfRows=5&pageNo=1&_type=json&MobileOS=ETC&MobileApp=TestApp&listYN=Y&eventStartDate=20170901&areaCode=1&sigunguCode=18
 
 ### 지역 코드 조회
-GET https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=nqlCoUOebh6V0L1HYGLsIw0Xqm83%2FBL544%2BX9ZKcUBptyMk5lmcmDk7oiiRGOnZCxXOmgcjzVVppa58pSIZZKg%3D%3D&_type=json&MobileOS=ETC&MobileApp=TestApp&numOfRows=20&pageNo=1
+GET https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=nqlCoUOebh6V0L1HYGLsIw0Xqm83%2FBL544%2BX9ZKcUBptyMk5lmcmDk7oiiRGOnZCxXOmgcjzVVppa58pSIZZKg%3D%3D&_type=json&MobileOS=ETC&MobileApp=TestApp&numOfRows=20&pageNo=1&areaCode=32
 
 ### 시군구 조회
 GET https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=nqlCoUOebh6V0L1HYGLsIw0Xqm83%2FBL544%2BX9ZKcUBptyMk5lmcmDk7oiiRGOnZCxXOmgcjzVVppa58pSIZZKg%3D%3D&_type=json&MobileOS=ETC&MobileApp=TestApp&numOfRows=20&pageNo=1&areaCode=1

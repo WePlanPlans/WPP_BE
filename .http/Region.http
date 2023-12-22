@@ -1,0 +1,7 @@
+### 전체 지역 조회
+GET http://localhost:8080/region
+Origin: http://localhost:3000
+
+### 인기 지역 조회
+GET http://localhost:8080/region/popular
+Origin: http://localhost:3000

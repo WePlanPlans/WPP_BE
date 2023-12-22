@@ -1,0 +1,3 @@
+### 카테고리 조회 API
+GET http://localhost:8080/category
+Origin: http://localhost:3000
