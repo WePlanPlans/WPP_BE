@@ -1,0 +1,10 @@
+### 주소 좌표값 변환 api
+GET https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=%EC%A0%95%EC%9E%90%EC%9D%BC%EB%A1%9C%20239
+X-NCP-APIGW-API-KEY-ID: {{naver-map-client-id}}
+X-NCP-APIGW-API-KEY: {{naver-map-client-secret}}
+
+
+### 자동차 경로 계산 api
+GET https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.1058342,37.359708&goal=129.075986,35.179470
+X-NCP-APIGW-API-KEY-ID: {{naver-map-client-id}}
+X-NCP-APIGW-API-KEY: {{naver-map-client-secret}}
