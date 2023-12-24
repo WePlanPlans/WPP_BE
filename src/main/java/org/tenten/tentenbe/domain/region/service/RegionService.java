@@ -1,23 +1,33 @@
 package org.tenten.tentenbe.domain.region.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tenten.tentenbe.domain.region.dto.response.RegionResponse;
+import org.tenten.tentenbe.domain.region.dto.response.RegionResponse.RegionInfo;
 import org.tenten.tentenbe.global.common.enums.Region;
+import org.tenten.tentenbe.global.component.OpenApiComponent;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RegionService {
-    public List<RegionResponse> getRegions() {
-        return Region.entireRegions.stream().map(region -> {
-            return new RegionResponse(region.getAreaCode(), region.getSubAreaCode(), region.getName());
-        }).toList();
+    private final OpenApiComponent openApiComponent;
+
+    public RegionResponse getRegions(String areaCode) {
+        if (areaCode == null) {
+            return new RegionResponse(
+                    Region.entireRegions.stream().map(region -> new RegionInfo(region.getAreaCode(), region.getSubAreaCode(), region.getName())).toList());
+        } else {
+            return new RegionResponse(
+                    openApiComponent.getSubRegion(areaCode)
+            );
+        }
     }
 
-    public List<RegionResponse> getPopularRegions() {
-        return Region.popularPlaces.stream().map(region -> {
-            return new RegionResponse(region.getAreaCode(), region.getSubAreaCode(), region.getName());
-        }).toList();
+    public RegionResponse getPopularRegions() {
+        return new RegionResponse(
+                Region.popularPlaces.stream().map(region -> new RegionInfo(region.getAreaCode(), region.getSubAreaCode(), region.getName())).toList());
 
     }
 }

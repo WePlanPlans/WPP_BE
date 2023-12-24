@@ -13,7 +13,7 @@ GET https://apis.data.go.kr/B551011/KorService1/searchStay1?serviceKey={{open-ap
 GET https://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey={{open-api-key}}&numOfRows=5&pageNo=1&_type=json&MobileOS=ETC&MobileApp=TestApp&listYN=Y&eventStartDate=20170901&areaCode=1&sigunguCode=18
 
 ### 지역 코드 조회
-GET https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey={{open-api-key}}&_type=json&MobileOS=ETC&MobileApp=TestApp&numOfRows=20&pageNo=1&areaCode=32
+GET https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey={{open-api-key}}&_type=json&MobileOS=ETC&MobileApp=TestApp&numOfRows=20&pageNo=1
 
 ### 시군구 조회
 GET https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey={{open-api-key}}&_type=json&MobileOS=ETC&MobileApp=TestApp&numOfRows=20&pageNo=1&areaCode=1
