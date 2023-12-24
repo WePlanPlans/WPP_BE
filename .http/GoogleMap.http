@@ -15,7 +15,7 @@ X-Goog-FieldMask: routes.*
     "address": "정자역"
   },
   "destination": {
-    "address": "수서역"
+    "address": "부산역"
   },
   "languageCode": "ko",
   "travelMode": "TRANSIT",
@@ -27,4 +27,4 @@ X-Goog-FieldMask: routes.*
 }
 
 ### Geocoding API
-GET https://maps.googleapis.com/maps/api/geocode/json?key={{google-map-api-key}}&language=ko&address=정자일로 239
+GET https://maps.googleapis.com/maps/api/geocode/json?key={{google-map-api-key}}&language=ko&address=경찰병원역
