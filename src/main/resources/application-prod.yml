@@ -41,5 +41,5 @@ springdoc:
     try-it-out-enabled: false
 
 open-api:
-  url: ${secrets.OPEN_API_URL}
-  key: ${secrets.OPEN_API_KEY}
+  url: ${OPEN_API_URL}
+  key: ${OPEN_API_KEY}
