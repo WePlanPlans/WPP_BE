@@ -42,7 +42,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long memebrId, Long commentId) {
+    public void deleteComment(Long memberId, Long commentId) {
 
         Comment findCommentById = commentRepository.findById(commentId).orElseThrow(
             () -> new CommentException("해당 댓글이 없습니다.", HttpStatus.BAD_REQUEST)
