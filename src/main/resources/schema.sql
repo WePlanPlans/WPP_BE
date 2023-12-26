@@ -86,9 +86,9 @@ create table LikedItem
     memberId    bigint null,
     tourItemId  bigint null,
     constraint FKhlcf4xrx53ft7qcvh0k20xmxq
-        foreign key (tourItemId) references tentendb.TourItem (tourItemId),
+        foreign key (tourItemId) references TourItem (tourItemId),
     constraint FKtfahd69vv3e4wj1uhkpxs3vlq
-        foreign key (memberId) references tentendb.Member (memberId)
+        foreign key (memberId) references Member (memberId)
 );
 
 create table Review
@@ -102,9 +102,9 @@ create table Review
     tourItemId   bigint      null,
     content      text        null,
     constraint FK3ip6vbitby5kgkos0sfo172r0
-        foreign key (tourItemId) references tentendb.TourItem (tourItemId),
+        foreign key (tourItemId) references TourItem (tourItemId),
     constraint FKrlpd519txx779gau0g12498jg
-        foreign key (memberId) references tentendb.Member (memberId)
+        foreign key (memberId) references Member (memberId)
 );
 
 create table Comment
@@ -117,9 +117,9 @@ create table Comment
     reviewId     bigint      null,
     content      text        null,
     constraint FK4uunsyafmesugo6g82lsvnjte
-        foreign key (reviewId) references tentendb.Review (reviewId),
+        foreign key (reviewId) references Review (reviewId),
     constraint FKt1hm8idyj3hvvb76u4gb1owhu
-        foreign key (memberId) references tentendb.Member (memberId)
+        foreign key (memberId) references Member (memberId)
 );
 
 create table ReviewKeyword
@@ -129,9 +129,9 @@ create table ReviewKeyword
     reviewTagId bigint auto_increment
         primary key,
     constraint FKa4v4wydktt3nkb8k3yq2fj9d2
-        foreign key (keyWordId) references tentendb.KeyWord (keyWordId),
+        foreign key (keyWordId) references KeyWord (keyWordId),
     constraint FKip2fmgieccwcqg5lw59ds0l80
-        foreign key (reviewId) references tentendb.Review (reviewId)
+        foreign key (reviewId) references Review (reviewId)
 );
 
 create table TourItemDetail
@@ -144,7 +144,7 @@ create table TourItemDetail
     constraint UK_kuc31jv07x3i0yto2lae2molf
         unique (tourItemId),
     constraint FKqooyir77i8mjvvcb1idt8m7t2
-        foreign key (tourItemId) references tentendb.TourItem (tourItemId)
+        foreign key (tourItemId) references TourItem (tourItemId)
 );
 
 create table TourItemImage
@@ -156,7 +156,7 @@ create table TourItemImage
     constraint UK_emcjjwfo22jbixav9gwjtgsp6
         unique (tourItemId),
     constraint FK49pgfofh6aqykphqvjics3547
-        foreign key (tourItemId) references tentendb.TourItem (tourItemId)
+        foreign key (tourItemId) references TourItem (tourItemId)
 );
 
 create table Trip
@@ -172,7 +172,7 @@ create table Trip
     departure      varchar(255) null,
     destination    varchar(255) null,
     constraint FKrg0jpvm9q5j9qxaxuxj8i2jec
-        foreign key (memberId) references tentendb.Member (memberId)
+        foreign key (memberId) references Member (memberId)
 );
 
 create table TripItem
@@ -189,11 +189,11 @@ create table TripItem
         primary key,
     transportation enum ('CAR', 'PUBLIC_TRANSPORTATION') null,
     constraint FK2usvl9nqv9wyhyxo6n4wt215k
-        foreign key (tourItemId) references tentendb.TourItem (tourItemId),
+        foreign key (tourItemId) references TourItem (tourItemId),
     constraint FKjhahhv3w4r4ijrcdsyhbwsdos
-        foreign key (memberId) references tentendb.Member (memberId),
+        foreign key (memberId) references Member (memberId),
     constraint FKs1xb61ylvu77xldywtdj9bnxs
-        foreign key (tripId) references tentendb.Trip (tripId)
+        foreign key (tripId) references Trip (tripId)
 );
 
 create table TripMember
@@ -206,8 +206,8 @@ create table TripMember
         primary key,
     tripAuthority enum ('READ_ONLY', 'WRITE') null,
     constraint FKl30rei713mxy9yt35fscmp2ov
-        foreign key (tripId) references tentendb.Trip (tripId),
+        foreign key (tripId) references Trip (tripId),
     constraint FKqvcr8k1koo12vdoirnakirv13
-        foreign key (memberId) references tentendb.Member (memberId)
+        foreign key (memberId) references Member (memberId)
 );
 
