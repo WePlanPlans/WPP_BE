@@ -3,7 +3,6 @@ package org.tenten.tentenbe.global.component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -12,7 +11,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.tenten.tentenbe.domain.region.dto.response.RegionResponse;
 import org.tenten.tentenbe.domain.region.dto.response.RegionResponse.RegionInfo;
 import org.tenten.tentenbe.global.component.dto.response.AreaOpenApiResponse;
-import org.tenten.tentenbe.global.component.exception.OpenApiException;
 
 import java.util.List;
 
