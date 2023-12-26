@@ -25,7 +25,7 @@ public class CategoryController {
 
     @Operation(summary = "카테고리 조회 API", description = "카테고리 조회 API 입니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = CategoryResponse.class)))
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity<?> getCategory() {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, categoryService.getCategory()));
     }
