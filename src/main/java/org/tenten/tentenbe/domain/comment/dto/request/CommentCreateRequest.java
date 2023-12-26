@@ -1,4 +1,8 @@
 package org.tenten.tentenbe.domain.comment.dto.request;
 
-public record CommentCreateRequest() {
+import org.tenten.tentenbe.domain.member.model.Member;
+
+public record CommentCreateRequest(
+	String content
+) {
 }
