@@ -21,7 +21,7 @@ public class CommentService {
         return null;
     }
     @Transactional
-    public void deleteComment(Long memebrId, Long commentId) {
+    public void deleteComment(Long memberId, Long commentId) {
 
     }
 }
