@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
 import org.tenten.tentenbe.domain.member.service.MemberService;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
@@ -30,14 +31,14 @@ public class MemberController {
 
     @Operation(summary = "나의 여정 조회 API", description = "나의 여정 조회 API 입니다.")
     @ApiResponse(responseCode = "200", description = "여정 조회 성공시", content = @Content(schema = @Schema(implementation = TripResponse.class)))
-    @GetMapping("/trip")
+    @GetMapping("/trips")
     public ResponseEntity<?> getTrips() {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTrips(null)));
     }
 
     @Operation(summary = "나의 관심 여행지 조회 API", description = "나의 관심 여행지 조회 API 입니다.")
     @ApiResponse(responseCode = "200", description = "관심 여행지 조회 성공시", content = @Content(schema = @Schema(implementation = TourResponse.class)))
-    @GetMapping("/tour")
+    @GetMapping("/tours")
     public ResponseEntity<?> getTours() {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTours(null)));
     }
@@ -46,8 +47,8 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "관심 여행지 삭제 성공시")
     @DeleteMapping("/tour/{tourId}")
     public ResponseEntity<?> deleteTour(
-            @Parameter(name = "tourId", description = "삭제할 여행지 아이디", in = PATH)
-            @PathVariable("tourId") Long tourId
+        @Parameter(name = "tourId", description = "삭제할 여행지 아이디", in = PATH)
+        @PathVariable("tourId") Long tourId
     ) {
         memberService.deleteTour(null, tourId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
@@ -55,7 +56,7 @@ public class MemberController {
 
     @Operation(summary = "나의 리뷰 조회 API", description = "나의 리뷰 조회 API 입니다.")
     @ApiResponse(responseCode = "200", description = "리뷰 조회 성공시", content = @Content(schema = @Schema(implementation = ReviewResponse.class)))
-    @GetMapping("/review")
+    @GetMapping("/reviews")
     public ResponseEntity<?> getReviews() {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getReviews(null)));
     }
@@ -68,10 +69,12 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 정보 수정 API", description = "회원 정보 수정 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "회원 정보 수정 성공시", content = @Content(schema = @Schema(implementation = MemberResponse.class)))
+    @ApiResponse(responseCode = "200", description = "업데이트 성공시", content = @Content(schema = @Schema(implementation = MemberResponse.class)))
     @PutMapping()
-    public ResponseEntity<?> updateMember() {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.updateMember(null)));
+    public ResponseEntity<?> updateMember(
+        @RequestBody MemberUpdateRequest memberUpdateRequest
+        ) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.updateMember(null, memberUpdateRequest)));
     }
 
     @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API 입니다.")

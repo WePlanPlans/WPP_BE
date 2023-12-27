@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
@@ -40,7 +41,7 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponse updateMember(Long memberId) {
+    public MemberResponse updateMember(Long memberId, MemberUpdateRequest memberUpdateRequest) {
         return null;
     }
 
