@@ -31,7 +31,7 @@ public class JsonConverter<T> implements AttributeConverter<T, String> {
     public T convertToEntityAttribute(String dbData) {
         if (StringUtils.hasText(dbData)) {
             Class<?> aClass =
-                    GenericTypeResolver.resolveTypeArgument(getClass(), JsonConverter.class); // 4
+                GenericTypeResolver.resolveTypeArgument(getClass(), JsonConverter.class); // 4
             try {
                 return (T) objectMapper.readValue(dbData, aClass); // 5
             } catch (Exception e) {

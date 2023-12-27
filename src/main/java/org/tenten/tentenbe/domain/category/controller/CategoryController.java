@@ -19,7 +19,7 @@ import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCES
 @Tag(name = "카테고리 관련 API", description = "카테고리 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/category")
+@RequestMapping("/api/category")
 public class CategoryController {
     private final CategoryService categoryService;
 

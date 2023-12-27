@@ -22,7 +22,7 @@ import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCES
 @Tag(name = "지역 관련 API", description = "지역 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/region")
+@RequestMapping("/api/region")
 public class RegionController {
     private final RegionService regionService;
 
@@ -30,8 +30,8 @@ public class RegionController {
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = RegionResponse.class)))
     @GetMapping("")
     public ResponseEntity<?> getRegions(
-            @Parameter(name = "areaCode", required = false, in = QUERY, description = "세부 지역 조회할 광역 지자체 areaCode")
-            @RequestParam(value = "areaCode", required = false) String areaCode) {
+        @Parameter(name = "areaCode", required = false, in = QUERY, description = "세부 지역 조회할 광역 지자체 areaCode")
+        @RequestParam(value = "areaCode", required = false) String areaCode) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, regionService.getRegions(areaCode)));
     }
 

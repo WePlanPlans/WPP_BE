@@ -1,14 +1,13 @@
 package org.tenten.tentenbe.global.common.enums;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.tenten.tentenbe.global.exception.GlobalException;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Getter
 public enum Category {
-    DINING(39L, "식당"), ACCOMMODATION(32L,"숙소"), ATTRACTION(12L, "관광지");
+    DINING(39L, "식당"), ACCOMMODATION(32L, "숙소"), ATTRACTION(12L, "관광지");
 
     private final Long code;
     private final String name;
