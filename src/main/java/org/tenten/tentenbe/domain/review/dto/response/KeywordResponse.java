@@ -1,4 +1,8 @@
 package org.tenten.tentenbe.domain.review.dto.response;
 
-public record KeywordResponse() {
+import java.util.List;
+
+public record KeywordResponse(
+        List<KeywordInfo> keywords
+) {
 }
