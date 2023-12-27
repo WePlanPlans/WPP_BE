@@ -1,9 +1,9 @@
 package org.tenten.tentenbe.domain.auth.dto.request;
 
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.tenten.tentenbe.domain.member.model.Survey;
-
+import org.tenten.tentenbe.global.common.enums.AgeType;
+import org.tenten.tentenbe.global.common.enums.GenderType;
 public record SignUpRequest(
     @Schema(defaultValue = "example@mail.com")
     String email,
