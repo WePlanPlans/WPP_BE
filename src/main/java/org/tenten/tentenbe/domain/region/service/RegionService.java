@@ -14,17 +14,17 @@ public class RegionService {
     public RegionResponse getRegions(String areaCode) {
         if (areaCode == null) {
             return new RegionResponse(
-                    Region.entireRegions.stream().map(region -> new RegionResponse.RegionInfo(region.getAreaCode(), region.getSubAreaCode(), region.getName())).toList());
+                Region.entireRegions.stream().map(region -> new RegionResponse.RegionInfo(region.getAreaCode(), region.getSubAreaCode(), region.getName())).toList());
         } else {
             return new RegionResponse(
-                    openApiComponent.getSubRegion(areaCode)
+                openApiComponent.getSubRegion(areaCode)
             );
         }
     }
 
     public RegionResponse getPopularRegions() {
         return new RegionResponse(
-                Region.popularPlaces.stream().map(region -> new RegionResponse.RegionInfo(region.getAreaCode(), region.getSubAreaCode(), region.getName())).toList());
+            Region.popularPlaces.stream().map(region -> new RegionResponse.RegionInfo(region.getAreaCode(), region.getSubAreaCode(), region.getName())).toList());
 
     }
 }

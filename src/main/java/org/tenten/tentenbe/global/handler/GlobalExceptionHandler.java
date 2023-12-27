@@ -26,9 +26,9 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .errorMessage(ex.getMessage())
-                .status(ex.getErrorCode().value())
-                .build();
+            .errorMessage(ex.getMessage())
+            .status(ex.getErrorCode().value())
+            .build();
 
         return new ResponseEntity<>(errorResponse, ex.getErrorCode());
     }
@@ -39,21 +39,21 @@ public class GlobalExceptionHandler {
 
         log.error(ex.getMessage());
         Arrays.stream(ex.getStackTrace()).forEach(
-                stackTraceElement -> log.error(stackTraceElement.toString())
+            stackTraceElement -> log.error(stackTraceElement.toString())
         );
 
         return new ResponseEntity<>(ErrorResponse.internalServerError(ex.getMessage()),
-                INTERNAL_SERVER_ERROR);
+            INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected final ResponseEntity<ErrorResponse> methodValidException(MethodArgumentNotValidException ex, WebRequest request){
+    protected final ResponseEntity<ErrorResponse> methodValidException(MethodArgumentNotValidException ex, WebRequest request) {
         log.error("handling {}, message : {}", ex.getClass().toString(), ex.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .errorMessage(ex.getMessage())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .build();
+            .errorMessage(ex.getMessage())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

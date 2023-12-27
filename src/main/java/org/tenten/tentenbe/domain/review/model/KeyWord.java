@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.tenten.tentenbe.domain.review.model.ReviewKeyword;
 import org.tenten.tentenbe.global.common.enums.KeywordType;
 
 import java.util.ArrayList;

@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class AreaOpenApiResponse {
     Response response;
+
     @Getter
     @Builder
     @AllArgsConstructor
@@ -49,6 +50,7 @@ public class AreaOpenApiResponse {
     public static class Item {
         List<Area> item;
     }
+
     @Getter
     @Builder
     @AllArgsConstructor

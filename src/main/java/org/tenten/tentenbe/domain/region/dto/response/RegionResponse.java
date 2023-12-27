@@ -6,12 +6,12 @@ import java.util.List;
 
 public record RegionResponse(List<RegionInfo> regions) {
     public record RegionInfo(
-            @Schema(defaultValue = "1")
-            Long areaCode,
-            @Schema(defaultValue = "null")
-            Long subAreaCode,
-            @Schema(defaultValue = "서울시")
-            String name
+        @Schema(defaultValue = "1")
+        Long areaCode,
+        @Schema(defaultValue = "null")
+        Long subAreaCode,
+        @Schema(defaultValue = "서울시")
+        String name
     ) {
 
     }

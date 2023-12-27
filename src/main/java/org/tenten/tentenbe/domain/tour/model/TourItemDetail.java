@@ -1,10 +1,9 @@
 package org.tenten.tentenbe.domain.tour.model;
 
-import io.swagger.v3.core.util.Json;
 import jakarta.persistence.*;
 import lombok.*;
-import org.tenten.tentenbe.domain.tour.model.TourItemDetail.RoomOption.RoomOptionConverter;
 import org.tenten.tentenbe.domain.tour.model.TourItemDetail.ItemDetail.ItemDetailConverter;
+import org.tenten.tentenbe.domain.tour.model.TourItemDetail.RoomOption.RoomOptionConverter;
 import org.tenten.tentenbe.global.converter.JsonConverter;
 
 import java.util.List;
@@ -35,6 +34,7 @@ public class TourItemDetail {
     @OneToOne
     @JoinColumn(name = "tourItemId")
     private TourItem tourItem;
+
     @Setter
     @Getter
     @AllArgsConstructor

@@ -42,10 +42,10 @@ public class ReviewController {
     @ApiResponse(responseCode = "200", description = "업데이트 성공시", content = @Content(schema = @Schema(implementation = ReviewInfo.class)))
     @PutMapping("/{reviewId}")
     public ResponseEntity<?> updateReview(
-            @Parameter(name = "reviewId", description = "리뷰 아이디", in = PATH)
-            @PathVariable("reviewId")
-            Long reviewId,
-            @RequestBody ReviewUpdateRequest reviewUpdateRequest) {
+        @Parameter(name = "reviewId", description = "리뷰 아이디", in = PATH)
+        @PathVariable("reviewId")
+        Long reviewId,
+        @RequestBody ReviewUpdateRequest reviewUpdateRequest) {
         return ResponseEntity.ok(reviewService.updateReview(null, reviewId, reviewUpdateRequest));
     }
 
@@ -53,8 +53,8 @@ public class ReviewController {
     @ApiResponse(responseCode = "200", description = "삭제 성공시")
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<?> deleteReview(
-            @Parameter(name = "reviewId", description = "삭제할 리뷰 아이디", in = PATH)
-            @PathVariable("reviewId") Long reviewId) {
+        @Parameter(name = "reviewId", description = "삭제할 리뷰 아이디", in = PATH)
+        @PathVariable("reviewId") Long reviewId) {
         reviewService.deleteReview(null, reviewId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
@@ -63,8 +63,8 @@ public class ReviewController {
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = CommentResponse.class)))
     @GetMapping("/{reviewId}/comments")
     public ResponseEntity<?> getReviewDetail(
-            @Parameter(name = "reviewId", description = "조회할 리뷰 아이디", in = PATH)
-            @PathVariable("reviewId") Long reviewId) {
+        @Parameter(name = "reviewId", description = "조회할 리뷰 아이디", in = PATH)
+        @PathVariable("reviewId") Long reviewId) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getReviewComments(reviewId)));
     }
 
@@ -72,9 +72,9 @@ public class ReviewController {
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = KeywordResponse.class)))
     @GetMapping("/keywords")
     public ResponseEntity<?> getKeywords(
-            @Parameter(name = "code", description = "여행 상품 타입, ex) 32 - 숙박, 39 - 식당, 12 - 관광지", in = QUERY)
-            @RequestParam(name = "code", required = false)
-            Long code
+        @Parameter(name = "code", description = "여행 상품 타입, ex) 32 - 숙박, 39 - 식당, 12 - 관광지", in = QUERY)
+        @RequestParam(name = "code", required = false)
+        Long code
     ) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getKeywords(code)));
     }

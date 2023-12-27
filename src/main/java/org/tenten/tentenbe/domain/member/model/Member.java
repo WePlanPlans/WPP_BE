@@ -11,8 +11,8 @@ import org.tenten.tentenbe.domain.trip.model.Trip;
 import org.tenten.tentenbe.domain.trip.model.TripItem;
 import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
-import org.tenten.tentenbe.global.common.enums.UserAuthority;
 import org.tenten.tentenbe.global.common.enums.LoginType;
+import org.tenten.tentenbe.global.common.enums.UserAuthority;
 
 import java.util.ArrayList;
 import java.util.List;

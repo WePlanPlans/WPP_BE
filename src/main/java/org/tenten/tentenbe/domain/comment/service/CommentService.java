@@ -16,6 +16,7 @@ import org.tenten.tentenbe.domain.comment.repository.CommentRepository;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
+
     @Transactional
     public CommentResponse createComment(CommentCreateRequest commentCreateRequest) {
 
@@ -28,6 +29,7 @@ public class CommentService {
 
         return null;
     }
+
     @Transactional
     public CommentResponse updateComment(Long memberId, Long commentId, CommentUpdateRequest commentUpdateRequest) {
 
@@ -38,6 +40,7 @@ public class CommentService {
         findCommentById.UpdateComment(commentUpdateRequest.content());
         return null;
     }
+
     @Transactional
     public void deleteComment(Long memebrId, Long commentId) {
 

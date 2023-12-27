@@ -30,8 +30,8 @@ public class RegionController {
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = RegionResponse.class)))
     @GetMapping("")
     public ResponseEntity<?> getRegions(
-            @Parameter(name = "areaCode", required = false, in = QUERY, description = "세부 지역 조회할 광역 지자체 areaCode")
-            @RequestParam(value = "areaCode", required = false) String areaCode) {
+        @Parameter(name = "areaCode", required = false, in = QUERY, description = "세부 지역 조회할 광역 지자체 areaCode")
+        @RequestParam(value = "areaCode", required = false) String areaCode) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, regionService.getRegions(areaCode)));
     }
 

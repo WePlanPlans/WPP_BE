@@ -23,7 +23,7 @@ import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCES
 @Tag(name = "여행지 관련 API", description = "여행지 관련 API 모음입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/tours")
+@RequestMapping("/api/tours")
 public class TourController {
     private final TourService tourService;
     private final ReviewService reviewService;
@@ -61,7 +61,7 @@ public class TourController {
     public ResponseEntity<?> getTourDetail(
         @Parameter(name = "tourId", description = "상세조회할 여행 상품 ID", in = PATH, required = true)
         @PathVariable(value = "tourId") Long tourId
-            ) {
+    ) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tourService.getTourDetail(tourId, null)));
     }
 

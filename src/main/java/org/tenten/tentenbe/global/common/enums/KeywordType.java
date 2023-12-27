@@ -1,7 +1,6 @@
 package org.tenten.tentenbe.global.common.enums;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.tenten.tentenbe.domain.review.exception.KeywordException;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
