@@ -1,4 +1,8 @@
 package org.tenten.tentenbe.domain.comment.dto.response;
 
-public record CommentResponse() {
+import java.util.List;
+
+public record CommentResponse(
+        List<CommentInfo> comments
+) {
 }
