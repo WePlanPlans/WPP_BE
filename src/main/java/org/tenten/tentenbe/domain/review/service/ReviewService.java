@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.review.dto.request.ReviewCreateRequest;
 import org.tenten.tentenbe.domain.review.dto.request.ReviewUpdateRequest;
+import org.tenten.tentenbe.domain.review.dto.response.KeywordResponse;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
 import org.tenten.tentenbe.domain.review.repository.ReviewRepository;
@@ -31,6 +32,10 @@ public class ReviewService {
     }
     @Transactional(readOnly = true)
     public ReviewInfo getReviewComments(Long reviewId) {
+        return null;
+    }
+    @Transactional(readOnly = true)
+    public KeywordResponse getKeywords(Long code) {
         return null;
     }
 }

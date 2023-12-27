@@ -36,8 +36,8 @@ public class TourItem {
     private String title; // 여행지 이름
     private String zipcode; // 우편번호
     private String tel; // 전화번호
-    private String mapX; // x좌표
-    private String mapY; // y좌표
+    private String longitude; // x좌표
+    private String latitude; // y좌표
 
     @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
     private final List<Review> reviews = new ArrayList<>();
