@@ -26,7 +26,7 @@ public class CommentService {
 
         commentRepository.save(newComment);
 
-        return new CommentResponse(newComment.getContent(), null);
+        return null;
     }
     @Transactional
     public CommentResponse updateComment(Long memberId, Long commentId, CommentUpdateRequest commentUpdateRequest) {
@@ -36,7 +36,7 @@ public class CommentService {
         );
 
         findCommentById.UpdateComment(commentUpdateRequest.content());
-        return new CommentResponse(commentUpdateRequest.content(), null);
+        return null;
     }
     @Transactional
     public void deleteComment(Long memebrId, Long commentId) {
