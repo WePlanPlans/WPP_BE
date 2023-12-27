@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.auth.dto.request.LoginRequest;
 import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
-import org.tenten.tentenbe.domain.auth.dto.response.SignUpResponse;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 
 @Service
@@ -15,9 +14,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public SignUpResponse signUp(Long memberId, SignUpRequest signUpRequest) {
-        return null;
-    }
+    public void signUp(Long memberId, SignUpRequest signUpRequest) {};
     @Transactional
     public LoginResponse login(Long memberId, LoginRequest loginRequest) {
         return null;
