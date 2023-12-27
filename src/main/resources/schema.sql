@@ -49,7 +49,9 @@ create table Member
     profileImageUrl varchar(255)            null,
     survey          json                    null,
     loginType       enum ('EMAIL', 'KAKAO') null,
-    userAuthority   enum ('ROLE_USER')      null
+    userAuthority   enum ('ROLE_USER')      null,
+    ageType         enum ('TEENAGER', 'TWENTIES', 'THIRTIES', 'FOURTIES', 'ABOVE_FIFTIES', 'DEFAULT') null,
+    genderType      enum ('MALE', 'FEMALE', 'NON_BINARY', 'DEFAULT')      null
 );
 
 create table Test
@@ -164,15 +166,15 @@ create table Trip
     endDate        date         null,
     startDate      date         null,
     createdTime    datetime(6)  null,
-    memberId       bigint       null,
     modifiedTime   datetime(6)  null,
     numberOfPeople bigint       null,
     tripId         bigint auto_increment
         primary key,
-    departure      varchar(255) null,
-    destination    varchar(255) null,
-    constraint FKrg0jpvm9q5j9qxaxuxj8i2jec
-        foreign key (memberId) references Member (memberId)
+    tripName       varchar(255)                    null,
+    isDeleted      boolean                      null,
+    tripStatus     enum ('BEFORE', 'AFTER', 'ING') null,
+    area           varchar(255)                    null,
+    subarea        varchar(255)                    null
 );
 
 create table TripItem
@@ -210,4 +212,32 @@ create table TripMember
     constraint FKqvcr8k1koo12vdoirnakirv13
         foreign key (memberId) references Member (memberId)
 );
+
+create table TripLikedItem
+(
+    tripLikedItemId bigint not null
+        primary key,
+    tripId          bigint null,
+    tourItemId      bigint null,
+    constraint FK_TRIPLIKEDITEM_ON_TOURITEMID
+        foreign key (tourItemId) references TourItem (tourItemId),
+    constraint FK_TRIPLIKEDITEM_ON_TRIPID
+        foreign key (tripId) references Trip (tripId)
+);
+
+create table TripLikedItemPreference
+(
+    tripLikedItemPreferenceId bigint not null
+        primary key,
+    liked                     bit    null,
+    disliked                  bit    null,
+    tripMemberId              bigint null,
+    tripLikedItemId           bigint null,
+    constraint FK_TRIPLIKEDITEMPREFERENCE_ON_TRIPLIKEDITEMID
+        foreign key (tripLikedItemId) references TripLikedItem (tripLikedItemId),
+    constraint FK_TRIPLIKEDITEMPREFERENCE_ON_TRIPMEMBERID
+        foreign key (tripMemberId) references TripMember (tripMemberId)
+);
+
+
 

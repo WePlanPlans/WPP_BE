@@ -7,12 +7,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
+import org.tenten.tentenbe.global.common.enums.TripStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.InheritanceType.JOINED;
@@ -33,6 +35,13 @@ public class Trip extends BaseTimeEntity {
     private LocalDate endDate;
     private String departure;
     private String destination;
+    private String area;
+    private String subarea;
+    @Enumerated(STRING)
+    private TripStatus tripStatus;
+    private Boolean isDeleted;
+    private String tripName;
+    private Long budget;
 
     @OneToMany(mappedBy = "trip", fetch = LAZY, cascade = REMOVE)
     private final List<TripMember> tripMembers = new ArrayList<>();
@@ -40,7 +49,7 @@ public class Trip extends BaseTimeEntity {
     @OneToMany(mappedBy = "trip", fetch = LAZY, cascade = REMOVE)
     private final List<TripItem> tripItems = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "memberId")
-    private Member creator;
+    @OneToMany(mappedBy = "trip", fetch = LAZY, cascade = REMOVE)
+    private final List<TripLikedItem> tripLikedItems = new ArrayList<>();
+
 }

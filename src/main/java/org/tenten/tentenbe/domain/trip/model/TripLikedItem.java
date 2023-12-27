@@ -5,41 +5,34 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.tenten.tentenbe.domain.member.model.Member;
-import org.tenten.tentenbe.global.common.BaseTimeEntity;
-import org.tenten.tentenbe.global.common.enums.TripAuthority;
+import org.tenten.tentenbe.domain.tour.model.TourItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.REMOVE;
-import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
-import static jakarta.persistence.InheritanceType.JOINED;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = JOINED)
-public class TripMember extends BaseTimeEntity {
+public class TripLikedItem {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "tripMemberId")
+    @Column(name = "tripLikedItemId")
     private Long id;
-    @Enumerated(STRING)
-    private TripAuthority tripAuthority;
 
     @ManyToOne
     @JoinColumn(name = "tripId")
     private Trip trip;
 
     @ManyToOne
-    @JoinColumn(name = "memberId")
-    private Member member;
+    @JoinColumn(name = "tourItemId")
+    private TourItem tourItem;
 
-    @OneToMany(mappedBy = "tripMember", fetch = LAZY, cascade = REMOVE)
+    @OneToMany(mappedBy = "tripLikedItem", fetch = LAZY, cascade = REMOVE)
     private final List<TripLikedItemPreference> tripLikedItemPreferences = new ArrayList<>();
 }
