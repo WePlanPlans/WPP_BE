@@ -16,14 +16,17 @@ public class TourService {
     private final TourItemRepository tourItemRepository;
     private final TourItemDetailRepository tourItemDetailRepository;
     private final TourItemImageRepository tourItemImageRepository;
+
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(String region) {
         return null;
     }
+
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> searchTours(String region, String type, String keyword) {
         return null;
     }
+
     @Transactional(readOnly = true)
     public TourDetailResponse getTourDetail(Long tourId, Long memberId) {
         return null;
