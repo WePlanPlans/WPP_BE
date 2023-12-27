@@ -14,7 +14,6 @@ import static jakarta.persistence.InheritanceType.JOINED;
 
 @Entity
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Inheritance(strategy = JOINED)
@@ -30,7 +29,49 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "memberId")
     private Member creator;
 
+    //CASECADE REMOVE 일 경우
+    //댓글이 두개이고 댓글하나가 삭제되었을때 리뷰도 삭제된다
     @ManyToOne
     @JoinColumn(name = "reviewId")
     private Review review;
+
+
+    public Comment(String content // Member creator
+         ){
+        this.content = content;
+        // this.creator = creator;
+    }
+
+    public void UpdateComment(String content){
+        this.content = content;
+    }
+
+    // 리뷰와 댓글 양방향 설정 만약 리뷰에서 설정되어있으면 제거해도됨
+    public void addReview(Review review){
+        this.review = review;
+
+        if(!review.getComments().contains(this)){
+            review.getComments().add(this);
+        }
+    }
+    public void removeReview(){
+        if(this.review != null){
+            review.getComments().remove(this);
+            this.review = null;
+        }
+    }
+
+    public void addCreator(Member creator){
+        this.creator = creator;
+
+        if(!creator.getComments().contains(this)){
+            creator.getComments().add(this);
+        }
+    }
+    public void removeCreator(){
+        if(this.creator != null){
+            creator.getComments().remove(this);
+            this.creator = null;
+        }
+    }
 }

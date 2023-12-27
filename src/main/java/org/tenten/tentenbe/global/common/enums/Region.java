@@ -1,7 +1,6 @@
 package org.tenten.tentenbe.global.common.enums;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.tenten.tentenbe.global.exception.GlobalException;
 
 import java.util.List;
@@ -28,13 +27,13 @@ public enum Region {
     JEONNAM(37L, null, "전라남도"),
     JEJU(39L, null, "제주도"),
     GYEONGJU(35L, 2L, "경주"),
-    GANREUNG(32L, 1L, "강릉")
-    ;
+    GANREUNG(32L, 1L, "강릉");
     private final Long areaCode;
     private final Long subAreaCode;
     private final String name;
     public static final List<Region> entireRegions = List.of(SEOUL, INCHEON, DAEJEON, DAEGU, GWANGJU, BUSAN, ULSAN, SEJONG, GYEONGGI, GANGWON, CHUNGBUK, CHUNGNAM, JEONBUK, JEONNAM, JEJU);
     public static final List<Region> popularPlaces = List.of(SEOUL, BUSAN, JEJU, GYEONGJU, GANREUNG);
+
     Region(Long areaCode, Long subAreaCode, String name) {
         this.areaCode = areaCode;
         this.subAreaCode = subAreaCode;

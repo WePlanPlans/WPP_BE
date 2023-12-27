@@ -11,8 +11,10 @@ import org.tenten.tentenbe.domain.trip.model.Trip;
 import org.tenten.tentenbe.domain.trip.model.TripItem;
 import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
-import org.tenten.tentenbe.global.common.enums.UserAuthority;
+import org.tenten.tentenbe.global.common.enums.AgeType;
+import org.tenten.tentenbe.global.common.enums.GenderType;
 import org.tenten.tentenbe.global.common.enums.LoginType;
+import org.tenten.tentenbe.global.common.enums.UserAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,10 @@ public class Member extends BaseTimeEntity {
     private UserAuthority userAuthority;
     @Enumerated(STRING)
     private LoginType loginType;
+    @Enumerated(STRING)
+    private AgeType ageType;
+    @Enumerated(STRING)
+    private GenderType genderType;
 
     @OneToMany(mappedBy = "member", fetch = LAZY, cascade = REMOVE)
     private final List<TripMember> tripMembers = new ArrayList<>();
@@ -58,9 +64,6 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member", fetch = LAZY, cascade = REMOVE)
     private final List<LikedItem> likedItems = new ArrayList<>();
-
-    @OneToMany(mappedBy = "creator", fetch = LAZY, cascade = REMOVE)
-    private final List<Trip> trips = new ArrayList<>();
 
     @OneToMany(mappedBy = "creator", fetch = LAZY, cascade = REMOVE)
     private final List<TripItem> tripItems = new ArrayList<>();

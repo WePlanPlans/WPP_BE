@@ -9,7 +9,12 @@ import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
 import org.tenten.tentenbe.global.common.enums.TripAuthority;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.InheritanceType.JOINED;
 
@@ -34,4 +39,7 @@ public class TripMember extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "memberId")
     private Member member;
+
+    @OneToMany(mappedBy = "tripMember", fetch = LAZY, cascade = REMOVE)
+    private final List<TripLikedItemPreference> tripLikedItemPreferences = new ArrayList<>();
 }

@@ -19,13 +19,13 @@ import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCES
 @Tag(name = "카테고리 관련 API", description = "카테고리 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/category")
+@RequestMapping("/api/category")
 public class CategoryController {
     private final CategoryService categoryService;
 
     @Operation(summary = "카테고리 조회 API", description = "카테고리 조회 API 입니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = CategoryResponse.class)))
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity<?> getCategory() {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, categoryService.getCategory()));
     }

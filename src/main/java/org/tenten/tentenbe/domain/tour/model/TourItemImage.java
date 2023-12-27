@@ -2,7 +2,6 @@ package org.tenten.tentenbe.domain.tour.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.tenten.tentenbe.domain.member.model.Survey;
 import org.tenten.tentenbe.domain.tour.model.TourItemImage.ItemImage.ItemImageConverter;
 import org.tenten.tentenbe.global.converter.JsonConverter;
 
@@ -29,6 +28,7 @@ public class TourItemImage {
     @OneToOne
     @JoinColumn(name = "tourItemId")
     private TourItem tourItem;
+
     @Getter
     @Setter
     @NoArgsConstructor
