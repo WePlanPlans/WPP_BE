@@ -26,7 +26,7 @@ public class CommentService {
 
         commentRepository.save(newComment);
 
-        return new CommentResponse(newComment.getContent(), newComment.getCreator());
+        return new CommentResponse(newComment.getContent(), null);
     }
     @Transactional
     public CommentResponse updateComment(Long memberId, Long commentId, CommentUpdateRequest commentUpdateRequest) {
