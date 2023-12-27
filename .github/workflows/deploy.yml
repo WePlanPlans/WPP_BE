@@ -69,6 +69,7 @@ jobs:
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip .
+          wait_for_environment_recovery: 300
       - name: Deploy to EB   # 배포
         uses: einaregilsson/beanstalk-deploy@v21   # 엘라스틱 빈스톡으로 배포하는 라이브러리
         with:
