@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.trip.model.TripItem;
+import org.tenten.tentenbe.domain.trip.model.TripLikedItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,4 +51,7 @@ public class TourItem {
 
     @OneToOne(mappedBy = "tourItem", cascade = REMOVE)
     private TourItemImage tourItemImage;
+
+    @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
+    private final List<TripLikedItem> tripLikedItems = new ArrayList<>();
 }
