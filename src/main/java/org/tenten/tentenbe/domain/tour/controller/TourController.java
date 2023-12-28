@@ -57,20 +57,20 @@ public class TourController {
     @Operation(summary = "여행지 상세 조회 API", description = "여행지 상세 조회 API 입니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content =
     @Content(schema = @Schema(implementation = TourDetailResponse.class)))
-    @GetMapping("/{tourId}")
+    @GetMapping("/{tourItemId}")
     public ResponseEntity<?> getTourDetail(
-        @Parameter(name = "tourId", description = "상세조회할 여행 상품 ID", in = PATH, required = true)
-        @PathVariable(value = "tourId") Long tourId
+        @Parameter(name = "tourItemId", description = "상세조회할 여행 상품 ID", in = PATH, required = true)
+        @PathVariable(value = "tourItemId") Long tourItemId
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tourService.getTourDetail(tourId, null)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tourService.getTourDetail(null, tourItemId)));
     }
 
     @Operation(summary = "여행 상품 리뷰 조회", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content =
     @Content(schema = @Schema(implementation = ReviewResponse.class)))
-    @GetMapping("/{tourId}/reviews")
-    public ResponseEntity<?> getTourReviews(@PathVariable(name = "tourId") Long tourId) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getTourReviews(tourId)));
+    @GetMapping("/{tourItemId}/reviews")
+    public ResponseEntity<?> getTourReviews(@PathVariable(name = "tourItemId") Long tourItemId) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getTourReviews(tourItemId)));
     }
 
 }
