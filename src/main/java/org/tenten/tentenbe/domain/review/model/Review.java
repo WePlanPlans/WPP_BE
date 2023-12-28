@@ -46,4 +46,12 @@ public class Review extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "memberId")
     private Member creator;
+
+    public void updateRating(Long rating) {
+        this.rating = rating;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

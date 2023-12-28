@@ -70,7 +70,7 @@ public class TourController {
     @Content(schema = @Schema(implementation = ReviewResponse.class)))
     @GetMapping("/{tourId}/reviews")
     public ResponseEntity<?> getTourReviews(@PathVariable(name = "tourId") Long tourId) {
-        return ResponseEntity.ok(reviewService.getTourReviews(tourId));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getTourReviews(tourId)));
     }
 
 }

@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS LikedItem cascade;
 
 DROP TABLE IF EXISTS ReviewKeyword cascade;
 
-DROP TABLE IF EXISTS KeyWord cascade;
+DROP TABLE IF EXISTS Keyword cascade;
 
 DROP TABLE IF EXISTS Review cascade;
 
@@ -28,9 +28,9 @@ DROP TABLE IF EXISTS Member cascade;
 
 
 
-create table KeyWord
+create table Keyword
 (
-    keyWordId bigint auto_increment
+    keywordId bigint auto_increment
         primary key,
     content   varchar(255)                                                           null,
     type      enum ('DINING_KEYWORD', 'ACCOMMODATION_KEYWORD', 'ATTRACTION_KEYWORD') null
@@ -72,8 +72,8 @@ create table TourItem
         primary key,
     address              varchar(255) null,
     detailedAddress      varchar(255) null,
-    mapX                 varchar(255) null,
-    mapY                 varchar(255) null,
+    longitude                 varchar(255) null,
+    latitude                 varchar(255) null,
     originalThumbnailUrl varchar(255) null,
     smallThumbnailUrl    varchar(255) null,
     tel                  varchar(255) null,
@@ -126,12 +126,12 @@ create table Comment
 
 create table ReviewKeyword
 (
-    keyWordId   bigint null,
+    keywordId   bigint null,
     reviewId    bigint null,
     reviewKeywordId bigint auto_increment
         primary key,
     constraint FKa4v4wydktt3nkb8k3yq2fj9d2
-        foreign key (keyWordId) references KeyWord (keyWordId),
+        foreign key (keywordId) references KeyWord (keywordId),
     constraint FKip2fmgieccwcqg5lw59ds0l80
         foreign key (reviewId) references Review (reviewId)
 );

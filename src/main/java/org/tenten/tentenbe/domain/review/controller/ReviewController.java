@@ -35,7 +35,8 @@ public class ReviewController {
     @ApiResponse(responseCode = "200", description = "작성 성공시", content = @Content(schema = @Schema(implementation = ReviewInfo.class)))
     @PostMapping()
     public ResponseEntity<?> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
-        return ResponseEntity.ok(reviewService.createReview(null, reviewCreateRequest));
+        Long memberId = 1L;
+        return ResponseEntity.ok(reviewService.createReview(memberId, reviewCreateRequest));
     }
 
     @Operation(summary = "리뷰 수정 API", description = "리뷰 수정 API 입니다.")
@@ -46,7 +47,8 @@ public class ReviewController {
         @PathVariable("reviewId")
         Long reviewId,
         @RequestBody ReviewUpdateRequest reviewUpdateRequest) {
-        return ResponseEntity.ok(reviewService.updateReview(null, reviewId, reviewUpdateRequest));
+        Long memberId = 1L;
+        return ResponseEntity.ok(reviewService.updateReview(memberId, reviewId, reviewUpdateRequest));
     }
 
     @Operation(summary = "리뷰 삭제 API", description = "리뷰 삭제 API 입니다.")
@@ -55,7 +57,8 @@ public class ReviewController {
     public ResponseEntity<?> deleteReview(
         @Parameter(name = "reviewId", description = "삭제할 리뷰 아이디", in = PATH)
         @PathVariable("reviewId") Long reviewId) {
-        reviewService.deleteReview(null, reviewId);
+        Long memberId = 1L;
+        reviewService.deleteReview(memberId, reviewId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
 

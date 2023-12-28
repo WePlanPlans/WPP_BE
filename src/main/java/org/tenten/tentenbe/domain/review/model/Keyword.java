@@ -20,15 +20,15 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeyWord {
+public class Keyword {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "keyWordId")
+    @Column(name = "keywordId")
     private Long id;
     private String content;
     @Enumerated(STRING)
     private KeywordType type;
 
-    @OneToMany(mappedBy = "keyWord", fetch = LAZY, cascade = REMOVE)
+    @OneToMany(mappedBy = "keyword", fetch = LAZY, cascade = REMOVE)
     private final List<ReviewKeyword> reviewKeywords = new ArrayList<>();
 }
