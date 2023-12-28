@@ -13,10 +13,7 @@ import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.review.dto.request.ReviewCreateRequest;
 import org.tenten.tentenbe.domain.review.dto.request.ReviewKeywordCreateRequest;
 import org.tenten.tentenbe.domain.review.dto.request.ReviewUpdateRequest;
-import org.tenten.tentenbe.domain.review.dto.response.KeywordInfo;
-import org.tenten.tentenbe.domain.review.dto.response.KeywordResponse;
-import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
-import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
+import org.tenten.tentenbe.domain.review.dto.response.*;
 import org.tenten.tentenbe.domain.review.exception.KeywordException;
 import org.tenten.tentenbe.domain.review.exception.ReviewException;
 import org.tenten.tentenbe.domain.review.model.Keyword;
@@ -26,6 +23,7 @@ import org.tenten.tentenbe.domain.review.repository.KeywordRepository;
 import org.tenten.tentenbe.domain.review.repository.ReviewKeywordRepository;
 import org.tenten.tentenbe.domain.review.repository.ReviewRepository;
 import org.tenten.tentenbe.domain.tour.exception.TourException;
+import org.tenten.tentenbe.domain.tour.model.TourItem;
 import org.tenten.tentenbe.domain.tour.repository.TourItemRepository;
 import org.tenten.tentenbe.global.common.enums.KeywordType;
 
@@ -45,10 +43,33 @@ public class ReviewService {
     private final CommentRepository commentRepository;
     @Transactional(readOnly = true)
     public ReviewResponse getTourReviews(Long tourItemId) {
-        List<Review> reviews = reviewRepository.findReviewByTourItemId(tourItemId);
+        TourItem tourItem = tourItemRepository.findById(tourItemId)
+            .orElseThrow(() -> new TourException("해당 아이디로 존재하는 리뷰가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
+        List<Review> reviews = reviewRepository.findReviewByTourItemId(tourItem.getId());
+
+        Long reviewTotalCount = (long) reviews.size();
+        Long keywordTotalCount = calculateKeywordTotalCount(tourItem.getId());
+        Double ratingAverage = calculateRatingAverage(reviews);
         return new ReviewResponse(
-            reviews.stream().map(ReviewInfo::fromEntity).toList()
+            ratingAverage,
+            reviewTotalCount,
+            keywordTotalCount,
+            reviews.stream().map(ReviewInfo::fromEntity).toList(),
+            keywordRepository.findKeywordInfoByTourItemId(tourItem.getId())
         );
+    }
+
+    private Double calculateRatingAverage(List<Review> reviews) {
+        return reviews.stream()
+            .mapToDouble(Review::getRating)
+            .average()
+            .orElse(0.0);
+    }
+
+    private Long calculateKeywordTotalCount(Long tourItemId) {
+        return keywordRepository.findKeywordInfoByTourItemId(tourItemId).stream()
+            .mapToLong(TourKeywordInfo::keywordCount)
+            .sum();
     }
 
     @Transactional
