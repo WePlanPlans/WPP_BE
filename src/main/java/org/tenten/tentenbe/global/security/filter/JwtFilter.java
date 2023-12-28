@@ -26,7 +26,7 @@ import static org.tenten.tentenbe.global.common.constant.JwtConstants.BEARER_PRE
 @RequiredArgsConstructor
 @Slf4j
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper mapper;
 
