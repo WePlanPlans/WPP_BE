@@ -8,7 +8,7 @@ public record ReviewResponse(
     @Schema(defaultValue = "4.5")
     Double ratingAverage,
     @Schema(defaultValue = "10")
-    Long ReviewTotalCount,
+    Long reviewTotalCount,
     @Schema(defaultValue = "10")
     Long keywordTotalCount,
     List<ReviewInfo> reviewInfos,
