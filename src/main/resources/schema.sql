@@ -128,7 +128,7 @@ create table ReviewKeyword
 (
     keyWordId   bigint null,
     reviewId    bigint null,
-    reviewTagId bigint auto_increment
+    reviewKeywordId bigint auto_increment
         primary key,
     constraint FKa4v4wydktt3nkb8k3yq2fj9d2
         foreign key (keyWordId) references KeyWord (keyWordId),
