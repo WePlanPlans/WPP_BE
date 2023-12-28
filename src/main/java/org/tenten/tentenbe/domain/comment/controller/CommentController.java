@@ -29,9 +29,8 @@ public class CommentController {
     private final CommentService commentService;
 
     @Operation(summary = "댓글 작성 API", description = "댓글 작성 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "댓글 작성 성공시", content = @Content(schema = @Schema(implementation = CommentInfo.class)))
     @PostMapping()
-    public ResponseEntity<?> createComment(
+    public ResponseEntity<GlobalDataResponse<CommentInfo>> createComment(
         @RequestBody CommentCreateRequest commentCreateRequest
         // Security 의존성 추가될시
         // @AuthenticationPrincipal Member,
@@ -40,9 +39,8 @@ public class CommentController {
     }
 
     @Operation(summary = "댓글 수정 API", description = "댓글 수정 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "댓글 수정 성공시", content = @Content(schema = @Schema(implementation = CommentInfo.class)))
     @PutMapping("/{commentId}")
-    public ResponseEntity<?> updateComment(
+    public ResponseEntity<GlobalDataResponse<CommentInfo>> updateComment(
         @Parameter(name = "commentId", description = "댓글 아이디", in = PATH)
         @PathVariable("commentId")
         Long commentId,
@@ -54,9 +52,8 @@ public class CommentController {
     }
 
     @Operation(summary = "댓글 삭제 API", description = "댓글 삭제 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "댓글 삭제 성공시")
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComment(
+    public ResponseEntity<GlobalResponse> deleteComment(
         @Parameter(name = "commentId", description = "댓글 아이디", in = PATH)
         @PathVariable("commentId")
         Long commentId
