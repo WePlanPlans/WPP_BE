@@ -10,8 +10,6 @@ DROP TABLE IF EXISTS Keyword cascade;
 
 DROP TABLE IF EXISTS Review cascade;
 
-DROP TABLE IF EXISTS Test cascade;
-
 DROP TABLE IF EXISTS TourItemDetail cascade;
 
 DROP TABLE IF EXISTS TourItemImage cascade;
@@ -54,13 +52,6 @@ create table Member
     genderType      enum ('MALE', 'FEMALE', 'NON_BINARY', 'DEFAULT')      null
 );
 
-create table Test
-(
-    id      bigint auto_increment
-        primary key,
-    content varchar(255) null,
-    title   varchar(255) null
-);
 
 create table TourItem
 (
