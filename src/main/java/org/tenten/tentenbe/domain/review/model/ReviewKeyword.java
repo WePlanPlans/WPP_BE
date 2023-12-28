@@ -16,7 +16,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class ReviewKeyword {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "reviewTagId")
+    @Column(name = "reviewKeywordId")
     private Long id;
 
     @ManyToOne
@@ -24,6 +24,6 @@ public class ReviewKeyword {
     private Review review;
 
     @ManyToOne
-    @JoinColumn(name = "keyWordId")
-    private KeyWord keyWord;
+    @JoinColumn(name = "keywordId")
+    private Keyword keyword;
 }
