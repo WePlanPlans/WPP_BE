@@ -7,12 +7,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.auth.dto.request.LoginRequest;
 import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
+import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
 import org.tenten.tentenbe.domain.auth.service.AuthService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
@@ -57,4 +55,17 @@ public class AuthController {
         return ResponseEntity.ok(GlobalResponse.ok(SUCCESS));
     }
 
+    @Operation(summary = "닉네임 중복 조회 API", description = "닉네임 중복 조회 API 입니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = CheckResponse.class)))
+    @GetMapping("/nicknames/check/{nickname}")
+    public ResponseEntity<?> checkNickname(@PathVariable("nickname") String nickname) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.nicknameCheck(nickname)));
+    }
+
+    @Operation(summary = "이메일 중복 조회 API", description = "이메일 중복 조회 API 입니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = CheckResponse.class)))
+    @GetMapping("/emails/check/{email}")
+    public ResponseEntity<?> checkEmail(@PathVariable("email") String email) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.emailCheck(email)));
+    }
 }
