@@ -7,7 +7,9 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Getter
 public enum KeywordType {
-    DINING_KEYWORD("DINING", 39L), ACCOMMODATION_KEYWORD("ACCOMMODATION", 32L), ATTRACTION_KEYWORD("ATTRACTION", 12L);
+    DINING_KEYWORD("DINING", 39L),
+    ACCOMMODATION_KEYWORD("ACCOMMODATION", 32L),
+    ATTRACTION_KEYWORD("ATTRACTION", 12L);
 
     private final String name;
     private final Long code;

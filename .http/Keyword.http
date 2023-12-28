@@ -1,0 +1,3 @@
+### 키워드 조회 API
+GET http://localhost:8080/api/reviews/keywords?code=32
+Content-Type: application/json

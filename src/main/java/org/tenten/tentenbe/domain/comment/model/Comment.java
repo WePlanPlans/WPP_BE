@@ -29,16 +29,14 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "memberId")
     private Member creator;
 
-    //CASECADE REMOVE 일 경우
-    //댓글이 두개이고 댓글하나가 삭제되었을때 리뷰도 삭제된다
     @ManyToOne
     @JoinColumn(name = "reviewId")
     private Review review;
 
 
-    public Comment(String content // Member creator
-         ){
+    public Comment(String content , Review review ){
         this.content = content;
+        this.review = review;
         // this.creator = creator;
     }
 

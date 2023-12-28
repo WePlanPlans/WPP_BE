@@ -6,11 +6,9 @@ DROP TABLE IF EXISTS LikedItem cascade;
 
 DROP TABLE IF EXISTS ReviewKeyword cascade;
 
-DROP TABLE IF EXISTS KeyWord cascade;
+DROP TABLE IF EXISTS Keyword cascade;
 
 DROP TABLE IF EXISTS Review cascade;
-
-DROP TABLE IF EXISTS Test cascade;
 
 DROP TABLE IF EXISTS TourItemDetail cascade;
 
@@ -28,9 +26,9 @@ DROP TABLE IF EXISTS Member cascade;
 
 
 
-create table KeyWord
+create table Keyword
 (
-    keyWordId bigint auto_increment
+    keywordId bigint auto_increment
         primary key,
     content   varchar(255)                                                           null,
     type      enum ('DINING_KEYWORD', 'ACCOMMODATION_KEYWORD', 'ATTRACTION_KEYWORD') null
@@ -54,13 +52,6 @@ create table Member
     genderType      enum ('MALE', 'FEMALE', 'NON_BINARY', 'DEFAULT')      null
 );
 
-create table Test
-(
-    id      bigint auto_increment
-        primary key,
-    content varchar(255) null,
-    title   varchar(255) null
-);
 
 create table TourItem
 (
@@ -72,8 +63,8 @@ create table TourItem
         primary key,
     address              varchar(255) null,
     detailedAddress      varchar(255) null,
-    mapX                 varchar(255) null,
-    mapY                 varchar(255) null,
+    longitude            varchar(255) null,
+    latitude             varchar(255) null,
     originalThumbnailUrl varchar(255) null,
     smallThumbnailUrl    varchar(255) null,
     tel                  varchar(255) null,
@@ -126,12 +117,12 @@ create table Comment
 
 create table ReviewKeyword
 (
-    keyWordId   bigint null,
+    keywordId   bigint null,
     reviewId    bigint null,
-    reviewTagId bigint auto_increment
+    reviewKeywordId bigint auto_increment
         primary key,
     constraint FKa4v4wydktt3nkb8k3yq2fj9d2
-        foreign key (keyWordId) references KeyWord (keyWordId),
+        foreign key (keywordId) references Keyword (keywordId),
     constraint FKip2fmgieccwcqg5lw59ds0l80
         foreign key (reviewId) references Review (reviewId)
 );
@@ -171,10 +162,11 @@ create table Trip
     tripId         bigint auto_increment
         primary key,
     tripName       varchar(255)                    null,
-    isDeleted      boolean                      null,
+    isDeleted      boolean                         null,
     tripStatus     enum ('BEFORE', 'AFTER', 'ING') null,
     area           varchar(255)                    null,
-    subarea        varchar(255)                    null
+    subarea        varchar(255)                    null,
+    budget         bigint                          null
 );
 
 create table TripItem

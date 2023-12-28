@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public record CommentInfo(
     @Schema(defaultValue = "1")
-    Long contentId,
+    Long commentId,
     @Schema(defaultValue = "은별")
     String authorNickname,
     @Schema(defaultValue = "https://~~~.png")

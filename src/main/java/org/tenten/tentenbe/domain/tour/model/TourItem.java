@@ -27,7 +27,7 @@ public class TourItem {
     @Column(name = "tourItemId")
     private Long id;
     private Long contentId; // open api 컨텐츠 아이디
-    private Long contentTypeId; // open api 컨텐츠 타입 아이디
+    private Long contentTypeId; // open api 컨텐츠 타입 아이디 (카테고리 타입)
     private Long areaCode; // 지역 코드
     private Long subAreaCode; // 시군구 코드
     private String address;

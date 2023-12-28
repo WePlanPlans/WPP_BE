@@ -1,0 +1,41 @@
+### 리뷰 등록 API
+POST http://localhost:8080/api/reviews
+Content-Type: application/json
+
+{
+  "tourItemId": 1,
+  "content": "좋은 여행지였습니다.",
+  "rating": 4,
+  "keywords": [
+    {
+      "keywordId": 1,
+      "content": "깨끗해요"
+    },
+    {
+      "keywordId": 2,
+      "content": "친절해요"
+    }
+  ]
+}
+
+### 리뷰 수정 API
+PUT http://localhost:8080/api/reviews/1
+Content-Type: application/json
+
+{
+  "content": "좋은 여행지입니다.",
+  "rating": 4,
+  "keywords": [
+    {
+      "keywordId": 1,
+      "content": "깨끗해요"
+    },
+    {
+      "keywordId": 2,
+      "content": "친절해요"
+    }
+  ]
+}
+
+### 리뷰 삭제 API
+DELETE http://localhost:8080/api/reviews/1
