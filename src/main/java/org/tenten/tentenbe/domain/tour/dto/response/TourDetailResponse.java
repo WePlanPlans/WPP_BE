@@ -1,9 +1,7 @@
 package org.tenten.tentenbe.domain.tour.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
-
-import java.util.List;
+import org.tenten.tentenbe.domain.tour.model.TourItem;
 
 public record TourDetailResponse(
     @Schema(defaultValue = "1")
@@ -12,11 +10,8 @@ public record TourDetailResponse(
     @Schema(defaultValue = "여행지 이름")
     String title,
 
-    @Schema(defaultValue = "4.5")
-    Double rating,
-
     @Schema(defaultValue = "false")
-    Boolean good,
+    Boolean liked,
 
     @Schema(defaultValue = "OO시/도 OO구/군 OO로/길 OOO")
     String fullAddress,
@@ -34,12 +29,22 @@ public record TourDetailResponse(
     String tel,
 
     @Schema(defaultValue = "http://~~~~~~image.jpg")
-    String originalThumbnailUrl,
-
-    @Schema(defaultValue = "100")
-    Long keywordCount,
-
-    List<ReviewInfo> reviewInfos
+    String originalThumbnailUrl
 ) {
-
+    public TourDetailResponse(
+        TourItem tourItem,
+        Boolean liked
+    ) {
+        this(
+            tourItem.getId(),
+            tourItem.getTitle(),
+            liked,
+            tourItem.getAddress()+tourItem.getDetailedAddress(),
+            tourItem.getZipcode(),
+            tourItem.getLongitude(),
+            tourItem.getLatitude(),
+            tourItem.getTel(),
+            tourItem.getOriginalThumbnailUrl()
+        );
+    }
 }

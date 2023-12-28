@@ -10,16 +10,16 @@ public record TourSimpleResponse(
     String title,
 
     @Schema(defaultValue = "4.5")
-    Double rating,
+    Double ratingAverage,
 
     @Schema(defaultValue = "100")
     Long reviewCount,
 
     @Schema(defaultValue = "100")
-    Long goodCount,
+    Long likedCount,
 
     @Schema(defaultValue = "false")
-    Boolean good,
+    Boolean liked,
 
     @Schema(defaultValue = "http://~~~~~~image.jpg")
     String smallThumbnailUrl

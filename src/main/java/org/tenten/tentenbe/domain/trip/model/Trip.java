@@ -33,8 +33,6 @@ public class Trip extends BaseTimeEntity {
     private Long numberOfPeople; // 인원수
     private LocalDate startDate;
     private LocalDate endDate;
-    private String departure;
-    private String destination;
     private String area;
     private String subarea;
     @Enumerated(STRING)

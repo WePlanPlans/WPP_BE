@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    @Query("SELECT r FROM Review r JOIN FETCH r.reviewKeywords WHERE r.tourItem.id = :tourItemId")
+    @Query("SELECT r FROM Review r JOIN FETCH r.reviewKeywords rk JOIN FETCH rk.keyword WHERE r.tourItem.id = :tourItemId")
     List<Review> findReviewByTourItemId(@Param("tourItemId") Long tourItemId);
 }

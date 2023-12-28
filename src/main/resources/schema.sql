@@ -63,8 +63,8 @@ create table TourItem
         primary key,
     address              varchar(255) null,
     detailedAddress      varchar(255) null,
-    longitude                 varchar(255) null,
-    latitude                 varchar(255) null,
+    longitude            varchar(255) null,
+    latitude             varchar(255) null,
     originalThumbnailUrl varchar(255) null,
     smallThumbnailUrl    varchar(255) null,
     tel                  varchar(255) null,
@@ -122,7 +122,7 @@ create table ReviewKeyword
     reviewKeywordId bigint auto_increment
         primary key,
     constraint FKa4v4wydktt3nkb8k3yq2fj9d2
-        foreign key (keywordId) references KeyWord (keywordId),
+        foreign key (keywordId) references Keyword (keywordId),
     constraint FKip2fmgieccwcqg5lw59ds0l80
         foreign key (reviewId) references Review (reviewId)
 );
@@ -162,10 +162,11 @@ create table Trip
     tripId         bigint auto_increment
         primary key,
     tripName       varchar(255)                    null,
-    isDeleted      boolean                      null,
+    isDeleted      boolean                         null,
     tripStatus     enum ('BEFORE', 'AFTER', 'ING') null,
     area           varchar(255)                    null,
-    subarea        varchar(255)                    null
+    subarea        varchar(255)                    null,
+    budget         bigint                          null
 );
 
 create table TripItem

@@ -24,7 +24,7 @@ public enum Region {
     GYEONGBUK(35L, null, "경상북도"),
     GYEONGNAM(36L, null, "경상남도"),
     JEONBUK(37L, null, "전라북도"),
-    JEONNAM(37L, null, "전라남도"),
+    JEONNAM(38L, null, "전라남도"),
     JEJU(39L, null, "제주도"),
     GYEONGJU(35L, 2L, "경주"),
     GANREUNG(32L, 1L, "강릉");
