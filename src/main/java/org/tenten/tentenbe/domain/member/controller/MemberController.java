@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
 import org.tenten.tentenbe.domain.member.service.MemberService;
+import org.tenten.tentenbe.domain.review.dto.response.MemberReviewResponse;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
 import org.tenten.tentenbe.domain.tour.dto.response.TourResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripResponse;
@@ -55,7 +56,7 @@ public class MemberController {
     }
 
     @Operation(summary = "나의 리뷰 조회 API", description = "나의 리뷰 조회 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "리뷰 조회 성공시", content = @Content(schema = @Schema(implementation = ReviewResponse.class)))
+    @ApiResponse(responseCode = "200", description = "리뷰 조회 성공시", content = @Content(schema = @Schema(implementation = MemberReviewResponse.class)))
     @GetMapping("/reviews")
     public ResponseEntity<?> getReviews() {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getReviews(null)));
