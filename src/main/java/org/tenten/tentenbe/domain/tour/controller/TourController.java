@@ -38,14 +38,11 @@ public class TourController {
     @GetMapping()
     public ResponseEntity<?> getTours(
         @Parameter(name = "region", description = "인기 여행지 조회할 지역", in = QUERY, required = false)
-        @RequestParam(value = "region", required = false)
-        String region,
+        @RequestParam(value = "region", required = false) String region,
         @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
-        @RequestParam(value = "page", required = false, defaultValue = "0")
-        int page,
+        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
-        @RequestParam(value = "size", required = false, defaultValue = "10")
-        int size,
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size,
         @Parameter(hidden = true)
         @SortDefault.SortDefaults({
             @SortDefault(sort = "likedCount", direction = Sort.Direction.DESC),
@@ -56,7 +53,7 @@ public class TourController {
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tourService.getTours(
-                null,
+                1L, //Todo Security 적용 후 변경
                 region,
                 PageRequest.of(page, size, pageable.getSort())
             )));
@@ -71,12 +68,22 @@ public class TourController {
         @Parameter(name = "region", description = "검색할 지역", in = QUERY, required = true)
         @RequestParam(value = "region", required = true) String region,
         @Parameter(name = "type", description = "검색할 여행 상품 타입, 미지정 가능", in = QUERY, required = false)
-        @RequestParam(value = "type", required = false) String type,
-        @Parameter(name = "keyword", description = "검색할 상품명", in = QUERY, required = true)
-        @RequestParam(value = "keyword", required = true) String keyword
+        @RequestParam(value = "category", required = false) String category,
+        @Parameter(name = "searchWord", description = "검색할 상품명", in = QUERY, required = true)
+        @RequestParam(value = "searchWord", required = true) String searchWord,
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, tourService.searchTours(region, type, keyword)));
+            .ok(SUCCESS, tourService.searchTours(
+                1L, //Todo Security 적용 후 변경
+                region,
+                category,
+                searchWord,
+                PageRequest.of(page, size)
+            )));
     }
 
     @Operation(summary = "여행지 상세 조회 API", description = "여행지 상세 조회 API 입니다.")
@@ -88,7 +95,7 @@ public class TourController {
         @PathVariable(value = "tourItemId") Long tourItemId
     ) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, tourService.getTourDetail(null, tourItemId)));
+            .ok(SUCCESS, tourService.getTourDetail(1L, tourItemId))); //Todo Security 적용 후 변경
     }
 
     @Operation(summary = "여행 상품 리뷰 조회", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
