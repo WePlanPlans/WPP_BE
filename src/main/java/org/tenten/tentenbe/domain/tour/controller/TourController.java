@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -33,10 +34,8 @@ public class TourController {
     private final ReviewService reviewService;
 
     @Operation(summary = "인기 여행지 조회 API", description = "인기 여행지 조회 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content =
-    @Content(schema = @Schema(implementation = TourSimpleResponse.class)))
     @GetMapping()
-    public ResponseEntity<?> getTours(
+    public ResponseEntity<GlobalDataResponse<Page<TourSimpleResponse>>> getTours(
         @Parameter(name = "region", description = "인기 여행지 조회할 지역", in = QUERY, required = false)
         @RequestParam(value = "region", required = false) String region,
         @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
@@ -61,10 +60,8 @@ public class TourController {
     }
 
     @Operation(summary = "여행지 검색 API", description = "여행지 검색 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content =
-    @Content(schema = @Schema(implementation = TourSimpleResponse.class)))
     @GetMapping("/search")
-    public ResponseEntity<?> searchTours(
+    public ResponseEntity<GlobalDataResponse<Page<TourSimpleResponse>>> searchTours(
         @Parameter(name = "region", description = "검색할 지역", in = QUERY, required = true)
         @RequestParam(value = "region", required = true) String region,
         @Parameter(name = "type", description = "검색할 여행 상품 타입, 미지정 가능", in = QUERY, required = false)
@@ -87,10 +84,8 @@ public class TourController {
     }
 
     @Operation(summary = "여행지 상세 조회 API", description = "여행지 상세 조회 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content =
-    @Content(schema = @Schema(implementation = TourDetailResponse.class)))
     @GetMapping("/{tourItemId}")
-    public ResponseEntity<?> getTourDetail(
+    public ResponseEntity<GlobalDataResponse<TourDetailResponse>> getTourDetail(
         @Parameter(name = "tourItemId", description = "상세조회할 여행 상품 ID", in = PATH, required = true)
         @PathVariable(value = "tourItemId") Long tourItemId
     ) {
@@ -99,10 +94,8 @@ public class TourController {
     }
 
     @Operation(summary = "여행 상품 리뷰 조회 API", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content =
-    @Content(schema = @Schema(implementation = ReviewResponse.class)))
     @GetMapping("/{tourItemId}/reviews")
-    public ResponseEntity<?> getTourReviews(@PathVariable(name = "tourItemId") Long tourItemId) {
+    public ResponseEntity<GlobalDataResponse<ReviewResponse>> getTourReviews(@PathVariable(name = "tourItemId") Long tourItemId) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, reviewService.getTourReviews(tourItemId)));
     }

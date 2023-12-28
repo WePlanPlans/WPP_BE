@@ -32,29 +32,26 @@ public class ReviewController {
 
 
     @Operation(summary = "리뷰 작성 API", description = "리뷰 작성 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "작성 성공시", content = @Content(schema = @Schema(implementation = ReviewInfo.class)))
     @PostMapping()
-    public ResponseEntity<?> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
+    public ResponseEntity<GlobalDataResponse<ReviewInfo>> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
         Long memberId = 1L;
-        return ResponseEntity.ok(reviewService.createReview(memberId, reviewCreateRequest));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.createReview(memberId, reviewCreateRequest)));
     }
 
     @Operation(summary = "리뷰 수정 API", description = "리뷰 수정 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "업데이트 성공시", content = @Content(schema = @Schema(implementation = ReviewInfo.class)))
     @PutMapping("/{reviewId}")
-    public ResponseEntity<?> updateReview(
+    public ResponseEntity<GlobalDataResponse<ReviewInfo>> updateReview(
         @Parameter(name = "reviewId", description = "리뷰 아이디", in = PATH)
         @PathVariable("reviewId")
         Long reviewId,
         @RequestBody ReviewUpdateRequest reviewUpdateRequest) {
         Long memberId = 1L;
-        return ResponseEntity.ok(reviewService.updateReview(memberId, reviewId, reviewUpdateRequest));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.updateReview(memberId, reviewId, reviewUpdateRequest)));
     }
 
     @Operation(summary = "리뷰 삭제 API", description = "리뷰 삭제 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "삭제 성공시")
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReview(
+    public ResponseEntity<GlobalResponse> deleteReview(
         @Parameter(name = "reviewId", description = "삭제할 리뷰 아이디", in = PATH)
         @PathVariable("reviewId") Long reviewId) {
         Long memberId = 1L;
@@ -63,18 +60,16 @@ public class ReviewController {
     }
 
     @Operation(summary = "리뷰 댓글 조회 API", description = "리뷰 댓글 조회 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = CommentResponse.class)))
     @GetMapping("/{reviewId}/comments")
-    public ResponseEntity<?> getReviewDetail(
+    public ResponseEntity<GlobalDataResponse<CommentResponse>> getReviewDetail(
         @Parameter(name = "reviewId", description = "조회할 리뷰 아이디", in = PATH)
         @PathVariable("reviewId") Long reviewId) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getReviewComments(reviewId)));
     }
 
     @Operation(summary = "리뷰 키워드 조회 API", description = "리뷰 작성시, 전체 키워드 혹은 상품 타입별 조회 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = KeywordResponse.class)))
     @GetMapping("/keywords")
-    public ResponseEntity<?> getKeywords(
+    public ResponseEntity<GlobalDataResponse<KeywordResponse>> getKeywords(
         @Parameter(name = "code", description = "여행 상품 타입, ex) 32 - 숙박, 39 - 식당, 12 - 관광지", in = QUERY)
         @RequestParam(name = "code", required = false)
         Long code
