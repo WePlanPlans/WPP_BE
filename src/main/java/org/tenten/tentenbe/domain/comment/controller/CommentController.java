@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.comment.dto.request.CommentCreateRequest;
 import org.tenten.tentenbe.domain.comment.dto.request.CommentUpdateRequest;
+import org.tenten.tentenbe.domain.comment.dto.response.CommentInfo;
 import org.tenten.tentenbe.domain.comment.dto.response.CommentResponse;
 import org.tenten.tentenbe.domain.comment.service.CommentService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
@@ -28,7 +29,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @Operation(summary = "댓글 작성 API", description = "댓글 작성 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "댓글 작성 성공시", content = @Content(schema = @Schema(implementation = CommentResponse.class)))
+    @ApiResponse(responseCode = "200", description = "댓글 작성 성공시", content = @Content(schema = @Schema(implementation = CommentInfo.class)))
     @PostMapping()
     public ResponseEntity<?> createComment(
         @RequestBody CommentCreateRequest commentCreateRequest
@@ -39,7 +40,7 @@ public class CommentController {
     }
 
     @Operation(summary = "댓글 수정 API", description = "댓글 수정 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "댓글 수정 성공시", content = @Content(schema = @Schema(implementation = CommentResponse.class)))
+    @ApiResponse(responseCode = "200", description = "댓글 수정 성공시", content = @Content(schema = @Schema(implementation = CommentInfo.class)))
     @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(
         @Parameter(name = "commentId", description = "댓글 아이디", in = PATH)

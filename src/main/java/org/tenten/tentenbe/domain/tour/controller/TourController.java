@@ -98,7 +98,7 @@ public class TourController {
             .ok(SUCCESS, tourService.getTourDetail(1L, tourItemId))); //Todo Security 적용 후 변경
     }
 
-    @Operation(summary = "여행 상품 리뷰 조회", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
+    @Operation(summary = "여행 상품 리뷰 조회 API", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content =
     @Content(schema = @Schema(implementation = ReviewResponse.class)))
     @GetMapping("/{tourItemId}/reviews")
