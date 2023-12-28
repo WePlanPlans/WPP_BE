@@ -7,6 +7,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
@@ -34,8 +38,28 @@ public class TourController {
     @GetMapping()
     public ResponseEntity<?> getTours(
         @Parameter(name = "region", description = "인기 여행지 조회할 지역", in = QUERY, required = false)
-        @RequestParam(value = "region", required = false) String region) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tourService.getTours(region)));
+        @RequestParam(value = "region", required = false)
+        String region,
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @RequestParam(value = "page", required = false, defaultValue = "0")
+        int page,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @RequestParam(value = "size", required = false, defaultValue = "10")
+        int size,
+        @Parameter(hidden = true)
+        @SortDefault.SortDefaults({
+            @SortDefault(sort = "likedCount", direction = Sort.Direction.DESC),
+            @SortDefault(sort = "ratingAverage", direction = Sort.Direction.DESC),
+            @SortDefault(sort = "reviewCount", direction = Sort.Direction.DESC),
+            @SortDefault(sort = "title", direction = Sort.Direction.ASC)
+        }) Pageable pageable
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, tourService.getTours(
+                null,
+                region,
+                PageRequest.of(page, size, pageable.getSort())
+            )));
 
     }
 
@@ -51,7 +75,8 @@ public class TourController {
         @Parameter(name = "keyword", description = "검색할 상품명", in = QUERY, required = true)
         @RequestParam(value = "keyword", required = true) String keyword
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tourService.searchTours(region, type, keyword)));
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, tourService.searchTours(region, type, keyword)));
     }
 
     @Operation(summary = "여행지 상세 조회 API", description = "여행지 상세 조회 API 입니다.")
@@ -62,7 +87,8 @@ public class TourController {
         @Parameter(name = "tourItemId", description = "상세조회할 여행 상품 ID", in = PATH, required = true)
         @PathVariable(value = "tourItemId") Long tourItemId
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tourService.getTourDetail(null, tourItemId)));
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, tourService.getTourDetail(null, tourItemId)));
     }
 
     @Operation(summary = "여행 상품 리뷰 조회", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
@@ -70,7 +96,8 @@ public class TourController {
     @Content(schema = @Schema(implementation = ReviewResponse.class)))
     @GetMapping("/{tourItemId}/reviews")
     public ResponseEntity<?> getTourReviews(@PathVariable(name = "tourItemId") Long tourItemId) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getTourReviews(tourItemId)));
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, reviewService.getTourReviews(tourItemId)));
     }
 
 }
