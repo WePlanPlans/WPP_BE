@@ -3,4 +3,4 @@ GET http://localhost:8080/api/tours/1/reviews
 Content-Type: application/json
 
 ### 인기 여행지 조회 API
-GET http://localhost:8080/api/tours?page=0&size=10
+GET https://api.weplanplans.site/api/tours?page=0&size=10

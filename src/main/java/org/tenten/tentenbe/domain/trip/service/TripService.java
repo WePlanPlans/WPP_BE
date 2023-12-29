@@ -1,6 +1,7 @@
 package org.tenten.tentenbe.domain.trip.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.trip.dto.request.TripCreateRequest;
@@ -21,7 +22,7 @@ public class TripService {
         return null;
     }
     @Transactional(readOnly = true)
-    public TripResponse getTrips(Long memberId) {
+    public TripResponse getTrips(Long memberId, Pageable pageable) {
         return null;
     }
     @Transactional
