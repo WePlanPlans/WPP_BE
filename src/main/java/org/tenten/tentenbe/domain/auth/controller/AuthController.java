@@ -36,8 +36,8 @@ public class AuthController {
     @Operation(summary = "로그인-이메일 API", description = "로그인-이메일 API 입니다.")
     @ApiResponse(responseCode = "200", description = "이메일 로그인 성공시", content = @Content(schema = @Schema(implementation = LoginResponse.class)))
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.login(null, loginRequest)));
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.login(loginRequest)));
     }
 
     @Operation(summary = "로그인-카카오 API", description = "로그인-카카오 API 입니다.")
