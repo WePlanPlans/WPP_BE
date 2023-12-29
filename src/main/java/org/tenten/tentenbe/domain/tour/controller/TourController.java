@@ -95,9 +95,9 @@ public class TourController {
 
     @Operation(summary = "여행 상품 리뷰 조회 API", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
     @GetMapping("/{tourItemId}/reviews")
-    public ResponseEntity<GlobalDataResponse<ReviewResponse>> getTourReviews(@PathVariable(name = "tourItemId") Long tourItemId) {
+    public ResponseEntity<GlobalDataResponse<ReviewResponse>> getTourReviews(@PathVariable(name = "tourItemId") Long tourItemId, Pageable pageable) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, reviewService.getTourReviews(tourItemId)));
+            .ok(SUCCESS, reviewService.getTourReviews(tourItemId, pageable)));
     }
 
 }

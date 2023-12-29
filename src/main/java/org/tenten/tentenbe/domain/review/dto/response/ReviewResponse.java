@@ -1,6 +1,7 @@
 package org.tenten.tentenbe.domain.review.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public record ReviewResponse(
     Long reviewTotalCount,
     @Schema(defaultValue = "10")
     Long keywordTotalCount,
-    List<ReviewInfo> reviewInfos,
+    Page<ReviewInfo> reviewInfos,
     List<TourKeywordInfo> tourKeywordInfos
 ) {
 
