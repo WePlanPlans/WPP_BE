@@ -22,7 +22,8 @@ public record ReviewInfo(
     LocalDateTime createdTime,
     @Schema(defaultValue = "~~~여서 ~~~ 해서 ~~로 좋았습니다.")
     String content,
-    List<KeywordInfo> keywords) {
+    List<KeywordInfo> keywords,
+    Long commentCount) {
 
     public static ReviewInfo fromEntity(Review review) {
         Member creator = review.getCreator();
@@ -36,7 +37,8 @@ public record ReviewInfo(
             review.getReviewKeywords().stream().map(reviewKeyword -> {
                 Keyword keyword = reviewKeyword.getKeyword();
                 return new KeywordInfo(keyword.getId(), keyword.getContent(), keyword.getType());
-            }).toList()
+            }).toList(),
+            (long) review.getComments().size()
         );
     }
 
@@ -52,7 +54,8 @@ public record ReviewInfo(
             reviewKeywords.stream().map(reviewKeyword -> {
                 Keyword keyword = reviewKeyword.getKeyword();
                 return new KeywordInfo(keyword.getId(), keyword.getContent(), keyword.getType());
-            }).toList()
+            }).toList(),
+            (long) review.getComments().size()
         );
     }
 
