@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.auth.dto.request.LoginRequest;
 import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
@@ -50,12 +47,11 @@ public class AuthController {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.loginKakao(null, loginRequest)));
     }
 
-    @Operation(summary = "로그아웃 API", description = "로그아웃 API 입니다.")
+    @Operation(summary = "로그아웃시 리다이렉트 API", description = "로그아웃시 호출되는 API 입니다")
     @ApiResponse(responseCode = "200", description = "로그아웃 성공시")
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        authService.logout(null);
-        return ResponseEntity.ok(GlobalResponse.ok(SUCCESS));
+    @GetMapping(value = "/logout-redirect")
+    public ResponseEntity<String> logoutRedirect() {
+        return ResponseEntity.ok("LOGOUT");
     }
 
 }
