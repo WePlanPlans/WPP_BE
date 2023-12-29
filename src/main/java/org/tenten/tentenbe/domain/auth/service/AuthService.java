@@ -11,6 +11,9 @@ import org.tenten.tentenbe.domain.auth.exception.MemberAlreadyExistException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 
+import static org.tenten.tentenbe.global.common.enums.LoginType.EMAIL;
+import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -30,7 +33,7 @@ public class AuthService {
         // TODO : 이메일 인증
         // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
-        Member newMember = signUpRequest.toEntity(encodedPassword);
+        Member newMember = signUpRequest.toEntity(encodedPassword, EMAIL, ROLE_USER);
         memberRepository.save(newMember);
     };
 
