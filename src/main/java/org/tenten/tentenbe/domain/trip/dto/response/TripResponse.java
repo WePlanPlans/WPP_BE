@@ -1,6 +1,6 @@
 package org.tenten.tentenbe.domain.trip.dto.response;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
-public record TripResponse(List<TripSimpleResponse> trips) {
+public record TripResponse(Page<TripSimpleResponse> trips) {
 }
