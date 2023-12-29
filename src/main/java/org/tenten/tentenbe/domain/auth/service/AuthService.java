@@ -73,6 +73,12 @@ public class AuthService {
             .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
             .build();
     }
+
+    private Member getMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+            .orElseThrow(RuntimeException::new);
+    }
+
     @Transactional
     public LoginResponse loginKakao(Long memberId, LoginRequest loginRequest) {
         return null;
