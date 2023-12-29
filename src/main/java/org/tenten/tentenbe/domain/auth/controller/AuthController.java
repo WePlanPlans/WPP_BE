@@ -31,7 +31,7 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "회원가입 성공시")
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest) {
-        authService.signUp(null, signUpRequest);
+        authService.signUp(signUpRequest);
         return ResponseEntity.ok(GlobalResponse.ok(SUCCESS));
     }
 

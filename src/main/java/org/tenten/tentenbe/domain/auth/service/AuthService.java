@@ -1,20 +1,36 @@
 package org.tenten.tentenbe.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.auth.dto.request.LoginRequest;
 import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
+import org.tenten.tentenbe.domain.auth.exception.MemberAlreadyExistException;
+import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void signUp(Long memberId, SignUpRequest signUpRequest) {};
+    public void signUp(SignUpRequest signUpRequest) {
+        // 이미 존재하는 유저가 아니면 (중복데이터검=)
+        if (memberRepository.existsByEmail(signUpRequest.email())) {
+             throw new MemberAlreadyExistException();
+        }
+
+        // TODO : 이메일 인증
+        // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장
+        String encodedPassword = passwordEncoder.encode(signUpRequest.password());
+        Member newMember = signUpRequest.toEntity(encodedPassword);
+        memberRepository.save(newMember);
+    };
+
     @Transactional
     public LoginResponse login(Long memberId, LoginRequest loginRequest) {
         return null;
@@ -23,7 +39,9 @@ public class AuthService {
     public LoginResponse loginKakao(Long memberId, LoginRequest loginRequest) {
         return null;
     }
+
     @Transactional
-    public void logout(Long memberId) {}
+    public void logout(Long memberId) {
+    }
 
 }
