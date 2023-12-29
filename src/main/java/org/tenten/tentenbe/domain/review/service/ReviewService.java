@@ -1,6 +1,9 @@
 package org.tenten.tentenbe.domain.review.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.comment.dto.response.CommentInfo;
@@ -41,20 +44,21 @@ public class ReviewService {
     private final KeywordRepository keywordRepository;
     private final ReviewKeywordRepository reviewKeywordRepository;
     private final CommentRepository commentRepository;
-    @Transactional(readOnly = true)
-    public ReviewResponse getTourReviews(Long tourItemId) {
+    @Transactional(readOnly = true) // TODO: tourItem.getReviews fetchJoin으로 한번에 가져오게 리팩터링
+    public ReviewResponse getTourReviews(Long tourItemId, Pageable pageable) {
         TourItem tourItem = tourItemRepository.findById(tourItemId)
             .orElseThrow(() -> new TourException("해당 아이디로 존재하는 리뷰가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
-        List<Review> reviews = reviewRepository.findReviewByTourItemId(tourItem.getId());
+        Page<Review> reviewPage = reviewRepository.findReviewByTourItemId(tourItem.getId(), pageable);
+        List<ReviewInfo> reviewInfos = reviewPage.stream().map(ReviewInfo::fromEntity).toList();
 
-        Long reviewTotalCount = (long) reviews.size();
+        long reviewTotalCount = tourItem.getReviews().size();
         Long keywordTotalCount = calculateKeywordTotalCount(tourItem.getId());
-        Double ratingAverage = calculateRatingAverage(reviews);
+        Double ratingAverage = calculateRatingAverage(tourItem.getReviews());
         return new ReviewResponse(
             ratingAverage,
             reviewTotalCount,
             keywordTotalCount,
-            reviews.stream().map(ReviewInfo::fromEntity).toList(),
+            new PageImpl<>(reviewInfos, pageable, reviewTotalCount),
             keywordRepository.findKeywordInfoByTourItemId(tourItem.getId())
         );
     }
@@ -137,18 +141,19 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public CommentResponse getReviewComments(Long reviewId) {
-        List<Comment> comments = commentRepository.findCommentsByReviewId(reviewId);
+    public CommentResponse getReviewComments(Long reviewId, Pageable pageable) {
+        Page<Comment> comments = commentRepository.findCommentsByReviewId(reviewId, pageable);
+        List<CommentInfo> commentInfos = comments.stream().map(comment -> new CommentInfo(comment.getId(), comment.getCreator().getNickname(), comment.getCreator().getProfileImageUrl(), comment.getContent(), comment.getCreatedTime())).toList();
 
-        return new CommentResponse(comments.stream().map(comment -> new CommentInfo(comment.getId(), comment.getCreator().getNickname(), comment.getCreator().getProfileImageUrl(), comment.getContent(), comment.getCreatedTime())).toList());
+        return new CommentResponse(new PageImpl<>(commentInfos, pageable, comments.getTotalElements()));
     }
 
     @Transactional(readOnly = true)
-    public KeywordResponse getKeywords(Long code) {
-        if (code == null) {
+    public KeywordResponse getKeywords(String keywordTypeName) {
+        if (keywordTypeName == null) {
             return new KeywordResponse(keywordRepository.findAll().stream().map(KeywordInfo::fromEntity).toList());
         } else {
-            KeywordType keywordType = KeywordType.fromCode(code);
+            KeywordType keywordType = KeywordType.fromName(keywordTypeName);
             return new KeywordResponse(keywordRepository.findByType(keywordType).stream().map(KeywordInfo::fromEntity).toList());
 
         }

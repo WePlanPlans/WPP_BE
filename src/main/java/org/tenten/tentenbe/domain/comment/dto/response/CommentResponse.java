@@ -1,8 +1,8 @@
 package org.tenten.tentenbe.domain.comment.dto.response;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public record CommentResponse(
-    List<CommentInfo> comments
+    Page<CommentInfo> comments
 ) {
 }

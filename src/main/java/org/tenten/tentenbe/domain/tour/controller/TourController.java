@@ -64,7 +64,7 @@ public class TourController {
     public ResponseEntity<GlobalDataResponse<Page<TourSimpleResponse>>> searchTours(
         @Parameter(name = "region", description = "검색할 지역", in = QUERY, required = true)
         @RequestParam(value = "region", required = true) String region,
-        @Parameter(name = "type", description = "검색할 여행 상품 타입, 미지정 가능", in = QUERY, required = false)
+        @Parameter(name = "category", description = "검색할 여행 상품 타입, 미지정 가능", in = QUERY, required = false)
         @RequestParam(value = "category", required = false) String category,
         @Parameter(name = "searchWord", description = "검색할 상품명", in = QUERY, required = true)
         @RequestParam(value = "searchWord", required = true) String searchWord,
@@ -95,9 +95,9 @@ public class TourController {
 
     @Operation(summary = "여행 상품 리뷰 조회 API", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
     @GetMapping("/{tourItemId}/reviews")
-    public ResponseEntity<GlobalDataResponse<ReviewResponse>> getTourReviews(@PathVariable(name = "tourItemId") Long tourItemId) {
+    public ResponseEntity<GlobalDataResponse<ReviewResponse>> getTourReviews(@PathVariable(name = "tourItemId") Long tourItemId, Pageable pageable) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, reviewService.getTourReviews(tourItemId)));
+            .ok(SUCCESS, reviewService.getTourReviews(tourItemId, pageable)));
     }
 
 }

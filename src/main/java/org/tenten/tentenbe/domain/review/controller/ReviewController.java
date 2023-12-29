@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.comment.dto.response.CommentResponse;
@@ -63,17 +64,18 @@ public class ReviewController {
     @GetMapping("/{reviewId}/comments")
     public ResponseEntity<GlobalDataResponse<CommentResponse>> getReviewDetail(
         @Parameter(name = "reviewId", description = "조회할 리뷰 아이디", in = PATH)
-        @PathVariable("reviewId") Long reviewId) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getReviewComments(reviewId)));
+        @PathVariable("reviewId") Long reviewId, Pageable pageable) {
+
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getReviewComments(reviewId, pageable)));
     }
 
-    @Operation(summary = "리뷰 키워드 조회 API", description = "리뷰 작성시, 전체 키워드 혹은 상품 타입별 조회 API 입니다.")
+    @Operation(summary = "리뷰 작성시 키워드 조회 API", description = "리뷰 작성시, 전체 키워드 혹은 조회 하고 싶은 키워드 타입별 키워드 목록 조회 API 입니다.")
     @GetMapping("/keywords")
     public ResponseEntity<GlobalDataResponse<KeywordResponse>> getKeywords(
-        @Parameter(name = "code", description = "여행 상품 타입, ex) 32 - 숙박, 39 - 식당, 12 - 관광지", in = QUERY)
-        @RequestParam(name = "code", required = false)
-        Long code
+        @Parameter(name = "keywordType", description = "조회하고 싶은 키워드 타입, ex) ACCOMMODATION - 숙박, DINING - 식당, ATTRACTION - 관광지", in = QUERY)
+        @RequestParam(name = "keywordType", required = false)
+        String keywordType
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getKeywords(code)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getKeywords(keywordType)));
     }
 }
