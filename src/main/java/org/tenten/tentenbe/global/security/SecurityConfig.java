@@ -17,6 +17,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.tenten.tentenbe.global.security.filter.JwtFilter;
+import org.tenten.tentenbe.global.security.jwt.CustomLogoutSuccessHandler;
+import org.tenten.tentenbe.global.security.jwt.JwtAuthenticationEntryPoint;
 
 import java.util.List;
 
@@ -24,6 +26,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,9 +41,18 @@ public class SecurityConfig {
                 .requestMatchers("/**").permitAll() // TODO: login이나 signup, 상품 조회처럼 인증 필요없는 url 넣기
                 .anyRequest().authenticated()
             )
-            // h2 문제
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+        http.exceptionHandling(exceptionHandling -> {
+            exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+        });
+
+        http.logout(logout -> logout
+            .logoutUrl("/api/auth/logout")
+            .logoutSuccessUrl("/api/auth/logout-redirect")
+            .clearAuthentication(true)
+            .logoutSuccessHandler(customLogoutSuccessHandler)
+        );
 
         return http.build();
     }
