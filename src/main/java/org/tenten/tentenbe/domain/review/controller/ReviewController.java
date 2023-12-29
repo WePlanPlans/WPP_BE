@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,9 +65,13 @@ public class ReviewController {
     @GetMapping("/{reviewId}/comments")
     public ResponseEntity<GlobalDataResponse<CommentResponse>> getReviewDetail(
         @Parameter(name = "reviewId", description = "조회할 리뷰 아이디", in = PATH)
-        @PathVariable("reviewId") Long reviewId, Pageable pageable) {
+        @PathVariable("reviewId") Long reviewId,
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
 
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getReviewComments(reviewId, pageable)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getReviewComments(reviewId, PageRequest.of(page, size))));
     }
 
     @Operation(summary = "리뷰 작성시 키워드 조회 API", description = "리뷰 작성시, 전체 키워드 혹은 조회 하고 싶은 키워드 타입별 키워드 목록 조회 API 입니다.")

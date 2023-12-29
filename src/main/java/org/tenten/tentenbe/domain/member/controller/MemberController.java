@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
@@ -17,6 +18,7 @@ import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.response.GlobalResponse;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
 
@@ -29,14 +31,26 @@ public class MemberController {
 
     @Operation(summary = "나의 여정 조회 API", description = "나의 여정 조회 API 입니다.")
     @GetMapping("/trips")
-    public ResponseEntity<GlobalDataResponse<Page<TripSimpleResponse>>> getTrips() {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTrips(null)));
+    public ResponseEntity<GlobalDataResponse<Page<TripSimpleResponse>>> getTrips(
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        Long memberId = 1L;
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTrips(memberId, PageRequest.of(page, size))));
     }
 
     @Operation(summary = "나의 관심 여행지 조회 API", description = "나의 관심 여행지 조회 API 입니다.")
     @GetMapping("/tours")
-    public ResponseEntity<GlobalDataResponse<Page<TourSimpleResponse>>> getTours() {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTours(null)));
+    public ResponseEntity<GlobalDataResponse<Page<TourSimpleResponse>>> getTours(
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        Long memberId = 1L;
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTours(1L, PageRequest.of(page, size))));
     }
 
     @Operation(summary = "나의 관심 여행지 삭제 API", description = "나의 관심 여행지 삭제 API 입니다.")
@@ -51,8 +65,14 @@ public class MemberController {
 
     @Operation(summary = "나의 리뷰 조회 API", description = "나의 리뷰 조회 API 입니다.")
     @GetMapping("/reviews")
-    public ResponseEntity<GlobalDataResponse<Page<ReviewInfo>>> getReviews() {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getReviews(null)));
+    public ResponseEntity<GlobalDataResponse<Page<ReviewInfo>>> getReviews(
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        Long memberId = 1L;
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getReviews(memberId, PageRequest.of(page, size))));
     }
 
     @Operation(summary = "회원 정보 조회 API", description = "회원 정보 조회 API 입니다.")
