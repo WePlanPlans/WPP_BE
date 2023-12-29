@@ -10,22 +10,25 @@ import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.model.Survey;
 import org.tenten.tentenbe.global.common.enums.AgeType;
 import org.tenten.tentenbe.global.common.enums.GenderType;
+import org.tenten.tentenbe.global.common.enums.LoginType;
+import org.tenten.tentenbe.global.common.enums.UserAuthority;
+
 public record SignUpRequest(
-    @Email
+    @Email(message = "올바르지 않은 이메일 형식입니다.")
     @Schema(description = "회원가입 이메일", defaultValue = "example@mail.com")
     String email,
 
-    @NotNull(message = "비밀번호는 ")
-    @Size(min = 8)
+    @NotNull(message = "비밀번호는 최소 8글자 이상입니다.")
+    @Size(min = 8, max = 20)
     @Schema(description = "회원가입 비밀번호", defaultValue = "as@#SD23/&DFd%fs@a1")
     String password,
 
-    @NotNull
+    @NotNull(message = "이름을 입력해주세요.")
     @Schema(description = "이름", defaultValue = "name")
     String name,
 
-    @NotNull
-    @Size(min = 2, max = 19)
+    @NotNull(message = "닉네임은 2글자 이상 20글자 이하입니다.")
+    @Size(min = 2, max = 20)
     @Schema(description = "닉네임", defaultValue = "nickName")
     String nickname,
 
@@ -43,7 +46,8 @@ public record SignUpRequest(
     @Schema(description = "설문조사 결과", defaultValue = "{}")
     Survey survey
 ) {
-    public Member toEntity(String encodedPassword) {
+    public Member toEntity(
+        String encodedPassword, LoginType loginTypeEmail, UserAuthority userAuthority) {
         return Member.builder()
             .email(email)
             .name(name)
@@ -53,7 +57,8 @@ public record SignUpRequest(
             .survey(survey)
             .ageType(ageType)
             .genderType(genderType)
-//            .loginType() // TODO : 로그인 타입을 이넘으로 만들것인지 논의
+            .userAuthority(userAuthority) //TODO : 권한 처리 논의
+            .loginType(loginTypeEmail) // TODO : 로그인 타입 처리 논의
             .build();
     }
 }
