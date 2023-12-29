@@ -35,16 +35,18 @@ public class TourService {
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, String region, Pageable pageable) {
         Member member = memberRepository.getReferenceById(memberId);
-        List<TourItem> tourItems;
+//        List<TourItem> tourItems;
         if(region == null) {
-            tourItems = tourItemRepository.findAll();
+            return tourItemRepository.findPopularTourItems(memberId, pageable);
+//            tourItems = tourItemRepository.findAll();
         } else {
-            tourItems = tourItemRepository.findByAreaCode(Region.fromName(region).getAreaCode());
+            return tourItemRepository.findPopularTourItems(Region.fromName(region).getAreaCode(), memberId, pageable);
+//            tourItems = tourItemRepository.findByAreaCode(Region.fromName(region).getAreaCode());
         }
 
-        List<TourSimpleResponse> tourSimpleResponses = getTourSimpleResponses(member, tourItems, pageable);
-
-        return new PageImpl<>(tourSimpleResponses, pageable, tourItems.size());
+//        List<TourSimpleResponse> tourSimpleResponses = getTourSimpleResponses(member, tourItems, pageable);
+//
+//        return new PageImpl<>(tourSimpleResponses, pageable, tourItems.size());
     }
 
     @Transactional(readOnly = true)

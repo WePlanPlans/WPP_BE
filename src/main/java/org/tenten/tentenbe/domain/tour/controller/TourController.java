@@ -41,20 +41,20 @@ public class TourController {
         @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
         @RequestParam(value = "page", required = false, defaultValue = "0") int page,
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
-        @RequestParam(value = "size", required = false, defaultValue = "10") int size,
-        @Parameter(hidden = true)
-        @SortDefault.SortDefaults({
-            @SortDefault(sort = "likedCount", direction = Sort.Direction.DESC),
-            @SortDefault(sort = "ratingAverage", direction = Sort.Direction.DESC),
-            @SortDefault(sort = "reviewCount", direction = Sort.Direction.DESC),
-            @SortDefault(sort = "title", direction = Sort.Direction.ASC)
-        }) Pageable pageable
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size
+//        @Parameter(hidden = true)
+//        @SortDefault.SortDefaults({
+//            @SortDefault(sort = "likedCount", direction = Sort.Direction.DESC),
+//            @SortDefault(sort = "ratingAverage", direction = Sort.Direction.DESC),
+//            @SortDefault(sort = "reviewCount", direction = Sort.Direction.DESC),
+//            @SortDefault(sort = "title", direction = Sort.Direction.ASC)
+//        }) Pageable pageable
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tourService.getTours(
                 1L, //Todo Security 적용 후 변경
                 region,
-                PageRequest.of(page, size, pageable.getSort())
+                PageRequest.of(page, size)
             )));
 
     }
