@@ -19,13 +19,16 @@ public class AuthService {
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
-        // 이미 존재하는 유저가 아니면 (중복데이터검=)
+        //  TODO : 커스텀 예외처리 -> 이미 존재하는 유저(이메일) 일때
         if (memberRepository.existsByEmail(signUpRequest.email())) {
              throw new MemberAlreadyExistException();
         }
-
+        // TODO : 커스텀 예외처리 -> 이미 존재하는 닉네임 일때
+        if (memberRepository.existsByNickname(signUpRequest.nickname())) {
+            throw new MemberAlreadyExistException();
+        }
         // TODO : 이메일 인증
-        // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장
+        // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
         Member newMember = signUpRequest.toEntity(encodedPassword);
         memberRepository.save(newMember);

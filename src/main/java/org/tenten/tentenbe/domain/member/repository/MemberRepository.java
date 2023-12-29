@@ -5,4 +5,6 @@ import org.tenten.tentenbe.domain.member.model.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByEmail(String email);
+
+    boolean existsByNickname(String nickname);
 }

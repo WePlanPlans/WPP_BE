@@ -1,6 +1,8 @@
 package org.tenten.tentenbe.domain.auth.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,7 +15,7 @@ public record SignUpRequest(
     @Schema(description = "회원가입 이메일", defaultValue = "example@mail.com")
     String email,
 
-    @NotNull
+    @NotNull(message = "비밀번호는 ")
     @Size(min = 8)
     @Schema(description = "회원가입 비밀번호", defaultValue = "as@#SD23/&DFd%fs@a1")
     String password,
@@ -28,9 +30,11 @@ public record SignUpRequest(
     String nickname,
 
     @Schema(description = "성별", defaultValue = "genderType")
+    @Enumerated(EnumType.STRING)
     GenderType genderType,
 
     @Schema(description = "연령대", defaultValue = "ageType")
+    @Enumerated(EnumType.STRING)
     AgeType ageType,
 
     @Schema(description = "프로필 이미지", defaultValue = "http://~~~~~~image.jpg")
