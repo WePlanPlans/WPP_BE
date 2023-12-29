@@ -18,5 +18,4 @@ public class SecurityUtil {
 
         return Long.parseLong(authentication.getName());
     }
-
 }
