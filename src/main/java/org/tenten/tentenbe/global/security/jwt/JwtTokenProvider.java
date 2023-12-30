@@ -1,10 +1,10 @@
 package org.tenten.tentenbe.global.security.jwt;
 
-import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,11 +13,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
+import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
+import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
 
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.*;
@@ -26,11 +30,22 @@ import static org.tenten.tentenbe.global.common.constant.JwtConstants.*;
 @Slf4j
 public class JwtTokenProvider {
     private final Key key;
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret) { // Todo : jwtSecret 환경변수 설정 필요
 
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret); // Base64로 인코딩된 jwtSecret 값을 디코딩하여 byte 배열로 변환
         this.key = Keys.hmacShaKeyFor(keyBytes); // 디코딩된 바이트 배열을 사용하여 HmacSHA 알고리즘에 기반한 SecretKey를 생성
+    }
+
+    public boolean validateRefreshTokenInDatabase(String refreshToken) {
+        Optional<RefreshToken> token = refreshTokenRepository.findByToken(refreshToken);
+        if (token.isPresent()) {
+            return true;
+        } else {
+            throw new RuntimeException("리프레시 토큰이 정상적이지 않습니다.");
+        }
     }
 
     public TokenInfoDTO generateTokenDto(Authentication authentication) {
@@ -54,6 +69,21 @@ public class JwtTokenProvider {
             .accessToken(accessToken)
             .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
             .refreshToken(refreshToken).build();
+    }
+
+    public String generateAccessToken(Authentication authentication) {
+        return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
+    }
+
+    public String generateToken(Authentication authentication, Long accessTokenExpiresIn) {
+        String authorities = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(","));
+
+        long now = (new Date()).getTime();
+        Date expiration = new Date(now + accessTokenExpiresIn);
+
+        return getToken(authentication, authorities, expiration);
     }
 
     private String getToken(Authentication authentication, String authorities, Date accessTokenExpiresIn) {
