@@ -1,9 +1,6 @@
 package org.tenten.tentenbe.domain.token.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 public class TokenDTO {
     @Builder
@@ -23,6 +20,15 @@ public class TokenDTO {
                     .grantType(grantType).build();
         }
 
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @Setter
+    @NoArgsConstructor
+    @Builder
+    public static class ReissueTokenDto {
+        private String accessToken;
     }
 
     @Builder
