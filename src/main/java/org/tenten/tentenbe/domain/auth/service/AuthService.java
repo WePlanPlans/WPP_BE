@@ -2,7 +2,6 @@ package org.tenten.tentenbe.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -18,6 +17,9 @@ import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
+import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
+import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
+import org.tenten.tentenbe.global.security.jwt.service.RefreshTokenService;
 
 import static org.tenten.tentenbe.global.common.enums.LoginType.EMAIL;
 import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
@@ -30,7 +32,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
-//    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -46,37 +49,32 @@ public class AuthService {
         // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
         Member newMember = signUpRequest.toEntity(encodedPassword, EMAIL, ROLE_USER);
+        RefreshToken refreshToken = RefreshToken.builder()
+            .member(newMember)
+            .build();
         memberRepository.save(newMember);
+        refreshTokenRepository.save(refreshToken);
     };
 
     @Transactional
     public LoginResponse login(LoginRequest loginRequest) {
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequest.toAuthentication();
-
-        AuthenticationManager authenticationManager = authenticationManagerBuilder.getObject();
-        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-
-//        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         TokenDTO.TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
         log.info("로그인 API 중 토큰 생성 로직 실행");
 
         String userEmail = authenticate.getName();
-        Member user = getMemberByEmail(userEmail);
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(RuntimeException::new);
 
-//        String refreshToken = tokenInfoDTO.getRefreshToken();
-//        refreshTokenService.saveOrUpdate(user, refreshToken);
+        String refreshToken = tokenInfoDTO.getRefreshToken();
+        member.getRefreshToken().updateToken(refreshToken);
 
         return LoginResponse.builder()
-            .memberDto(MemberDto.fromEntity(user))
+            .memberDto(MemberDto.fromEntity(member))
             .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
             .build();
-    }
-
-    private Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-            .orElseThrow(RuntimeException::new);
     }
 
     @Transactional
@@ -84,8 +82,5 @@ public class AuthService {
         return null;
     }
 
-    @Transactional
-    public void logout(Long memberId) {
-    }
 
 }
