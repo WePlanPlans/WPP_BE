@@ -1,24 +1,28 @@
 package org.tenten.tentenbe.global.security.jwt.model;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.tenten.tentenbe.domain.member.model.Member;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String token;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public void updateToken(String token) {
+        this.token = token;
+    }
 
 }
