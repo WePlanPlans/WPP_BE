@@ -1,5 +1,6 @@
 package org.tenten.tentenbe.domain.auth.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,10 +17,11 @@ import org.tenten.tentenbe.domain.auth.dto.response.MemberDto;
 import org.tenten.tentenbe.domain.auth.exception.MemberAlreadyExistException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
-import org.tenten.tentenbe.domain.token.dto.TokenDTO;
+import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
+import org.tenten.tentenbe.global.util.CookieUtil;
 
 import static org.tenten.tentenbe.global.common.enums.LoginType.EMAIL;
 import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
@@ -53,16 +55,18 @@ public class AuthService {
             .build();
         memberRepository.save(newMember);
         refreshTokenRepository.save(refreshToken);
-    };
+    }
 
     @Transactional
-    public LoginResponse login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
         UsernamePasswordAuthenticationToken authenticationToken = loginRequest.toAuthentication();
         Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        TokenDTO.TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
+        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
         log.info("로그인 API 중 토큰 생성 로직 실행");
+        // 쿠키 심는 로직
+        CookieUtil.storeRefreshTokenInCookie(response, tokenInfoDTO.getRefreshToken());
 
         String userEmail = authenticate.getName();
         Member member = memberRepository.findByEmail(userEmail).orElseThrow(RuntimeException::new);
