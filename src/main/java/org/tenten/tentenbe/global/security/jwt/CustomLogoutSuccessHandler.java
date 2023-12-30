@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.tenten.tentenbe.domain.member.model.Member;
+import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.exception.LogoutMemberException;
 import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
@@ -23,8 +25,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler implements LogoutSuccessHandler {
     private final RefreshTokenRepository refreshTokenRepository;
-
     private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
 
     @Override
     @Transactional
@@ -42,9 +44,9 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
 
         // 데이터베이스에서 리프레시 토큰 검증 및 삭제
         Optional<RefreshToken> refreshTokenEntityOptional = refreshTokenRepository.findByMember_Email(principal.getUsername());
+        Member member = memberRepository.findByEmail(principal.getUsername()).get();
         if (refreshTokenEntityOptional.isPresent()) {
-            RefreshToken refreshTokenEntity = refreshTokenEntityOptional.get();
-            refreshTokenRepository.delete(refreshTokenEntity);
+            member.getRefreshToken().updateToken(null);
         } else {
             throw new LogoutMemberException("리프레시 토큰이 데이터베이스에 없습니다.");
         }
