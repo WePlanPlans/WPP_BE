@@ -19,7 +19,6 @@ import org.tenten.tentenbe.domain.token.dto.TokenDTO;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
-import org.tenten.tentenbe.global.security.jwt.service.RefreshTokenService;
 
 import static org.tenten.tentenbe.global.common.enums.LoginType.EMAIL;
 import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
@@ -32,7 +31,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenService refreshTokenService;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
