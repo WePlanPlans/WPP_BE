@@ -31,6 +31,7 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         log.info("로그아웃 호출됐음");
         setDefaultTargetUrl("https://weplanplans.site/api/auth/logout-redirect");
+//        setDefaultTargetUrl("http://localhost:8080/api/auth/logout-redirect");
 
         String token = request.getHeader("Authorization").split(" ")[1];
         log.info("token = " + token);
