@@ -41,9 +41,9 @@ public class Member extends BaseTimeEntity {
     private String name; // 본명,
     private String nickname; // 닉네임
     private String profileImageUrl; // 프사 url
-//    @Convert(converter = Survey.SurveyConverter.class)
-//    @Column(columnDefinition = "JSON")
-//    private Survey survey;
+    @Convert(converter = Survey.SurveyConverter.class)
+    @Column(columnDefinition = "JSON")
+    private Survey survey;
     @Enumerated(STRING)
     private UserAuthority userAuthority;
     @Enumerated(STRING)
