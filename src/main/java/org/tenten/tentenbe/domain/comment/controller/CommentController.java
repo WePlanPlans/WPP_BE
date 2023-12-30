@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.comment.dto.request.CommentCreateRequest;
 import org.tenten.tentenbe.domain.comment.dto.request.CommentUpdateRequest;
+import org.tenten.tentenbe.domain.comment.dto.response.CommentInfo;
 import org.tenten.tentenbe.domain.comment.dto.response.CommentResponse;
 import org.tenten.tentenbe.domain.comment.service.CommentService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
@@ -28,9 +29,8 @@ public class CommentController {
     private final CommentService commentService;
 
     @Operation(summary = "댓글 작성 API", description = "댓글 작성 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "댓글 작성 성공시", content = @Content(schema = @Schema(implementation = CommentResponse.class)))
     @PostMapping()
-    public ResponseEntity<?> createComment(
+    public ResponseEntity<GlobalDataResponse<CommentInfo>> createComment(
         @RequestBody CommentCreateRequest commentCreateRequest
         // Security 의존성 추가될시
         // @AuthenticationPrincipal Member,
@@ -39,9 +39,8 @@ public class CommentController {
     }
 
     @Operation(summary = "댓글 수정 API", description = "댓글 수정 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "댓글 수정 성공시", content = @Content(schema = @Schema(implementation = CommentResponse.class)))
     @PutMapping("/{commentId}")
-    public ResponseEntity<?> updateComment(
+    public ResponseEntity<GlobalDataResponse<CommentInfo>> updateComment(
         @Parameter(name = "commentId", description = "댓글 아이디", in = PATH)
         @PathVariable("commentId")
         Long commentId,
@@ -53,9 +52,8 @@ public class CommentController {
     }
 
     @Operation(summary = "댓글 삭제 API", description = "댓글 삭제 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "댓글 삭제 성공시")
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComment(
+    public ResponseEntity<GlobalResponse> deleteComment(
         @Parameter(name = "commentId", description = "댓글 아이디", in = PATH)
         @PathVariable("commentId")
         Long commentId

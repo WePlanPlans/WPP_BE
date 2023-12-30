@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.auth.dto.request.LoginRequest;
 import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
+import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.MemberDto;
 import org.tenten.tentenbe.domain.auth.exception.MemberAlreadyExistException;
@@ -81,4 +82,13 @@ public class AuthService {
     }
 
 
+    @Transactional(readOnly = true)
+    public CheckResponse nicknameCheck(String nickname) {
+        return null;
+    }
+
+    @Transactional(readOnly = true)
+    public CheckResponse emailCheck(String email) {
+        return null;
+    }
 }

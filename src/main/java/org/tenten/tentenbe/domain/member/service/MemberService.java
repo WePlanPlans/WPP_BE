@@ -2,14 +2,16 @@ package org.tenten.tentenbe.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
-import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
-import org.tenten.tentenbe.domain.tour.dto.response.TourResponse;
-import org.tenten.tentenbe.domain.trip.dto.response.TripResponse;
+import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
+import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
+import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -17,17 +19,18 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public Page<TripResponse> getTrips(Long memberId) {
+    public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
+
         return null;
     }
 
     @Transactional(readOnly = true)
-    public Page<TourResponse> getTours(Long memberId) {
+    public Page<TourSimpleResponse> getTours(Long memberId, Pageable pageable) {
         return null;
     }
 
     @Transactional(readOnly = true)
-    public Page<ReviewResponse> getReviews(Long memberId) {
+    public Page<ReviewInfo> getReviews(Long memberId, PageRequest pageRequest) {
         return null;
     }
 

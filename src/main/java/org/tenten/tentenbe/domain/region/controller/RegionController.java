@@ -27,18 +27,16 @@ public class RegionController {
     private final RegionService regionService;
 
     @Operation(summary = "전체 지역 조회 API", description = "전체 지역 조회 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = RegionResponse.class)))
     @GetMapping("")
-    public ResponseEntity<?> getRegions(
+    public ResponseEntity<GlobalDataResponse<RegionResponse>> getRegions(
         @Parameter(name = "areaCode", required = false, in = QUERY, description = "세부 지역 조회할 광역 지자체 areaCode")
         @RequestParam(value = "areaCode", required = false) String areaCode) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, regionService.getRegions(areaCode)));
     }
 
     @Operation(summary = "인기 지역 조회 API", description = "인기 여행지 지역 조회 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = RegionResponse.class)))
     @GetMapping("/popular")
-    public ResponseEntity<?> getPopularRegions() {
+    public ResponseEntity<GlobalDataResponse<RegionResponse>> getPopularRegions() {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, regionService.getPopularRegions()));
     }
 }

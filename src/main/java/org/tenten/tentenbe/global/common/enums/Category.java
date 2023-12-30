@@ -7,7 +7,9 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Getter
 public enum Category {
-    DINING(39L, "식당"), ACCOMMODATION(32L, "숙소"), ATTRACTION(12L, "관광지");
+    DINING(39L, "식당"),
+    ACCOMMODATION(32L, "숙소"),
+    ATTRACTION(12L, "관광지");
 
     private final Long code;
     private final String name;

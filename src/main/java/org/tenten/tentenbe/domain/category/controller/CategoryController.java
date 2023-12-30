@@ -14,6 +14,8 @@ import org.tenten.tentenbe.domain.category.dto.response.CategoryResponse;
 import org.tenten.tentenbe.domain.category.service.CategoryService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 
+import java.util.List;
+
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
 
 @Tag(name = "카테고리 관련 API", description = "카테고리 관련 API 입니다.")
@@ -24,9 +26,8 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @Operation(summary = "카테고리 조회 API", description = "카테고리 조회 API 입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = CategoryResponse.class)))
     @GetMapping()
-    public ResponseEntity<?> getCategory() {
+    public ResponseEntity<GlobalDataResponse<List<CategoryResponse>>> getCategory() {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, categoryService.getCategory()));
     }
 }
