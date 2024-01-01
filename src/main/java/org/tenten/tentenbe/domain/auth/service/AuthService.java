@@ -14,7 +14,6 @@ import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
 import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.MemberDto;
-import org.tenten.tentenbe.domain.auth.exception.MemberAlreadyExistException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
@@ -38,14 +37,14 @@ public class AuthService {
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
-        //  TODO : 커스텀 예외처리 -> 이미 존재하는 유저(이메일) 일때
-        if (memberRepository.existsByEmail(signUpRequest.email())) {
-             throw new MemberAlreadyExistException();
-        }
-        // TODO : 커스텀 예외처리 -> 이미 존재하는 닉네임 일때
-        if (memberRepository.existsByNickname(signUpRequest.nickname())) {
-            throw new MemberAlreadyExistException();
-        }
+//        //  TODO : 커스텀 예외처리 -> 이미 존재하는 유저(이메일) 일때
+//        if (memberRepository.existsByEmail(signUpRequest.email())) {
+//             throw new DuplicateNicknameException("이미 존재하는 이메일입니다.");
+//        }
+//        // TODO : 커스텀 예외처리 -> 이미 존재하는 닉네임 일때
+//        if (memberRepository.existsByNickname(signUpRequest.nickname())) {
+//            throw new DuplicateNicknameException("이미 존재하는 닉네임입니다.");
+//        }
         // TODO : 이메일 인증
         // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
@@ -88,11 +87,19 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public CheckResponse nicknameCheck(String nickname) {
-        return null;
+        if (memberRepository.existsByNickname(nickname)) {
+            return CheckResponse.builder().exists(false).build(); // 닉네임 중복 시 false 반환
+        } else {
+            return CheckResponse.builder().exists(true).build(); // 중복 아닐 시 true 반환
+        }
     }
 
     @Transactional(readOnly = true)
     public CheckResponse emailCheck(String email) {
-        return null;
+        if (memberRepository.existsByEmail(email)) {
+            return CheckResponse.builder().exists(false).build(); // 이메일 중복 시 false 반환
+        } else {
+            return CheckResponse.builder().exists(true).build(); // 중복 아닐 시 true 반환
+        }
     }
 }
