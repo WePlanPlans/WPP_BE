@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
+import org.tenten.tentenbe.domain.member.exception.UserNotFoundException;
+import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
@@ -50,5 +52,8 @@ public class MemberService {
 
     @Transactional
     public void deleteMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+        memberRepository.delete(member); // TODO: 쿠키 삭제 필요성 검토
     }
 }

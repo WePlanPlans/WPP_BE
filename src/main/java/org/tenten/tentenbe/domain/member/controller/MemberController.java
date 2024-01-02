@@ -16,6 +16,7 @@ import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.response.GlobalResponse;
+import org.tenten.tentenbe.global.util.SecurityUtil;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
@@ -92,7 +93,8 @@ public class MemberController {
     @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API 입니다.")
     @DeleteMapping()
     public ResponseEntity<GlobalResponse> deleteMember() {
-        memberService.deleteMember(null);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        memberService.deleteMember(currentMemberId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
 }
