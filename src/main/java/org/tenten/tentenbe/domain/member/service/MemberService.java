@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
+import org.tenten.tentenbe.domain.member.dto.response.MemberDetailResponse;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
 import org.tenten.tentenbe.domain.member.exception.UserNotFoundException;
 import org.tenten.tentenbe.domain.member.model.Member;
@@ -36,13 +37,11 @@ public class MemberService {
         return null;
     }
 
-    @Transactional
-    public void deleteTour(Long memberId, Long commentId) {
-    }
-
     @Transactional(readOnly = true)
-    public MemberResponse getMemberInfo(Long memberId) {
-        return null;
+    public MemberDetailResponse getMemberInfo(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+        return MemberDetailResponse.fromEntity(member);
     }
 
     @Transactional

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.tenten.tentenbe.domain.member.model.Survey;
 import org.tenten.tentenbe.global.common.enums.AgeType;
 import org.tenten.tentenbe.global.common.enums.GenderType;
+import org.tenten.tentenbe.global.common.enums.LoginType;
 
 public record MemberResponse(
     @Schema(defaultValue = "1")
@@ -19,6 +20,8 @@ public record MemberResponse(
     @Schema(defaultValue = "성별")
     GenderType genderType,
     @Schema(defaultValue = "설문조사 결과")
-    Survey survey
+    Survey survey,
+    @Schema(defaultValue = "로그인 타입")
+    LoginType loginType
 ) {
 }
