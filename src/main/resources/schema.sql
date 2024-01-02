@@ -69,7 +69,9 @@ create table TourItem
     smallThumbnailUrl    varchar(255) null,
     tel                  varchar(255) null,
     title                varchar(255) null,
-    zipcode              varchar(255) null
+    zipcode              varchar(255) null,
+    reviewTotalCount     bigint       null,
+    likedTotalCount      bigint       null
 );
 
 create table LikedItem
