@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.trip.dto.request.TripCreateRequest;
+import org.tenten.tentenbe.domain.trip.dto.response.TripCreateResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.domain.trip.service.TripService;
@@ -33,7 +34,7 @@ public class TripController {
 
     @Operation(summary = "여정 생성 API", description = "여정 생성 API 입니다. 지역 정보는 지역 정보 조회 API를 호출한 후에, 유효한 지역 명을 넣어주셔야합니다.")
     @PostMapping()
-    public ResponseEntity<GlobalDataResponse<Long>> createTrip(@RequestBody TripCreateRequest tripCreateRequest) {
+    public ResponseEntity<GlobalDataResponse<TripCreateResponse>> createTrip(@RequestBody TripCreateRequest tripCreateRequest) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.createTrip(1L, tripCreateRequest)));
     }
 
