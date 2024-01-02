@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.tenten.tentenbe.domain.comment.model.Comment;
 import org.tenten.tentenbe.domain.review.model.Review;
-import org.tenten.tentenbe.domain.trip.model.Trip;
 import org.tenten.tentenbe.domain.trip.model.TripItem;
 import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
@@ -15,6 +14,7 @@ import org.tenten.tentenbe.global.common.enums.AgeType;
 import org.tenten.tentenbe.global.common.enums.GenderType;
 import org.tenten.tentenbe.global.common.enums.LoginType;
 import org.tenten.tentenbe.global.common.enums.UserAuthority;
+import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,4 +67,7 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "creator", fetch = LAZY, cascade = REMOVE)
     private final List<TripItem> tripItems = new ArrayList<>();
+
+    @OneToOne(mappedBy = "member", cascade = REMOVE)
+    private RefreshToken refreshToken;
 }
