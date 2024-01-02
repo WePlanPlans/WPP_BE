@@ -43,10 +43,12 @@ public class TripService {
 
         return tripRepository.save(trip).getId();
     }
+
     @Transactional(readOnly = true)
     public TripResponse getTrips(Long memberId, Pageable pageable) {
         return null;
     }
+
     @Transactional
     public void deleteTripMember(Long memberId, Long tripId) {
 
