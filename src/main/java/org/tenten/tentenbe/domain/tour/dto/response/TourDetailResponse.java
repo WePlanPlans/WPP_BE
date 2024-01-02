@@ -7,6 +7,9 @@ public record TourDetailResponse(
     @Schema(defaultValue = "1")
     Long id,
 
+    @Schema(defaultValue = "카테고리 Id")
+    Long contentTypeId,
+
     @Schema(defaultValue = "여행지 이름")
     String title,
 
@@ -38,6 +41,7 @@ public record TourDetailResponse(
     ) {
         this(
             tourItem.getId(),
+            tourItem.getContentTypeId(),
             tourItem.getTitle(),
             liked,
             fullAddress,

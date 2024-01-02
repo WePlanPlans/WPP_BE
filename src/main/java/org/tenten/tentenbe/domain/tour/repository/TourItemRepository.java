@@ -16,6 +16,7 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
     List<TourItem> findByAreaCode(Long areaCode);
     @Query("SELECT NEW org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse(" +
         "ti.id, " +
+        "ti.contentTypeId, " +
         "ti.title, " +
         "CAST(COALESCE(AVG(r.rating), 0) AS DOUBLE), " +
         "CAST(COALESCE(COUNT(DISTINCT r.id), 0) AS LONG), " +
@@ -30,6 +31,7 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
     Page<TourSimpleResponse> findPopularTourItems(@Param("memberId") Long memberId, Pageable pageable);
     @Query("SELECT NEW org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse(" +
         "ti.id, " +
+        "ti.contentTypeId, " +
         "ti.title, " +
         "CAST(COALESCE(AVG(r.rating), 0) AS DOUBLE), " +
         "CAST(COALESCE(COUNT(DISTINCT r.id), 0) AS LONG), " +

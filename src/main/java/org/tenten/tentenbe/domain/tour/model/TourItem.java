@@ -39,6 +39,8 @@ public class TourItem {
     private String tel; // 전화번호
     private String longitude; // x좌표
     private String latitude; // y좌표
+    private Long reviewTotalCount; // 리뷰 총 개수
+    private Long likedTotalCount;  // 좋아요 총 개수
 
     @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
     private final List<Review> reviews = new ArrayList<>();
@@ -54,4 +56,12 @@ public class TourItem {
 
     @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
     private final List<TripLikedItem> tripLikedItems = new ArrayList<>();
+
+    public void increaseLikedCount() {
+        this.likedTotalCount++;
+    }
+
+    public void decreaseLikedCount() {
+        this.likedTotalCount--;
+    }
 }

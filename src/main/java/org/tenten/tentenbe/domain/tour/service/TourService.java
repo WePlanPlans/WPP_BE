@@ -90,6 +90,7 @@ public class TourService {
         return tourItems.stream()
             .map(tourItem -> new TourSimpleResponse(
                 tourItem.getId(),
+                tourItem.getContentTypeId(),
                 tourItem.getTitle(),
                 tourItem.getReviews().stream()
                     .mapToDouble(Review::getRating)
