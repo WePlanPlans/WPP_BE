@@ -12,6 +12,7 @@ import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberDetailResponse;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
 import org.tenten.tentenbe.domain.member.service.MemberService;
+import org.tenten.tentenbe.domain.review.dto.response.MemberReviewResponse;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
@@ -56,14 +57,14 @@ public class MemberController {
 
     @Operation(summary = "나의 리뷰 조회 API", description = "나의 리뷰 조회 API 입니다.")
     @GetMapping("/reviews")
-    public ResponseEntity<GlobalDataResponse<Page<ReviewInfo>>> getReviews(
+    public ResponseEntity<GlobalDataResponse<Page<MemberReviewResponse>>> getReviews(
         @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
         @RequestParam(value = "page", required = false, defaultValue = "0") int page,
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-        Long memberId = 1L;
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getReviews(memberId, PageRequest.of(page, size))));
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, memberService.getReviews(getCurrentMemberId(), PageRequest.of(page, size))));
     }
 
     @Operation(summary = "회원 정보 조회 API", description = "회원 정보 조회 API 입니다.")
@@ -76,7 +77,7 @@ public class MemberController {
     @PutMapping()
     public ResponseEntity<GlobalDataResponse<MemberResponse>> updateMember(
         @RequestBody MemberUpdateRequest memberUpdateRequest
-        ) {
+        ) { // TODO : 카카오 회원은 비밀번호 수정 불가
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.updateMember(null, memberUpdateRequest)));
     }
 

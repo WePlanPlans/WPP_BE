@@ -12,7 +12,10 @@ import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
 import org.tenten.tentenbe.domain.member.exception.UserNotFoundException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
+import org.tenten.tentenbe.domain.review.dto.response.MemberReviewResponse;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
+import org.tenten.tentenbe.domain.review.model.Review;
+import org.tenten.tentenbe.domain.review.repository.ReviewRepository;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 
@@ -20,6 +23,7 @@ import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional(readOnly = true)
     public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
@@ -33,8 +37,9 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReviewInfo> getReviews(Long memberId, PageRequest pageRequest) {
-        return null;
+    public Page<MemberReviewResponse> getReviews(Long memberId, PageRequest pageRequest) {
+        Page<Review> reviewPage = reviewRepository.findReviewByCreatorId(memberId, pageRequest);
+        return reviewPage.map(MemberReviewResponse::fromEntity);
     }
 
     @Transactional(readOnly = true)
