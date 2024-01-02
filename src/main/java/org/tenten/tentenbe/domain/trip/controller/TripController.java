@@ -2,21 +2,16 @@ package org.tenten.tentenbe.domain.trip.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.trip.dto.request.TripCreateRequest;
 import org.tenten.tentenbe.domain.trip.dto.response.TripCreateResponse;
-import org.tenten.tentenbe.domain.trip.dto.response.TripResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.domain.trip.service.TripService;
-import org.tenten.tentenbe.global.common.constant.ResponseConstant;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.response.GlobalResponse;
 
@@ -40,7 +35,7 @@ public class TripController {
 
     @Operation(summary = "나의 여정 목록 조회 API", description = "자신의 여정 목록 조회 API 입니다.")
     @GetMapping()
-    public ResponseEntity<GlobalDataResponse<TripResponse>> getTrips(
+    public ResponseEntity<GlobalDataResponse<Page<TripSimpleResponse>>> getTrips(
         @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
         @RequestParam(value = "page", required = false, defaultValue = "0") int page,
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)

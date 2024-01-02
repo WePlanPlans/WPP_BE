@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.tour.model.TourItem;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
 import org.tenten.tentenbe.global.common.enums.Transportation;

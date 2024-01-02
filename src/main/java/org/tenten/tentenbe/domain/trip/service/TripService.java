@@ -1,6 +1,7 @@
 package org.tenten.tentenbe.domain.trip.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,7 +9,7 @@ import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.trip.dto.request.TripCreateRequest;
 import org.tenten.tentenbe.domain.trip.dto.response.TripCreateResponse;
-import org.tenten.tentenbe.domain.trip.dto.response.TripResponse;
+import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.domain.trip.model.Trip;
 import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.domain.trip.repository.TripItemRepository;
@@ -53,8 +54,9 @@ public class TripService {
     }
 
     @Transactional(readOnly = true)
-    public TripResponse getTrips(Long memberId, Pageable pageable) {
-        return null;
+    public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
+        Member member = memberRepository.getReferenceById(memberId);
+        return tripRepository.findTripsByMemberId(memberId, pageable);
     }
 
     @Transactional
