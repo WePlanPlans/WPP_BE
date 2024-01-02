@@ -7,7 +7,6 @@ import org.tenten.tentenbe.domain.review.dto.response.TourKeywordInfo;
 import org.tenten.tentenbe.domain.review.model.Keyword;
 import org.tenten.tentenbe.global.common.enums.KeywordType;
 
-import java.security.Key;
 import java.util.List;
 
 public interface KeywordRepository extends JpaRepository<Keyword, Long> {
@@ -20,8 +19,8 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
         "LEFT OUTER JOIN ReviewKeyword rk ON kw.id = rk.keyword.id " +
         "LEFT OUTER JOIN Review r ON rk.review.id = r.id " +
         "LEFT OUTER JOIN TourItem ti ON r.tourItem.id = ti.id " +
-        "WHERE ti.id IS NULL OR ti.id = :tourItemId GROUP BY kw.id")
-    List<TourKeywordInfo> findKeywordInfoByTourItemId(@Param("tourItemId") Long tourItemId);
+        "WHERE ti.id IS NULL OR ti.id = :tourItemId GROUP BY kw.id HAVING kw.type = :keywordType")
+    List<TourKeywordInfo> findKeywordInfoByTourItemIdAndKeywordType(@Param("tourItemId") Long tourItemId, @Param("keywordType") KeywordType keywordType);
 
     List<Keyword> findByType(KeywordType keywordType);
 }
