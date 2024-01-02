@@ -38,10 +38,6 @@ public class TripItem extends BaseTimeEntity {
     private Trip trip;
 
     @ManyToOne
-    @JoinColumn(name = "memberId")
-    private Member creator;
-
-    @ManyToOne
     @JoinColumn(name = "tourItemId")
     private TourItem tourItem;
 }
