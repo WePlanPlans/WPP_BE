@@ -46,3 +46,16 @@ open-api:
 
 jwt:
   secret: ${JWT_SECRET}
+
+#s3
+cloud:
+  aws:
+    credentials:
+      access-key: ${aws.credentials.access.key}
+      secret-key: ${aws.credentials.secret.key}
+    s3:
+      bucket: ${aws.s3.bucket}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: 'false'
