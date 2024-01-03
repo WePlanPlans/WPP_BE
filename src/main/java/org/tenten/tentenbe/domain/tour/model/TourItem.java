@@ -1,10 +1,7 @@
 package org.tenten.tentenbe.domain.tour.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.trip.model.TripItem;
 import org.tenten.tentenbe.domain.trip.model.TripLikedItem;
@@ -20,7 +17,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TourItem {
     @Id
     @GeneratedValue(strategy = IDENTITY)

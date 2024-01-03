@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.tour.model.TourItem;
-import org.tenten.tentenbe.global.common.enums.Region;
 
 import java.util.List;
 
