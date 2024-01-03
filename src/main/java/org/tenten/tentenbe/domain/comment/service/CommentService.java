@@ -12,32 +12,39 @@ import org.tenten.tentenbe.domain.comment.dto.response.CommentResponse;
 import org.tenten.tentenbe.domain.comment.exception.CommentException;
 import org.tenten.tentenbe.domain.comment.model.Comment;
 import org.tenten.tentenbe.domain.comment.repository.CommentRepository;
+import org.tenten.tentenbe.domain.member.exception.MemberException;
+import org.tenten.tentenbe.domain.member.model.Member;
+import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.review.repository.ReviewRepository;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
     private final ReviewRepository reviewRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public CommentInfo createComment(CommentCreateRequest commentCreateRequest) {
+    public CommentInfo createComment(Long currentMemberId, CommentCreateRequest commentCreateRequest) {
 
         Review review = reviewRepository.findById(commentCreateRequest.reviewId()).orElseThrow(
             ()-> new RuntimeException("해당 리뷰가 없습니다.")
         );
 
         Comment newComment = new Comment(commentCreateRequest.content(), review);
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(() -> new MemberException("주어진 아이디로 존재하는 멤버가 없습니다.", NOT_FOUND));
 
         newComment.addReview(review);
-        // newComment.addCreator();
+        newComment.addCreator(member);
         Comment savedComment = commentRepository.save(newComment);
 
 		return new CommentInfo(
             savedComment.getId(),
-            "사용자 이름",
-            "사용자 프로필",
+            member.getNickname(),
+            member.getProfileImageUrl(),
             savedComment.getContent(),
             savedComment.getCreatedTime()
         );
