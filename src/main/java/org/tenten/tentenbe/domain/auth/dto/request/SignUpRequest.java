@@ -43,6 +43,7 @@ public record SignUpRequest(
     @Schema(defaultValue = "http://asiduheimage.jpg")
     String profileImage,
 
+    @Schema(defaultValue = "설문조사")
     Survey survey
 ) {
     public Member toEntity(
