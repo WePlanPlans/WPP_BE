@@ -7,9 +7,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
+import org.tenten.tentenbe.domain.member.dto.response.MemberDetailResponse;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
+import org.tenten.tentenbe.domain.member.exception.UserNotFoundException;
+import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
+import org.tenten.tentenbe.domain.review.dto.response.MemberReviewResponse;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
+import org.tenten.tentenbe.domain.review.model.Review;
+import org.tenten.tentenbe.domain.review.repository.ReviewRepository;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 
@@ -17,6 +23,7 @@ import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional(readOnly = true)
     public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
@@ -30,17 +37,16 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReviewInfo> getReviews(Long memberId, PageRequest pageRequest) {
-        return null;
-    }
-
-    @Transactional
-    public void deleteTour(Long memberId, Long commentId) {
+    public Page<MemberReviewResponse> getReviews(Long memberId, PageRequest pageRequest) {
+        Page<Review> reviewPage = reviewRepository.findReviewByCreatorId(memberId, pageRequest);
+        return reviewPage.map(MemberReviewResponse::fromEntity);
     }
 
     @Transactional(readOnly = true)
-    public MemberResponse getMemberInfo(Long memberId) {
-        return null;
+    public MemberDetailResponse getMemberInfo(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+        return MemberDetailResponse.fromEntity(member);
     }
 
     @Transactional
@@ -50,5 +56,8 @@ public class MemberService {
 
     @Transactional
     public void deleteMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+        memberRepository.delete(member); // TODO: 쿠키 삭제 필요성 검토
     }
 }

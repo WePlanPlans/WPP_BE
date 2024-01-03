@@ -1,33 +1,64 @@
 package org.tenten.tentenbe.domain.auth.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.model.Survey;
 import org.tenten.tentenbe.global.common.enums.AgeType;
 import org.tenten.tentenbe.global.common.enums.GenderType;
+import org.tenten.tentenbe.global.common.enums.LoginType;
+import org.tenten.tentenbe.global.common.enums.UserAuthority;
+
 public record SignUpRequest(
-    @Schema(defaultValue = "example@mail.com")
+    @Email(message = "올바르지 않은 이메일 형식입니다.")
+    @Schema(description = "회원가입 이메일", defaultValue = "example@mail.com")
     String email,
 
-    @Schema(defaultValue = "as@#SD23/&DFd%fs@a1")
+    @NotNull(message = "비밀번호는 최소 8글자 이상입니다.")
+    @Size(min = 8, max = 20)
+    @Schema(description = "회원가입 비밀번호", defaultValue = "as@#SD23/&DFd%fs@a1")
     String password,
 
-    @Schema(defaultValue = "이름")
+    @NotNull(message = "이름을 입력해주세요.")
+    @Schema(description = "이름", defaultValue = "name")
     String name,
 
-    @Schema(defaultValue = "닉네임")
+    @NotNull(message = "닉네임은 2글자 이상 20글자 이하입니다.")
+    @Size(min = 2, max = 20)
+    @Schema(description = "닉네임", defaultValue = "nickName")
     String nickname,
 
-    @Schema(defaultValue = "성별")
+    @Schema(description = "성별", defaultValue = "genderType")
+    @Enumerated(EnumType.STRING)
     GenderType genderType,
 
-    @Schema(defaultValue = "연령대")
+    @Schema(description = "연령대", defaultValue = "ageType")
+    @Enumerated(EnumType.STRING)
     AgeType ageType,
 
-    @Schema(defaultValue = "프로필 이미지")
+    @Schema(description = "프로필 이미지", defaultValue = "http://~~~~~~image.jpg")
     String profileImage,
 
-    @Schema(defaultValue = "설문조사 결과")
+    @Schema(description = "설문조사 결과", defaultValue = "{}")
     Survey survey
-    ) {
-
+) {
+    public Member toEntity(
+        String encodedPassword, LoginType loginTypeEmail, UserAuthority userAuthority) {
+        return Member.builder()
+            .email(email)
+            .name(name)
+            .password(encodedPassword)
+            .nickname(nickname)
+            .profileImageUrl(profileImage)
+            .survey(survey)
+            .ageType(ageType)
+            .genderType(genderType)
+            .userAuthority(userAuthority) //TODO : 권한 처리 논의
+            .loginType(loginTypeEmail) // TODO : 로그인 타입 처리 논의
+            .build();
+    }
 }
