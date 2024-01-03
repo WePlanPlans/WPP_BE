@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -33,36 +32,59 @@ public class TourService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public Page<TourSimpleResponse> getTours(Long memberId, String region, Pageable pageable) {
+    public Page<TourSimpleResponse> getTours(Long memberId, String regionName, Pageable pageable) {
         Member member = memberRepository.getReferenceById(memberId);
-//        List<TourItem> tourItems;
-        if(region == null) {
-            return tourItemRepository.findPopularTourItems(memberId, pageable);
-//            tourItems = tourItemRepository.findAll();
-        } else {
-            return tourItemRepository.findPopularTourItems(Region.fromName(region).getAreaCode(), memberId, pageable);
-//            tourItems = tourItemRepository.findByAreaCode(Region.fromName(region).getAreaCode());
-        }
 
-//        List<TourSimpleResponse> tourSimpleResponses = getTourSimpleResponses(member, tourItems, pageable);
-//
-//        return new PageImpl<>(tourSimpleResponses, pageable, tourItems.size());
+        return getTourSimpleResponsePage(memberId, regionName, pageable);
+    }
+
+    private Page<TourSimpleResponse> getTourSimpleResponsePage(Long memberId, String regionName, Pageable pageable) {
+        if (regionName == null) {
+            return tourItemRepository.findPopularTourItems(memberId, pageable);
+        }
+        return tourItemRepository.findPopularTourItems(Region.fromName(regionName).getAreaCode(), memberId, pageable);
     }
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> searchTours(Long memberId, String regionName, String categoryName, String searchWord, Pageable pageable) {
         Member member = memberRepository.getReferenceById(memberId);
-        Region region = Region.fromName(regionName);
+        Region region = findRegion(regionName);
         Category category = findCategory(categoryName);
 
         Specification<TourItem> spec = Specification.where(regionIs(region))
             .and(categoryIs(category))
-            .and(nameContains(searchWord));
+            .and(nameOrAddressContains(searchWord));
         List<TourItem> tourItems = tourItemRepository.findAll(spec);
 
         List<TourSimpleResponse> tourSimpleResponses = getTourSimpleResponses(member, tourItems, pageable);
 
         return new PageImpl<>(tourSimpleResponses, pageable, tourItems.size());
+    }
+
+    private Specification<TourItem> regionIs(Region region) {
+        return (root, query, cb) -> {
+            if(region == null) {
+                return cb.conjunction();
+            }
+            return cb.equal(root.get("areaCode"), region.getAreaCode());
+        };
+    }
+
+    private Specification<TourItem> categoryIs(Category category) {
+        return (root, query, cb) -> {
+            if (category == null) {
+                return cb.conjunction();
+            }
+            return cb.equal(root.get("contentTypeId"), category.getCode());
+        };
+    }
+
+    private Specification<TourItem> nameOrAddressContains(String searchWord) {
+        return (root, query, cb) -> cb.or(
+            cb.like(root.get("title"), "%" + searchWord + "%"),
+            cb.like(root.get("address"), "%" + searchWord + "%"),
+            cb.like(root.get("detailedAddress"), "%" + searchWord + "%")
+        );
     }
 
     @Transactional(readOnly = true)
@@ -73,14 +95,14 @@ public class TourService {
 
         Boolean liked = likedCheck(member, tourItem.getId());
 
-        return new TourDetailResponse(tourItem, liked, createAddress(tourItem.getAddress(), tourItem.getDetailedAddress()));
+        return new TourDetailResponse(tourItem, liked, getFullAddress(tourItem.getAddress(), tourItem.getDetailedAddress()));
     }
 
-    private String createAddress(String address, String detailedAddress) {
-        if(detailedAddress == null) {
+    private String getFullAddress(String address, String detailedAddress) {
+        if (detailedAddress == null) {
             return address;
         }
-        return address + detailedAddress;
+        return address + " " + detailedAddress;
     }
 
     private List<TourSimpleResponse> getTourSimpleResponses(Member member, List<TourItem> tourItems, Pageable pageable) {
@@ -99,33 +121,26 @@ public class TourService {
                 (long) tourItem.getReviews().size(),
                 (long) tourItem.getTripLikedItems().size(),
                 likedCheck(member, tourItem.getId()),
-                tourItem.getSmallThumbnailUrl()
+                tourItem.getSmallThumbnailUrl(),
+                tourItem.getAddress(),
+                tourItem.getLongitude(),
+                tourItem.getLatitude()
             )).toList()
             .subList(start, end);
     }
 
     private Category findCategory(String categoryName) {
-        if(categoryName != null) {
+        if (categoryName != null) {
             return Category.fromName(categoryName);
         }
         return null;
     }
 
-    private Specification<TourItem> regionIs(Region region) {
-        return (root, query, cb) -> cb.equal(root.get("areaCode"), region.getAreaCode());
-    }
-
-    private Specification<TourItem> categoryIs(Category category) {
-        return (root, query, cb) -> {
-            if (category == null) {
-                return cb.conjunction();
-            }
-            return cb.equal(root.get("contentTypeId"), category.getCode());
-        };
-    }
-
-    private Specification<TourItem> nameContains(String searchWord) {
-        return (root, query, cb) -> cb.like(root.get("title"), "%" + searchWord + "%");
+    private Region findRegion(String regionName) {
+        if (regionName != null) {
+            return Region.fromName(regionName);
+        }
+        return null;
     }
 
     private Boolean likedCheck(Member member, Long tourId) {

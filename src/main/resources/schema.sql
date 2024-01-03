@@ -54,7 +54,7 @@ create table Member
 
 create table RefreshToken
 (
-    refreshTokenId bigint       not null
+    refreshTokenId bigint  auto_increment
         primary key,
     token          varchar(255) null,
     memberId       bigint       not null,

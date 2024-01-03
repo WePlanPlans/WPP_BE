@@ -1,0 +1,21 @@
+### 회원 가입
+POST https://api.weplanplans.site/api/auth/signup
+Content-Type: application/json
+Origin: http://localhost:5173
+
+{
+  "email": "example1231234@mail.com",
+  "password": "as@#SD23/&DFd%fs@a1",
+  "name": "John",
+  "nickname": "johnn1234yiq",
+  "genderType": "MALE",
+  "ageType": "TEENAGER",
+  "profileImage": "http://asiduheimage.jpg/",
+  "survey": {
+    "planning": "ex",
+    "activeHours": "asd",
+    "accommodation": "asdasdasd",
+    "food": "asdasdasdasd",
+    "tripStyle": "asdasdasdasdasd"
+  }
+}

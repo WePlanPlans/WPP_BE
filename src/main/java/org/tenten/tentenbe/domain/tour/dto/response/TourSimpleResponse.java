@@ -25,7 +25,16 @@ public record TourSimpleResponse(
     Boolean liked,
 
     @Schema(defaultValue = "http://~~~~~~image.jpg")
-    String smallThumbnailUrl
+    String smallThumbnailUrl,
+
+    @Schema(defaultValue = "서울특별시 강남구(여행지 주소)")
+    String tourAddress,
+
+    @Schema(defaultValue = "127.31(경도)")
+    String longitude,
+
+    @Schema(defaultValue = "37.31(위도)")
+    String latitude
 ) {
 
 }
