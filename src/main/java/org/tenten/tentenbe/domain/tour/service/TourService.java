@@ -73,7 +73,14 @@ public class TourService {
 
         Boolean liked = likedCheck(member, tourItem.getId());
 
-        return new TourDetailResponse(tourItem, liked);
+        return new TourDetailResponse(tourItem, liked, createAddress(tourItem.getAddress(), tourItem.getDetailedAddress()));
+    }
+
+    private String createAddress(String address, String detailedAddress) {
+        if(detailedAddress == null) {
+            return address;
+        }
+        return address + detailedAddress;
     }
 
     private List<TourSimpleResponse> getTourSimpleResponses(Member member, List<TourItem> tourItems, Pageable pageable) {

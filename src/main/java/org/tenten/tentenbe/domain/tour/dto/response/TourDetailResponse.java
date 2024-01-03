@@ -33,13 +33,14 @@ public record TourDetailResponse(
 ) {
     public TourDetailResponse(
         TourItem tourItem,
-        Boolean liked
+        Boolean liked,
+        String fullAddress
     ) {
         this(
             tourItem.getId(),
             tourItem.getTitle(),
             liked,
-            tourItem.getAddress()+tourItem.getDetailedAddress(),
+            fullAddress,
             tourItem.getZipcode(),
             tourItem.getLongitude(),
             tourItem.getLatitude(),
