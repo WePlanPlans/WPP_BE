@@ -67,8 +67,8 @@ public class AuthService {
         // 쿠키 심는 로직
         CookieUtil.storeRefreshTokenInCookie(response, tokenInfoDTO.getRefreshToken());
 
-        String userEmail = authenticate.getName();
-        Member member = memberRepository.findByEmail(userEmail).orElseThrow(RuntimeException::new);
+        String memberId = authenticate.getName();
+        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
 
         String refreshToken = tokenInfoDTO.getRefreshToken();
         member.getRefreshToken().updateToken(refreshToken);
