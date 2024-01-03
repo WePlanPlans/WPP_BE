@@ -43,3 +43,6 @@ springdoc:
 open-api:
   url: ${OPEN_API_URL}
   key: ${OPEN_API_KEY}
+
+jwt:
+  secret: ${JWT_SECRET}
