@@ -175,7 +175,6 @@ create table TripItem
 (
     visitDate      date                                  null,
     createdTime    datetime(6)                           null,
-    memberId       bigint                                null,
     modifiedTime   datetime(6)                           null,
     price          bigint                                null,
     seqNum         bigint                                null,
@@ -186,8 +185,6 @@ create table TripItem
     transportation enum ('CAR', 'PUBLIC_TRANSPORTATION') null,
     constraint FK2usvl9nqv9wyhyxo6n4wt215k
         foreign key (tourItemId) references TourItem (tourItemId),
-    constraint FKjhahhv3w4r4ijrcdsyhbwsdos
-        foreign key (memberId) references Member (memberId),
     constraint FKs1xb61ylvu77xldywtdj9bnxs
         foreign key (tripId) references Trip (tripId)
 );

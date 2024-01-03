@@ -17,7 +17,7 @@ public record TripSimpleResponse(
     @Schema(defaultValue = "2")
     Long numberOfTripMembers,
     @Schema(defaultValue = "여행 전")
-    String tripStatus,
+    TripStatus tripStatus,
     @Schema(defaultValue = "https://~~~~.png")
     String tripThumbnailUrl
 ) {
