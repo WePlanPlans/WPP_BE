@@ -77,10 +77,9 @@ public class SecurityConfig {
         return source;
     }
 
-    // h2-console 화면설정
     @Bean
     @ConditionalOnProperty(name = "spring.h2.console.enabled",havingValue = "true")
-    public WebSecurityCustomizer configureH2ConsoleEnable() {
+    public WebSecurityCustomizer configureH2ConsoleEnable() { // h2-console 화면설정
         return web -> web.ignoring()
             .requestMatchers(PathRequest.toH2Console());
     }
