@@ -35,7 +35,7 @@ public class JsonConverter<T> implements AttributeConverter<T, String> {
             try {
                 return (T) objectMapper.readValue(dbData, aClass); // 5
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                return null;
             }
         }
         return null;
