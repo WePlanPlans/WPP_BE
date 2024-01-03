@@ -1,10 +1,7 @@
 package org.tenten.tentenbe.domain.tour.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.trip.model.TripItem;
 import org.tenten.tentenbe.domain.trip.model.TripLikedItem;
@@ -20,7 +17,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TourItem {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -39,6 +36,8 @@ public class TourItem {
     private String tel; // 전화번호
     private String longitude; // x좌표
     private String latitude; // y좌표
+    private Long reviewTotalCount; // 리뷰 총 개수
+    private Long likedTotalCount;  // 좋아요 총 개수
 
     @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
     private final List<Review> reviews = new ArrayList<>();
@@ -54,4 +53,12 @@ public class TourItem {
 
     @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
     private final List<TripLikedItem> tripLikedItems = new ArrayList<>();
+
+    public void increaseLikedCount() {
+        this.likedTotalCount++;
+    }
+
+    public void decreaseLikedCount() {
+        this.likedTotalCount--;
+    }
 }

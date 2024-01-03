@@ -65,9 +65,6 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", fetch = LAZY, cascade = REMOVE)
     private final List<LikedItem> likedItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "creator", fetch = LAZY, cascade = REMOVE)
-    private final List<TripItem> tripItems = new ArrayList<>();
-
     @OneToOne(mappedBy = "member", cascade = REMOVE)
     private RefreshToken refreshToken;
 }
