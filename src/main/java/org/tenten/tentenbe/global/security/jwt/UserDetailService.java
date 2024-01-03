@@ -36,7 +36,7 @@ public class UserDetailService implements UserDetailsService {
     private UserDetails createUserDetails(Member member) {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getUserAuthority().toString());
         return new User(
-            member.getEmail(),
+            String.valueOf(member.getId()),
             member.getPassword(),
             Collections.singleton(grantedAuthority)
         );

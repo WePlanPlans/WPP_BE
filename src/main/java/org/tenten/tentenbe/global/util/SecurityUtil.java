@@ -12,7 +12,7 @@ public class SecurityUtil {
     // Request가 들어올 때 JwtFilter의 doFilter에서 저장
     public static Long getCurrentMemberId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.getName() == null) {
+        if (authentication == null || authentication.getName() == null || authentication.getName().equals("anonymousUser")) {
             return null;
         }
 
