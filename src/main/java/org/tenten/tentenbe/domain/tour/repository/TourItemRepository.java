@@ -13,6 +13,7 @@ import java.util.List;
 
 public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSpecificationExecutor<TourItem> {
     List<TourItem> findByAreaCode(Long areaCode);
+
     @Query("SELECT NEW org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse(" +
         "ti.id, " +
         "ti.contentTypeId, " +
@@ -21,13 +22,17 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
         "CAST(COALESCE(COUNT(DISTINCT r.id), 0) AS LONG), " +
         "CAST(COALESCE(COUNT(DISTINCT li.id), 0) AS LONG), " +
         "COALESCE((CASE WHEN li.member.id = :memberId THEN true ELSE false END),false ), " +
-        "ti.smallThumbnailUrl) " +
+        "ti.smallThumbnailUrl, " +
+        "ti.address, " +
+        "ti.longitude, " +
+        "ti.latitude)" +
         "FROM TourItem ti " +
         "LEFT OUTER JOIN Review r ON ti.id = r.tourItem.id " +
         "LEFT OUTER JOIN LikedItem li ON ti.id = li.tourItem.id " +
         "LEFT OUTER JOIN Member m ON li.member.id = m.id " +
         "GROUP BY ti.id ORDER BY COALESCE(COUNT(li.id), 0) DESC, COALESCE(AVG(r.rating), 0) DESC, COUNT(r.id) DESC, ti.title ASC")
     Page<TourSimpleResponse> findPopularTourItems(@Param("memberId") Long memberId, Pageable pageable);
+
     @Query("SELECT NEW org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse(" +
         "ti.id, " +
         "ti.contentTypeId, " +
@@ -36,7 +41,10 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
         "CAST(COALESCE(COUNT(DISTINCT r.id), 0) AS LONG), " +
         "CAST(COALESCE(COUNT(DISTINCT li.id), 0) AS LONG), " +
         "COALESCE((CASE WHEN li.member.id = :memberId THEN true ELSE false END),false ), " +
-        "ti.smallThumbnailUrl) " +
+        "ti.smallThumbnailUrl, " +
+        "ti.address, " +
+        "ti.longitude, " +
+        "ti.latitude)" +
         "FROM TourItem ti " +
         "LEFT OUTER JOIN Review r ON ti.id = r.tourItem.id " +
         "LEFT OUTER JOIN LikedItem li ON ti.id = li.tourItem.id " +
