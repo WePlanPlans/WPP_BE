@@ -45,6 +45,7 @@ public record SignUpRequest(
 
     @Schema(defaultValue = "설문조사")
     Survey survey
+
 ) {
     public Member toEntity(
         String encodedPassword, LoginType loginTypeEmail, UserAuthority userAuthority) {
