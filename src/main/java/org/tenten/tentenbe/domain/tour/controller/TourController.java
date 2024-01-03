@@ -2,16 +2,12 @@ package org.tenten.tentenbe.domain.tour.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
@@ -62,8 +58,8 @@ public class TourController {
     @Operation(summary = "여행지 검색 API", description = "여행지 검색 API 입니다.")
     @GetMapping("/search")
     public ResponseEntity<GlobalDataResponse<Page<TourSimpleResponse>>> searchTours(
-        @Parameter(name = "region", description = "검색할 지역", in = QUERY, required = true)
-        @RequestParam(value = "region", required = true) String region,
+        @Parameter(name = "region", description = "검색할 지역", in = QUERY, required = false)
+        @RequestParam(value = "region", required = false) String region,
         @Parameter(name = "category", description = "검색할 여행 상품 타입, 미지정 가능", in = QUERY, required = false)
         @RequestParam(value = "category", required = false) String category,
         @Parameter(name = "searchWord", description = "검색할 상품명", in = QUERY, required = true)
