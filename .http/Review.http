@@ -1,5 +1,5 @@
 ### 리뷰 등록 API
-POST http://localhost:8080/api/reviews
+POST https://api.weplanplans.site/api/reviews
 Content-Type: application/json
 
 {
