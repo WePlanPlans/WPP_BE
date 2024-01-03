@@ -12,13 +12,14 @@ import org.tenten.tentenbe.domain.member.model.Member;
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "refreshTokenId")
     private Long id;
 
     @Column(unique = true)
     private String token;
 
     @OneToOne
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "memberId", nullable = false)
     private Member member;
 
     public void updateToken(String token) {
