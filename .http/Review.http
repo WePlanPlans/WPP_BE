@@ -1,6 +1,7 @@
 ### 리뷰 등록 API
 POST https://api.weplanplans.site/api/reviews
 Content-Type: application/json
+Origin: http://localhost:5173
 
 {
   "tourItemId": 1,
