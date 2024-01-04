@@ -3,12 +3,15 @@ package org.tenten.tentenbe.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.tenten.tentenbe.domain.liked.model.LikedItem;
+import org.tenten.tentenbe.domain.liked.repository.LikedItemRepository;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberDetailResponse;
 import org.tenten.tentenbe.domain.member.dto.response.MemberUpdateResponse;
@@ -24,6 +27,8 @@ import org.tenten.tentenbe.global.common.enums.LoginType;
 import org.tenten.tentenbe.global.s3.ImageUploadDto;
 import org.tenten.tentenbe.global.s3.S3Uploader;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -31,6 +36,7 @@ public class MemberService {
     private final ReviewRepository reviewRepository;
     private final S3Uploader s3Uploader;
     private final PasswordEncoder passwordEncoder;
+    private final LikedItemRepository likedItemRepository;
 
     @Transactional(readOnly = true)
     public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
@@ -40,7 +46,15 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, Pageable pageable) {
-        return null;
+        Member member = getMember(memberId);
+        Page<LikedItem> likedItems = likedItemRepository.findByMember(member, pageable);
+
+        List<TourSimpleResponse> tourSimpleResponses = likedItems
+            .stream()
+            .map(likedItem -> TourSimpleResponse.fromEntity(likedItem.getTourItem()))
+            .toList();
+
+        return new PageImpl<>(tourSimpleResponses, pageable, likedItems.getTotalElements());
     }
 
     @Transactional(readOnly = true)
@@ -51,15 +65,13 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberDetailResponse getMemberInfo(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+        Member member = getMember(memberId);
         return MemberDetailResponse.fromEntity(member);
     }
 
     @Transactional
     public MemberUpdateResponse updateMember(Long memberId, MemberUpdateRequest memberUpdateRequest) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+        Member member = getMember(memberId);
         if (member.getLoginType() == LoginType.EMAIL) { // 이메일 로그인 유저일 경우
             member.updateMember(memberUpdateRequest);
 
@@ -73,8 +85,7 @@ public class MemberService {
 
     @Transactional
     public void deleteMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+        Member member = getMember(memberId);
         memberRepository.delete(member); // TODO: 쿠키 삭제 필요성 검토
     }
 
@@ -88,6 +99,11 @@ public class MemberService {
         } catch (Exception e) {
             throw new BadRequestException("잘못된 요청입니다.");
         }
+    }
+
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
     }
 
 }
