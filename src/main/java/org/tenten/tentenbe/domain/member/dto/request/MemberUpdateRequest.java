@@ -6,13 +6,13 @@ import org.tenten.tentenbe.global.common.enums.AgeType;
 import org.tenten.tentenbe.global.common.enums.GenderType;
 
 public record MemberUpdateRequest(
-    @Schema(defaultValue = "닉네임")
+    @Schema(defaultValue = "zkzkzkzk")
     String nickname,
-    @Schema(defaultValue = "프로필 이미지")
+    @Schema(defaultValue = "http://hfstdfg.jpg")
     String profileImageUrl,
-    @Schema(defaultValue = "연령대")
+    @Schema(defaultValue = "TWENTIES")
     AgeType ageType,
-    @Schema(defaultValue = "성별")
+    @Schema(defaultValue = "MALE")
     GenderType genderType,
     Survey survey,
     @Schema(defaultValue = "as@#SD23/&DFd%fs@a1")
