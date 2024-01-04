@@ -14,6 +14,8 @@ public record MemberUpdateRequest(
     AgeType ageType,
     @Schema(defaultValue = "성별")
     GenderType genderType,
-    Survey survey
+    Survey survey,
+    @Schema(defaultValue = "as@#SD23/&DFd%fs@a1")
+    String password
 ) {
 }
