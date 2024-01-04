@@ -55,7 +55,7 @@ public class TourItem {
     @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
     private final List<TripLikedItem> tripLikedItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "likedItem", fetch = LAZY, cascade = REMOVE)
+    @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
     private final List<LikedItem> likedItems = new ArrayList<>();
 
     public void increaseLikedCount() {
@@ -64,5 +64,13 @@ public class TourItem {
 
     public void decreaseLikedCount() {
         this.likedTotalCount--;
+    }
+
+    public void increaseReviewCount() {
+        this.reviewTotalCount++;
+    }
+
+    public void decreaseReviewCount() {
+        this.reviewTotalCount--;
     }
 }
