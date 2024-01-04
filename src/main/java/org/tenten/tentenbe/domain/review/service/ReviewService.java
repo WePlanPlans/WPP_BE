@@ -51,15 +51,14 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findReviewByTourItemId(tourItem.getId(), pageable);
         List<ReviewInfo> reviewInfos = reviewPage.stream().map(ReviewInfo::fromEntity).toList();
 
-        long reviewTotalCount = tourItem.getReviews().size();
         KeywordType keywordType = KeywordType.fromCode(tourItem.getContentTypeId());
         Long keywordTotalCount = calculateKeywordTotalCount(tourItem.getId(), keywordType);
         Double ratingAverage = calculateRatingAverage(tourItem.getReviews());
         return new ReviewResponse(
             ratingAverage,
-            reviewTotalCount,
+            tourItem.getReviewTotalCount(),
             keywordTotalCount,
-            new PageImpl<>(reviewInfos, pageable, reviewTotalCount),
+            new PageImpl<>(reviewInfos, pageable, tourItem.getReviewTotalCount()),
             keywordRepository.findKeywordInfoByTourItemIdAndKeywordType(tourItem.getId(), keywordType)
         );
     }
@@ -80,22 +79,14 @@ public class ReviewService {
     @Transactional
     public ReviewInfo createReview(Long memberId, ReviewCreateRequest reviewCreateRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException("해당 아이디로 존재하는 멤버가 없습니다. memberId : " + memberId, NOT_FOUND));
-        validateTourItem(memberId, reviewCreateRequest.tourItemId());
+        TourItem tourItem = tourItemRepository.findById(reviewCreateRequest.tourItemId()).orElseThrow(() -> new TourException("해당 아이디로 존재하는 여행 상품이 없습니다. tourItemId : " + reviewCreateRequest.tourItemId(), NOT_FOUND));
         Review review = reviewCreateRequest.toEntity(member);
+        tourItem.increaseReviewCount();
         reviewRepository.save(review);
         List<ReviewKeyword> reviewKeywords = addKeywordToReview(review, reviewCreateRequest.keywords());
         return ReviewInfo.fromEntity(review, reviewKeywords);
     }
 
-    private void validateTourItem(Long memberId, Long tourItemId) {
-        tourItemRepository.findById(tourItemId).orElseThrow(() -> new TourException("해당 아이디로 존재하는 여행 상품이 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
-    }
-
-    private void validateKeyword(Long keywordId) {
-        if (!keywordRepository.existsById(keywordId)) {
-            throw new KeywordException("해당 아이디로 존재하는 키워드가 없습니다. keywordId : " + keywordId, NOT_FOUND);
-        }
-    }
 
     @Transactional
     public ReviewInfo updateReview(Long memberId, Long reviewId, ReviewUpdateRequest reviewUpdateRequest) {
@@ -136,9 +127,9 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewException("해당 아이디로 존재하는 리뷰가 없습니다. reviewId : " + reviewId, NOT_FOUND));
 
         validateCreator(member, review);
-
+        TourItem tourItem = review.getTourItem();
+        tourItem.decreaseReviewCount();
         reviewRepository.deleteById(review.getId());
-
     }
 
     @Transactional(readOnly = true)

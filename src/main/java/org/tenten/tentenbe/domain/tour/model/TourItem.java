@@ -2,6 +2,7 @@ package org.tenten.tentenbe.domain.tour.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.tenten.tentenbe.domain.liked.model.LikedItem;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.trip.model.TripItem;
 import org.tenten.tentenbe.domain.trip.model.TripLikedItem;
@@ -54,11 +55,22 @@ public class TourItem {
     @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
     private final List<TripLikedItem> tripLikedItems = new ArrayList<>();
 
+    @OneToMany(mappedBy = "tourItem", fetch = LAZY, cascade = REMOVE)
+    private final List<LikedItem> likedItems = new ArrayList<>();
+
     public void increaseLikedCount() {
         this.likedTotalCount++;
     }
 
     public void decreaseLikedCount() {
         this.likedTotalCount--;
+    }
+
+    public void increaseReviewCount() {
+        this.reviewTotalCount++;
+    }
+
+    public void decreaseReviewCount() {
+        this.reviewTotalCount--;
     }
 }

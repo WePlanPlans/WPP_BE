@@ -16,13 +16,11 @@ import org.tenten.tentenbe.domain.member.dto.response.MemberDetailResponse;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
 import org.tenten.tentenbe.domain.member.service.MemberService;
 import org.tenten.tentenbe.domain.review.dto.response.MemberReviewResponse;
-import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.response.GlobalResponse;
 import org.tenten.tentenbe.global.s3.ImageUploadDto;
-import org.tenten.tentenbe.global.s3.S3Uploader;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
@@ -35,7 +33,6 @@ import static org.tenten.tentenbe.global.util.SecurityUtil.getCurrentMemberId;
 @RequestMapping("/api/member")
 public class MemberController {
     private final MemberService memberService;
-    private final S3Uploader s3Uploader;
 
     @Operation(summary = "나의 여정 조회 API", description = "나의 여정 조회 API 입니다.")
     @GetMapping("/trips")
