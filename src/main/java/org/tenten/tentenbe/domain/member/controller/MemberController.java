@@ -54,8 +54,8 @@ public class MemberController {
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-        Long memberId = 1L;
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTours(1L, PageRequest.of(page, size))));
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, memberService.getTours(getCurrentMemberId(), PageRequest.of(page, size))));
     }
 
     @Operation(summary = "나의 리뷰 조회 API", description = "나의 리뷰 조회 API 입니다.")
