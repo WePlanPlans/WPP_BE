@@ -118,8 +118,8 @@ public class TourService {
                     .mapToDouble(Review::getRating)
                     .average()
                     .orElse(0.0),
-                (long) tourItem.getReviews().size(),
-                (long) tourItem.getTripLikedItems().size(),
+                tourItem.getReviewTotalCount(),
+                tourItem.getLikedTotalCount(),
                 likedCheck(member, tourItem.getId()),
                 tourItem.getSmallThumbnailUrl(),
                 tourItem.getAddress(),
