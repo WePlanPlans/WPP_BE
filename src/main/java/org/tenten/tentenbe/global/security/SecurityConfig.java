@@ -61,12 +61,12 @@ public class SecurityConfig {
         );
 
         // OAuth2 로그인
-        http.oauth2Login(oauth2Configurer -> oauth2Configurer
+        http.oauth2Login(oauth2 -> oauth2
 //            .loginPage("/api/auth/login/kakao")
             .userInfoEndpoint( //OAuth 2 로그인 성공 이후 사용자 정보를 가져올 때의 설정들을 담당한다.
                 userInfoEndpoint -> userInfoEndpoint.userService(oAuthUserService)) //userService 에 소셜 로그인 성공 시 진행할 OAuth2UserService 인터페이스의 구현체를 등록
-            .successHandler(oAuthLoginSuccessHandler)
-            .failureHandler(oAuthLoginFailureHandler)
+//            .successHandler(oAuthLoginSuccessHandler)
+//            .failureHandler(oAuthLoginFailureHandler)
         );
         return http.build();
     }
@@ -79,7 +79,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://api.weplanplans.site", "https://weplanplans.vercel.app", "https://dev-weplanplans.vercel.app")); // TODO: 5173 open
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://api.weplanplans.site", "https://weplanplans.vercel.app", "https://dev-weplanplans.vercel.app", "http://localhost:8080")); // TODO: 5173 open
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.addExposedHeader("Authorization");
