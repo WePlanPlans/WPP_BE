@@ -20,6 +20,7 @@ import org.tenten.tentenbe.global.response.GlobalResponse;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
+import static org.tenten.tentenbe.global.util.SecurityUtil.getCurrentMemberId;
 
 @Tag(name = "댓글 관련 API", description = "댓글 관련 API 모음 입니다.")
 @RestController
@@ -32,11 +33,8 @@ public class CommentController {
     @PostMapping()
     public ResponseEntity<GlobalDataResponse<CommentInfo>> createComment(
         @RequestBody CommentCreateRequest commentCreateRequest
-        // Security 의존성 추가될시
-        // @AuthenticationPrincipal Member,
     ) {
-        Long currentMemberId = 1L;
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.createComment(currentMemberId, commentCreateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.createComment(getCurrentMemberId(), commentCreateRequest)));
     }
 
     @Operation(summary = "댓글 수정 API", description = "댓글 수정 API 입니다.")
@@ -46,10 +44,8 @@ public class CommentController {
         @PathVariable("commentId")
         Long commentId,
         @RequestBody CommentUpdateRequest commentUpdateRequest
-        // Security 의존성 추가될시
-        // @AuthenticationPrincipal Member,
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.updateComment(null, commentId, commentUpdateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.updateComment(getCurrentMemberId(), commentId, commentUpdateRequest)));
     }
 
     @Operation(summary = "댓글 삭제 API", description = "댓글 삭제 API 입니다.")
@@ -58,10 +54,8 @@ public class CommentController {
         @Parameter(name = "commentId", description = "댓글 아이디", in = PATH)
         @PathVariable("commentId")
         Long commentId
-        // Security 의존성 추가될시
-        // @AuthenticationPrincipal Member,
     ) {
-        commentService.deleteComment(null, commentId);
+        commentService.deleteComment(getCurrentMemberId(), commentId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
 }

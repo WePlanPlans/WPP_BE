@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
 import org.tenten.tentenbe.domain.review.service.ReviewService;
@@ -15,9 +16,12 @@ import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.tour.service.TourService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 
+import java.nio.file.attribute.UserPrincipal;
+
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
+import static org.tenten.tentenbe.global.util.SecurityUtil.*;
 
 @Tag(name = "여행지 관련 API", description = "여행지 관련 API 모음입니다.")
 @RestController
@@ -46,7 +50,7 @@ public class TourController {
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tourService.getTours(
-                1L, //Todo Security 적용 후 변경
+                1L,
                 region,
                 PageRequest.of(page, size)
             )));
@@ -69,7 +73,7 @@ public class TourController {
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tourService.searchTours(
-                1L, //Todo Security 적용 후 변경
+                1L,
                 region,
                 category,
                 searchWord,
@@ -84,7 +88,7 @@ public class TourController {
         @PathVariable(value = "tourItemId") Long tourItemId
     ) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, tourService.getTourDetail(1L, tourItemId))); //Todo Security 적용 후 변경
+            .ok(SUCCESS, tourService.getTourDetail(1L, tourItemId)));
     }
 
     @Operation(summary = "여행 상품 리뷰 조회 API", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
