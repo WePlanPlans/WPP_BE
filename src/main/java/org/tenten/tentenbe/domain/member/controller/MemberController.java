@@ -42,8 +42,7 @@ public class MemberController {
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-        Long memberId = 1L;
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTrips(memberId, PageRequest.of(page, size))));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTrips(getCurrentMemberId(), PageRequest.of(page, size))));
     }
 
     @Operation(summary = "나의 관심 여행지 조회 API", description = "나의 관심 여행지 조회 API 입니다.")
@@ -54,8 +53,7 @@ public class MemberController {
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-        Long memberId = 1L;
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTours(1L, PageRequest.of(page, size))));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTours(getCurrentMemberId(), PageRequest.of(page, size))));
     }
 
     @Operation(summary = "나의 리뷰 조회 API", description = "나의 리뷰 조회 API 입니다.")
@@ -81,7 +79,7 @@ public class MemberController {
     public ResponseEntity<GlobalDataResponse<MemberResponse>> updateMember(
         @RequestBody MemberUpdateRequest memberUpdateRequest
         ) { // TODO : 카카오 회원은 비밀번호 수정 불가
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.updateMember(null, memberUpdateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.updateMember(getCurrentMemberId(), memberUpdateRequest)));
     }
 
     @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API 입니다.")

@@ -2,13 +2,9 @@ package org.tenten.tentenbe.domain.review.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.comment.dto.response.CommentResponse;
@@ -24,6 +20,7 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
+import static org.tenten.tentenbe.global.util.SecurityUtil.getCurrentMemberId;
 
 @Tag(name = "리뷰 관련 API", description = "리뷰 관련 API 모음 입니다.")
 @RestController
@@ -36,8 +33,7 @@ public class ReviewController {
     @Operation(summary = "리뷰 작성 API", description = "리뷰 작성 API 입니다.")
     @PostMapping()
     public ResponseEntity<GlobalDataResponse<ReviewInfo>> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
-        Long memberId = 1L;
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.createReview(memberId, reviewCreateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.createReview(getCurrentMemberId(), reviewCreateRequest)));
     }
 
     @Operation(summary = "리뷰 수정 API", description = "리뷰 수정 API 입니다.")
@@ -47,8 +43,7 @@ public class ReviewController {
         @PathVariable("reviewId")
         Long reviewId,
         @RequestBody ReviewUpdateRequest reviewUpdateRequest) {
-        Long memberId = 1L;
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.updateReview(memberId, reviewId, reviewUpdateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.updateReview(getCurrentMemberId(), reviewId, reviewUpdateRequest)));
     }
 
     @Operation(summary = "리뷰 삭제 API", description = "리뷰 삭제 API 입니다.")
@@ -56,8 +51,7 @@ public class ReviewController {
     public ResponseEntity<GlobalResponse> deleteReview(
         @Parameter(name = "reviewId", description = "삭제할 리뷰 아이디", in = PATH)
         @PathVariable("reviewId") Long reviewId) {
-        Long memberId = 1L;
-        reviewService.deleteReview(memberId, reviewId);
+        reviewService.deleteReview(getCurrentMemberId(), reviewId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
 
