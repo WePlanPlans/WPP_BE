@@ -234,8 +234,8 @@ create table TripLikedItemPreference
 (
     tripLikedItemPreferenceId bigint not null
         primary key,
-    liked                     bit    null,
-    disliked                  bit    null,
+    prefer                    bit    null,
+    notPrefer                 bit    null,
     tripMemberId              bigint null,
     tripLikedItemId           bigint null,
     constraint FK_TRIPLIKEDITEMPREFERENCE_ON_TRIPLIKEDITEMID

@@ -8,8 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.trip.dto.request.TripCreateRequest;
+import org.tenten.tentenbe.domain.trip.dto.request.TripLikedItemRequest;
 import org.tenten.tentenbe.domain.trip.dto.response.TripCreateResponse;
+import org.tenten.tentenbe.domain.trip.dto.response.TripLikedSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
+import org.tenten.tentenbe.domain.trip.dto.response.TripSurveyResponse;
 import org.tenten.tentenbe.domain.trip.model.Trip;
 import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.domain.trip.repository.TripItemRepository;
@@ -61,6 +64,22 @@ public class TripService {
 
     @Transactional
     public void deleteTripMember(Long memberId, Long tripId) {
+
+    }
+
+    public Page<TripLikedSimpleResponse> getTripLikedItems(Long tripId, String category, Pageable pageable) {
+        return null;
+    }
+
+    public TripSurveyResponse getTripSurveys(Long tripId) {
+        return null;
+    }
+
+    public void LikeTourInOurTrip(Long tripId, TripLikedItemRequest request) {
+
+    }
+
+    public void preferOrNotTourInOurTrip(Long memberId, Long tripId, Long tourId, Boolean prefer) {
 
     }
 }
