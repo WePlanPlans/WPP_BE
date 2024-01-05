@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberDetailResponse;
-import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
+import org.tenten.tentenbe.domain.member.dto.response.MemberUpdateResponse;
 import org.tenten.tentenbe.domain.member.service.MemberService;
 import org.tenten.tentenbe.domain.review.dto.response.MemberReviewResponse;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
@@ -53,7 +53,9 @@ public class MemberController {
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.getTours(getCurrentMemberId(), PageRequest.of(page, size))));
+
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, memberService.getTours(getCurrentMemberId(), PageRequest.of(page, size))));
     }
 
     @Operation(summary = "나의 리뷰 조회 API", description = "나의 리뷰 조회 API 입니다.")
@@ -76,10 +78,12 @@ public class MemberController {
 
     @Operation(summary = "회원 정보 수정 API", description = "회원 정보 수정 API 입니다.")
     @PutMapping()
-    public ResponseEntity<GlobalDataResponse<MemberResponse>> updateMember(
+    public ResponseEntity<GlobalDataResponse<MemberUpdateResponse>> updateMember(
         @RequestBody MemberUpdateRequest memberUpdateRequest
-        ) { // TODO : 카카오 회원은 비밀번호 수정 불가
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.updateMember(getCurrentMemberId(), memberUpdateRequest)));
+
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, memberService.updateMember(getCurrentMemberId(), memberUpdateRequest)));
     }
 
     @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API 입니다.")
@@ -93,8 +97,12 @@ public class MemberController {
         summary = "프로필 이미지 업로드 API",
         description = "MultipartFile 형태의 이미지 파일을 'images'라는 키로 form-data 형태로 전송해주세요. 이 API는 전송된 이미지를 S3에 저장하고, 저장된 이미지의 URL을 반환합니다."
     )
-    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GlobalDataResponse<ImageUploadDto>> uploadImage(@RequestParam("images") MultipartFile multipartFile) throws BadRequestException {
+    @PostMapping(value = "",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<GlobalDataResponse<ImageUploadDto>> uploadImage(
+        @RequestParam("images") MultipartFile multipartFile) throws BadRequestException {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.uploadImage(multipartFile)));
     }
 
