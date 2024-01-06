@@ -10,8 +10,8 @@ import java.util.List;
 public record ReviewCreateRequest(
     @Schema(defaultValue = "1")
     Long tourItemId,
-    @Schema(defaultValue = "3")
-    Long rating,
+    @Schema(defaultValue = "3.5")
+    Double rating,
     List<ReviewKeywordCreateRequest> keywords,
     @Schema(defaultValue = "너무 맘에 드는 여행지였습니다.")
     String content

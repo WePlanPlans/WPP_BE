@@ -88,7 +88,7 @@ public class TourController {
         @PathVariable(value = "tourItemId") Long tourItemId
     ) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, tourService.getTourDetail(1L, tourItemId)));
+            .ok(SUCCESS, tourService.getTourDetail(getCurrentMemberId(), tourItemId)));
     }
 
     @Operation(summary = "여행 상품 리뷰 조회 API", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
