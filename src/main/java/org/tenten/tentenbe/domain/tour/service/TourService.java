@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.liked.model.LikedItem;
+import org.tenten.tentenbe.domain.liked.repository.LikedItemRepository;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.review.model.Review;
@@ -30,6 +31,7 @@ import static org.springframework.http.HttpStatus.*;
 public class TourService {
     private final TourItemRepository tourItemRepository;
     private final MemberRepository memberRepository;
+    private final LikedItemRepository likedItemRepository;
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, String regionName, Pageable pageable) {
@@ -91,10 +93,10 @@ public class TourService {
     public TourDetailResponse getTourDetail(Long memberId, Long tourItemId) {
         TourItem tourItem = tourItemRepository.findById(tourItemId)
             .orElseThrow(() -> new TourException("해당 아이디로 존재하는 리뷰가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
-        Boolean liked = false;
+        boolean liked = false;
         if (memberId != null) {
             Member member = memberRepository.getReferenceById(memberId);
-            liked = likedCheck(member, tourItem.getId());
+            liked = likedItemRepository.existsByMemberIdAndTourItemId(memberId, tourItemId);
         }
 
 
