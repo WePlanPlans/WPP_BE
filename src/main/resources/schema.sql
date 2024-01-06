@@ -105,7 +105,7 @@ create table Review
     createdTime  datetime(6) null,
     memberId     bigint      null,
     modifiedTime datetime(6) null,
-    rating       bigint      null,
+    rating       double precision      null,
     reviewId     bigint auto_increment
         primary key,
     tourItemId   bigint      null,

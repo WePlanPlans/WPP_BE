@@ -91,9 +91,12 @@ public class TourService {
     public TourDetailResponse getTourDetail(Long memberId, Long tourItemId) {
         TourItem tourItem = tourItemRepository.findById(tourItemId)
             .orElseThrow(() -> new TourException("해당 아이디로 존재하는 리뷰가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
-        Member member = memberRepository.getReferenceById(memberId);
+        Boolean liked = false;
+        if (memberId != null) {
+            Member member = memberRepository.getReferenceById(memberId);
+            liked = likedCheck(member, tourItem.getId());
+        }
 
-        Boolean liked = likedCheck(member, tourItem.getId());
 
         return new TourDetailResponse(tourItem, liked, getFullAddress(tourItem.getAddress(), tourItem.getDetailedAddress()));
     }
