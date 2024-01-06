@@ -35,7 +35,9 @@ public class TourService {
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, String regionName, Pageable pageable) {
-        Member member = memberRepository.getReferenceById(memberId);
+        if(memberId != null) {
+            Member member = memberRepository.getReferenceById(memberId);
+        }
 
         return getTourSimpleResponsePage(memberId, regionName, pageable);
     }
@@ -93,14 +95,17 @@ public class TourService {
     public TourDetailResponse getTourDetail(Long memberId, Long tourItemId) {
         TourItem tourItem = tourItemRepository.findById(tourItemId)
             .orElseThrow(() -> new TourException("해당 아이디로 존재하는 리뷰가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
-        boolean liked = false;
-        if (memberId != null) {
-            Member member = memberRepository.getReferenceById(memberId);
-            liked = likedItemRepository.existsByMemberIdAndTourItemId(memberId, tourItemId);
-        }
-
+        boolean liked = isLiked(memberId, tourItemId);
 
         return new TourDetailResponse(tourItem, liked, getFullAddress(tourItem.getAddress(), tourItem.getDetailedAddress()));
+    }
+
+    private boolean isLiked(Long memberId, Long tourItemId) {
+        if (memberId != null) {
+            Member member = memberRepository.getReferenceById(memberId);
+            return likedItemRepository.existsByMemberIdAndTourItemId(memberId, tourItemId);
+        }
+        return false;
     }
 
     private String getFullAddress(String address, String detailedAddress) {

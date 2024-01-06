@@ -19,9 +19,9 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
         "ti.contentTypeId, " +
         "ti.title, " +
         "CAST(COALESCE(AVG(r.rating), 0) AS DOUBLE), " +
-        "CAST(COALESCE(COUNT(DISTINCT r.id), 0) AS LONG), " +
-        "CAST(COALESCE(COUNT(DISTINCT li.id), 0) AS LONG), " +
-        "COALESCE((CASE WHEN li.member.id = :memberId THEN true ELSE false END),false ), " +
+        "CAST(COALESCE(COUNT(r.id), 0) AS LONG), " +
+        "CAST(COALESCE(COUNT(li.id), 0) AS LONG), " +
+        "COALESCE((li.member.id = :memberId), false), " +
         "ti.smallThumbnailUrl, " +
         "ti.address, " +
         "ti.longitude, " +
@@ -29,8 +29,8 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
         "FROM TourItem ti " +
         "LEFT OUTER JOIN Review r ON ti.id = r.tourItem.id " +
         "LEFT OUTER JOIN LikedItem li ON ti.id = li.tourItem.id " +
-        "LEFT OUTER JOIN Member m ON li.member.id = m.id " +
-        "GROUP BY ti.id ORDER BY COALESCE(COUNT(li.id), 0) DESC, COALESCE(AVG(r.rating), 0) DESC, COUNT(r.id) DESC, ti.title ASC")
+        "GROUP BY ti.id " +
+        "ORDER BY COALESCE(COUNT(li.id), 0) DESC, COALESCE(AVG(r.rating), 0) DESC, COUNT(r.id) DESC, ti.title ASC")
     Page<TourSimpleResponse> findPopularTourItems(@Param("memberId") Long memberId, Pageable pageable);
 
     @Query("SELECT NEW org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse(" +
@@ -40,7 +40,7 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
         "CAST(COALESCE(AVG(r.rating), 0) AS DOUBLE), " +
         "CAST(COALESCE(COUNT(DISTINCT r.id), 0) AS LONG), " +
         "CAST(COALESCE(COUNT(DISTINCT li.id), 0) AS LONG), " +
-        "COALESCE((CASE WHEN li.member.id = :memberId THEN true ELSE false END),false ), " +
+        "COALESCE((li.member.id = :memberId), false), " +
         "ti.smallThumbnailUrl, " +
         "ti.address, " +
         "ti.longitude, " +
@@ -48,7 +48,6 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
         "FROM TourItem ti " +
         "LEFT OUTER JOIN Review r ON ti.id = r.tourItem.id " +
         "LEFT OUTER JOIN LikedItem li ON ti.id = li.tourItem.id " +
-        "LEFT OUTER JOIN Member m ON li.member.id = m.id " +
         "WHERE ti.areaCode = :areaCode " +
         "GROUP BY ti.id ORDER BY COALESCE(COUNT(li.id), 0) DESC, COALESCE(AVG(r.rating), 0) DESC, COUNT(r.id) DESC, ti.title ASC")
     Page<TourSimpleResponse> findPopularTourItems(@Param("areaCode") Long areaCode, @Param("memberId") Long memberId, Pageable pageable);
