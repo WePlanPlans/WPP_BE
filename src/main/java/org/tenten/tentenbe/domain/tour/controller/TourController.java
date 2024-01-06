@@ -70,7 +70,7 @@ public class TourController {
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tourService.searchTours(
-                1L,
+                getCurrentMemberId(),
                 region,
                 category,
                 searchWord,
