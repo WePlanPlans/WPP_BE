@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.tenten.tentenbe.domain.comment.model.Comment;
 import org.tenten.tentenbe.domain.liked.model.LikedItem;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
+import org.tenten.tentenbe.domain.member.dto.request.SurveyUpdateRequest;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
@@ -74,7 +75,10 @@ public class Member extends BaseTimeEntity {
         this.profileImageUrl = updateRequest.profileImageUrl();
         this.ageType = updateRequest.ageType();
         this.genderType = updateRequest.genderType();
-        this.survey = updateRequest.survey();
+    }
+
+    public void updateSurvey(SurveyUpdateRequest surveyUpdateRequest) {
+        this.survey = surveyUpdateRequest.survey();
     }
 
     public void updatePassword(String encodedPassword) {
