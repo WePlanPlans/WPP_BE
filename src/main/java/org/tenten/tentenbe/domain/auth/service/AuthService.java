@@ -87,18 +87,18 @@ public class AuthService {
     @Transactional(readOnly = true)
     public CheckResponse nicknameCheck(String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
-            return CheckResponse.builder().exists(false).build(); // 닉네임 중복 시 false 반환
+            return CheckResponse.builder().exists(true).build(); // 닉네임 중복 시 true 반환
         } else {
-            return CheckResponse.builder().exists(true).build(); // 중복 아닐 시 true 반환
+            return CheckResponse.builder().exists(false).build(); // 중복 아닐 시 false 반환
         }
     }
 
     @Transactional(readOnly = true)
     public CheckResponse emailCheck(String email) {
         if (memberRepository.existsByEmail(email)) {
-            return CheckResponse.builder().exists(false).build(); // 이메일 중복 시 false 반환
+            return CheckResponse.builder().exists(true).build(); // 이메일 중복 시 true 반환
         } else {
-            return CheckResponse.builder().exists(true).build(); // 중복 아닐 시 true 반환
+            return CheckResponse.builder().exists(false).build(); // 중복 아닐 시 false 반환
         }
     }
 }
