@@ -21,7 +21,7 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
         "CAST(COALESCE(AVG(r.rating), 0) AS DOUBLE), " +
         "ti.reviewTotalCount, " +
         "ti.likedTotalCount, " +
-        "COALESCE((li.member.id = :memberId), false), " +
+        "COALESCE(CASE WHEN (SELECT COALESCE(COUNT(tli.id), 0) FROM LikedItem tli WHERE tli.tourItem.id = ti.id AND tli.member.id = :memberId) = 1 then true end, false), " +
         "ti.smallThumbnailUrl, " +
         "ti.address, " +
         "ti.longitude, " +
@@ -40,7 +40,7 @@ public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSp
         "CAST(COALESCE(AVG(r.rating), 0) AS DOUBLE), " +
         "ti.reviewTotalCount, " +
         "ti.likedTotalCount, " +
-        "COALESCE((li.member.id = :memberId), false), " +
+        "COALESCE(CASE WHEN (SELECT COALESCE(COUNT(tli.id), 0) FROM LikedItem tli WHERE tli.tourItem.id = ti.id AND tli.member.id = :memberId) = 1 then true end, false), " +
         "ti.smallThumbnailUrl, " +
         "ti.address, " +
         "ti.longitude, " +
