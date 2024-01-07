@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tenten.tentenbe.domain.liked.model.LikedItem;
 import org.tenten.tentenbe.domain.liked.repository.LikedItemRepository;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
+import org.tenten.tentenbe.domain.member.dto.request.PasswordUpdateRequest;
+import org.tenten.tentenbe.domain.member.dto.request.SurveyUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberDetailResponse;
 import org.tenten.tentenbe.domain.member.dto.response.MemberUpdateResponse;
 import org.tenten.tentenbe.domain.member.exception.UserNotFoundException;
@@ -23,7 +25,6 @@ import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.review.repository.ReviewRepository;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
-import org.tenten.tentenbe.global.common.enums.LoginType;
 import org.tenten.tentenbe.global.s3.ImageUploadDto;
 import org.tenten.tentenbe.global.s3.S3Uploader;
 
@@ -72,15 +73,21 @@ public class MemberService {
     @Transactional
     public MemberUpdateResponse updateMember(Long memberId, MemberUpdateRequest memberUpdateRequest) {
         Member member = getMember(memberId);
-        if (member.getLoginType() == LoginType.EMAIL) { // 이메일 로그인 유저일 경우
-            member.updateMember(memberUpdateRequest);
-
-            String encodedPassword = passwordEncoder.encode(memberUpdateRequest.password());
-            member.updatePassword(encodedPassword);
-        } else { // 카카오 로그인 유저일 경우
-            member.updateMember(memberUpdateRequest);
-        }
+        member.updateMember(memberUpdateRequest);
         return MemberUpdateResponse.fromEntity(member);
+    }
+
+    @Transactional
+    public void updateSurvey(Long memberId, SurveyUpdateRequest surveyUpdateRequest) {
+        Member member = getMember(memberId);
+        member.updateSurvey(surveyUpdateRequest);
+    }
+
+    @Transactional
+    public void updatePassword(Long currentMemberId, PasswordUpdateRequest passwordUpdateRequest) {
+        Member member = getMember(currentMemberId);
+        String encodedPassword = passwordEncoder.encode(passwordUpdateRequest.password());
+        member.updatePassword(encodedPassword);
     }
 
     @Transactional
@@ -89,6 +96,7 @@ public class MemberService {
         memberRepository.delete(member); // TODO: 쿠키 삭제 필요성 검토
     }
 
+    @Transactional
     public ImageUploadDto uploadImage(MultipartFile multipartFile) throws BadRequestException {
         try {
             String uploadedUrl = s3Uploader.uploadFiles(multipartFile, "static");
