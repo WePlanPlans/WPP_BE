@@ -41,10 +41,12 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
         // 리프레시 토큰을 사용하여 사용자 정보를 가져옴
         Authentication auth = jwtTokenProvider.getAuthentication(token);
         User principal = (User) auth.getPrincipal();
+        Long memberId = Long.valueOf(principal.getUsername());
 
         // 데이터베이스에서 리프레시 토큰 검증 및 삭제
-        Optional<RefreshToken> refreshTokenEntityOptional = refreshTokenRepository.findByMember_Email(principal.getUsername());
-        Member member = memberRepository.findByEmail(principal.getUsername()).get();
+        Optional<RefreshToken> refreshTokenEntityOptional = refreshTokenRepository.findByMember_Id(memberId);
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new LogoutMemberException("로그아웃 호출한 멤버가 데이터베이스에 없습니다."));
         if (refreshTokenEntityOptional.isPresent()) {
             member.getRefreshToken().updateToken(null);
         } else {
