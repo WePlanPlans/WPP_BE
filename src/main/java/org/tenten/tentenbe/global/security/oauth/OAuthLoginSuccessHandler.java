@@ -47,13 +47,12 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         Map<String, Object> kakaoAccountValue = (Map<String, Object>) attributes.get("kakao_account");
 
         String email = (String) kakaoAccountValue.get("email"); //필수
-        String name = (String) kakaoAccountValue.get("name");   //필수
         String age_range =(String) kakaoAccountValue.get("age_range");
         String gender= (String) kakaoAccountValue.get("gender");
 
         Map<String, Object> profile = (Map<String, Object>) kakaoAccountValue.getOrDefault("profile", new HashMap<String, Object>());
 
-        String nickname = (String) profile.getOrDefault("nickname", "");
+        String nickname = (String) profile.getOrDefault("nickname", ""); //필수
         String profile_image = (String) profile.get("thumbnail_image_url");
 
         boolean isExist = (boolean) kakaoAccountValue.get("isExist");
@@ -85,8 +84,8 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append("http://localhost:8080")
-                .append("?name=").append(URLEncoder.encode(name, StandardCharsets.UTF_8))
-                .append("&nickname=").append(URLEncoder.encode(nickname, StandardCharsets.UTF_8))
+//                .append("?name=").append(URLEncoder.encode(name, StandardCharsets.UTF_8))
+                .append("?nickname=").append(URLEncoder.encode(nickname, StandardCharsets.UTF_8))
                 .append("&email=").append(email)
                 .append("&gender=").append(gender)
                 .append("&age_range=").append(age_range)
