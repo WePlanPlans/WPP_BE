@@ -77,11 +77,13 @@ public class MemberService {
         return MemberUpdateResponse.fromEntity(member);
     }
 
+    @Transactional
     public void updateSurvey(Long memberId, SurveyUpdateRequest surveyUpdateRequest) {
         Member member = getMember(memberId);
         member.updateSurvey(surveyUpdateRequest);
     }
 
+    @Transactional
     public void updatePassword(Long currentMemberId, PasswordUpdateRequest passwordUpdateRequest) {
         Member member = getMember(currentMemberId);
         String encodedPassword = passwordEncoder.encode(passwordUpdateRequest.password());
@@ -94,6 +96,7 @@ public class MemberService {
         memberRepository.delete(member); // TODO: 쿠키 삭제 필요성 검토
     }
 
+    @Transactional
     public ImageUploadDto uploadImage(MultipartFile multipartFile) throws BadRequestException {
         try {
             String uploadedUrl = s3Uploader.uploadFiles(multipartFile, "static");
