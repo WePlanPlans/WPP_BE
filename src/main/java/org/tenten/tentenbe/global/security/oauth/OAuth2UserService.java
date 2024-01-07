@@ -1,9 +1,7 @@
 package org.tenten.tentenbe.global.security.oauth;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,18 +12,10 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tenten.tentenbe.domain.auth.dto.request.LoginRequest;
-import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
-import org.tenten.tentenbe.domain.auth.dto.response.MemberDto;
-import org.tenten.tentenbe.domain.auth.service.AuthService;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
-import org.tenten.tentenbe.domain.token.dto.TokenDTO;
-import org.tenten.tentenbe.global.common.enums.UserAuthority;
-import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
-import org.tenten.tentenbe.global.util.CookieUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -38,8 +28,6 @@ import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
 @RequiredArgsConstructor
 public class OAuth2UserService extends DefaultOAuth2UserService {
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -64,37 +52,18 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         String email = (String) kakaoAccountValue.get("email");
 
         boolean isExist = memberRepository.existsByEmailAndLoginType(email, KAKAO);
-        kakaoAccountValue.put("isExist", isExist);
 
-        if(isExist) {
-            //로그인 처리
-            UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(email, "dummy");
-            Authentication authenticate =
-                authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-            TokenDTO.TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
-            log.info("로그인 API 중 토큰 생성 로직 실행");
-
-            String memberId = authenticate.getName();
-            Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
-
-            String refreshToken = tokenInfoDTO.getRefreshToken();
-            member.getRefreshToken().updateToken(refreshToken);
-
-            kakaoAccountValue.put("member", member);
-            kakaoAccountValue.put("tokenInfoDto", tokenInfoDTO);
-
-        } else {
+        if(!isExist) {
             //회원가입 처리
             BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+            //todo: passwordEncoder를 Security가 아닌 새로운 Config에 빈 등록
+
             Member member = Member.builder()
                 .email(email)
-                .password(bCryptPasswordEncoder.encode("dummy"))
+                .password(bCryptPasswordEncoder.encode("dummy"))    //todo: OAuth 패스워드 환경 변수로 빼기
                 .loginType(KAKAO)
-                .userAuthority(UserAuthority.ROLE_USER)
+                .userAuthority(ROLE_USER)
                 .build();
-
             RefreshToken refreshToken = RefreshToken.builder()
                 .member(member)
                 .build();
