@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO;
 import org.tenten.tentenbe.global.common.enums.UserAuthority;
+import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
@@ -30,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
 import static org.tenten.tentenbe.global.common.enums.LoginType.KAKAO;
 
 @Slf4j
@@ -74,11 +77,9 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
                     .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
                     .build();
 
-            String loginResponseJsonString = mapper.writeValueAsString(loginResponse);
-
-            response.getWriter().write(loginResponseJsonString);
-//            response.getWriter().write("hello");
-
+            //응답 포맷
+            String loginGlobalResponseJsonString = mapper.writeValueAsString(ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, loginResponse)));
+            response.getWriter().write(loginGlobalResponseJsonString);
 
 //      회원가입 처리
         } else {
