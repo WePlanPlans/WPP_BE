@@ -87,7 +87,7 @@ public class MemberController {
     }
 
     @Operation(summary = "비밀번호 수정 API", description = "비밀번호 수정 API 입니다.")
-    @PutMapping()
+    @PutMapping("/password")
     public ResponseEntity<GlobalResponse> updatePassword(
         @RequestBody PasswordUpdateRequest passwordUpdateRequest
     ) {
@@ -96,7 +96,7 @@ public class MemberController {
     }
 
     @Operation(summary = "여행 취향 수정 API", description = "여행 취향 수정 API 입니다.")
-    @PutMapping()
+    @PutMapping("/survey")
     public ResponseEntity<GlobalResponse> updateSurvey(
         @RequestBody SurveyUpdateRequest surveyUpdateRequest
     ) {
