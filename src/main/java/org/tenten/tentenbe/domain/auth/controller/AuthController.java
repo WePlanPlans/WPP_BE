@@ -47,9 +47,15 @@ public class AuthController {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.loginKakao(null, loginRequest)));
     }
 
-    @Operation(summary = "로그아웃시 리다이렉트 API", description = "로그아웃시 호출되는 API 입니다. Url = /logout")
+    @Operation(summary = "로그아웃 API", description = "로그아웃 API 입니다.")
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        return ResponseEntity.ok("LOGOUT!");
+    }
+
+    @Operation(summary = "로그아웃시 리다이렉트 API", description = "로그아웃시 호출되는 API 입니다. Url = /logout", hidden = true)
     @GetMapping(value = "/logout-redirect")
-    public ResponseEntity<String> logoutRedirect(@RequestBody HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> logoutRedirect(HttpServletRequest request, HttpServletResponse response) {
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME); // 쿠키 삭제
         return ResponseEntity.ok("LOGOUT");
     }
