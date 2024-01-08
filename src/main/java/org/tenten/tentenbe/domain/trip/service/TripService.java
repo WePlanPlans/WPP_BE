@@ -9,10 +9,7 @@ import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.trip.dto.request.TripCreateRequest;
 import org.tenten.tentenbe.domain.trip.dto.request.TripLikedItemRequest;
-import org.tenten.tentenbe.domain.trip.dto.response.TripCreateResponse;
-import org.tenten.tentenbe.domain.trip.dto.response.TripLikedSimpleResponse;
-import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
-import org.tenten.tentenbe.domain.trip.dto.response.TripSurveyResponse;
+import org.tenten.tentenbe.domain.trip.dto.response.*;
 import org.tenten.tentenbe.domain.trip.model.Trip;
 import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.domain.trip.repository.TripItemRepository;
@@ -81,5 +78,13 @@ public class TripService {
 
     public void preferOrNotTourInOurTrip(Long memberId, Long tripId, Long tourId, Boolean prefer) {
 
+    }
+
+    public TripDetailResponse getTrip(Long memberId, Long tripId) {
+        return null;
+    }
+
+    public TripInfoUpdateResponse updateTrip(Long memberId, Long tripId) {
+        return null;
     }
 }
