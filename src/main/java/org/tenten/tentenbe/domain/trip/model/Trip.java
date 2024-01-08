@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.tenten.tentenbe.domain.trip.dto.request.TripInfoUpdateRequest;
+import org.tenten.tentenbe.domain.trip.dto.response.TripInfoUpdateResponse;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
 import org.tenten.tentenbe.global.common.enums.TripStatus;
 
@@ -48,5 +50,22 @@ public class Trip extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "trip", fetch = LAZY, cascade = REMOVE)
     private final List<TripLikedItem> tripLikedItems = new ArrayList<>();
+
+    public TripInfoUpdateResponse updateTripInfo(TripInfoUpdateRequest request) {
+        this.tripName = request.tripName();
+        this.numberOfPeople = request.numberOfPeople();
+        this.startDate = request.startDate();
+        this.endDate = request.endDate();
+        this.area = request.area();
+        this.subarea = request.subarea();
+        return new TripInfoUpdateResponse(
+            request.tripName(),
+            request.numberOfPeople(),
+            request.startDate(),
+            request.endDate(),
+            request.area(),
+            request.subarea()
+        );
+    }
 
 }

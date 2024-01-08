@@ -62,7 +62,8 @@ public class TripController {
         @PathVariable(name = "tripId") Long tripId,
         @RequestBody TripInfoUpdateRequest tripInfoUpdateRequest
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.updateTrip(1L, tripId)));
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, tripService.updateTrip(getCurrentMemberId(), tripId, tripInfoUpdateRequest)));
     }
 
     @Operation(summary = "여정 탈퇴 API", description = "본인이 속한 여정에서 나가는 API 입니다.")
