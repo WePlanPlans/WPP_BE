@@ -52,7 +52,7 @@ public class TripController {
         @Parameter(name = "tripId", description = "상세 조회할 여정 아이디", in = PATH)
         @PathVariable(name = "tripId") Long tripId
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrip(1L, tripId)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrip(getCurrentMemberId(), tripId)));
     }
 
     @Operation(summary = "여정 기본정보 수정 API", description = "여정 기본정보 수정 API 입니다.")

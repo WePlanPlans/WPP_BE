@@ -61,8 +61,13 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public TripDetailResponse getTrip(Long memberId, Long tripId) {
-        Member member = getMemberOrNullById(memberId);
-        return null;
+        getMemberOrNullById(memberId);
+        Trip trip = tripRepository.getReferenceById(tripId);
+        return new TripDetailResponse(
+            trip.getTripName(),
+            trip.getStartDate(),
+            trip.getEndDate()
+        );
     }
 
     private Member getMemberOrNullById(Long memberId) {
