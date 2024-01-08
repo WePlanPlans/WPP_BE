@@ -83,7 +83,7 @@ public class TripController {
         @PathVariable(name = "tripId") Long tripId,
         @RequestBody TripLikedItemRequest request
     ) {
-        tripService.LikeTourInOurTrip(tripId, request);
+        tripService.LikeTourInOurTrip(getCurrentMemberId(), tripId, request);
         return ResponseEntity.ok(GlobalResponse.ok(SUCCESS));
     }
 
