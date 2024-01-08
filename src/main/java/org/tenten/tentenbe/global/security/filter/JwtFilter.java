@@ -36,6 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
         log.info(request.getMethod()+" "+ request.getRequestURI());
+        log.info(request.getHeader("Origin"));
         try {
             String accessToken = extractTokenFromRequest(request);
 
@@ -70,7 +71,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     .build();
                 String result = mapper.writeValueAsString(reissueTokenDto);
                 response.setStatus(response.SC_CREATED);
-                setResponse(response);
+                setResponse(request, response);
                 try {
                     response.getWriter().write(result);
                 } catch (IOException exception) {
@@ -83,7 +84,7 @@ public class JwtFilter extends OncePerRequestFilter {
             e.printStackTrace();
             String result = mapper.writeValueAsString(new ErrorResponse(SC_INTERNAL_SERVER_ERROR, e.getMessage()));
             response.setStatus(response.SC_INTERNAL_SERVER_ERROR);
-            setResponse(response);
+            setResponse(request, response);
             try {
                 response.getWriter().write(result);
             } catch (IOException exception) {
@@ -93,10 +94,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
     }
 
-    private static void setResponse(HttpServletResponse response) {
+    private static void setResponse(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
-        response.setHeader("Access-Control-Allow-Origin", "https://weplanplans.site");
+        if (request.getHeader("Origin") == null) {
+            response.setHeader("Access-Control-Allow-Origin", "https://weplanplans.site");
+        } else {
+            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        }
+
     }
 
     private static void logException(Exception e) {
