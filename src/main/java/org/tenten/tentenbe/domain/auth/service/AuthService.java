@@ -14,6 +14,7 @@ import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
 import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.MemberDto;
+import org.tenten.tentenbe.domain.auth.dto.response.SignUpResponse;
 import org.tenten.tentenbe.domain.auth.exception.DuplicateNicknameException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
@@ -37,11 +38,11 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    public LoginResponse signUp(SignUpRequest signUpRequest, HttpServletResponse response) {
+    public SignUpResponse signUp(SignUpRequest signUpRequest, HttpServletResponse response) {
         if (memberRepository.existsByEmail(signUpRequest.email())) {
              throw new DuplicateNicknameException("이미 존재하는 이메일입니다.");
         }
-        // TODO : 닉네임 임의값 생성 + 이메일 인증
+        // TODO : 이메일 인증
         // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
         Member newMember = signUpRequest.toEntity(encodedPassword, EMAIL, ROLE_USER);
@@ -51,7 +52,7 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResponse firstLogin(SignUpRequest signUpRequest, HttpServletResponse response, Member newMember) {
+    public SignUpResponse firstLogin(SignUpRequest signUpRequest, HttpServletResponse response, Member newMember) {
 
         Authentication authenticate = getAuthenticate(signUpRequest.email(), signUpRequest.password());
         TokenInfoDTO tokenInfoDTO = getTokenInfoDTO(response, authenticate);
@@ -63,7 +64,15 @@ public class AuthService {
             .build();
         refreshTokenRepository.save(refreshToken);
 
-        return getResponse(newMember, tokenInfoDTO);
+        String nickname = "위플러" + (newMember.getId() + 321);
+        newMember.updateNickname(nickname);
+
+        return SignUpResponse.builder()
+            .memberId(newMember.getId())
+            .email(newMember.getEmail())
+            .nickName(nickname)
+            .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
+            .build();
     }
 
     @Transactional
@@ -78,7 +87,10 @@ public class AuthService {
         String refreshToken = tokenInfoDTO.getRefreshToken();
         member.getRefreshToken().updateToken(refreshToken);
 
-        return getResponse(member, tokenInfoDTO);
+        return LoginResponse.builder()
+            .memberDto(MemberDto.fromEntity(member))
+            .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
+            .build();
     }
 
     @Transactional
@@ -89,27 +101,16 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public CheckResponse nicknameCheck(String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            return CheckResponse.builder().exists(true).build(); // 닉네임 중복 시 true 반환
-        } else {
-            return CheckResponse.builder().exists(false).build(); // 중복 아닐 시 false 반환
-        }
+        return getResponse(memberRepository.existsByNickname(nickname));
     }
 
     @Transactional(readOnly = true)
     public CheckResponse emailCheck(String email) {
-        if (memberRepository.existsByEmail(email)) {
-            return CheckResponse.builder().exists(true).build(); // 이메일 중복 시 true 반환
-        } else {
-            return CheckResponse.builder().exists(false).build(); // 중복 아닐 시 false 반환
-        }
+        return getResponse(memberRepository.existsByEmail(email));
     }
-  
-    private LoginResponse getResponse(Member newMember, TokenInfoDTO tokenInfoDTO) {
-        return LoginResponse.builder()
-            .memberDto(MemberDto.fromEntity(newMember))
-            .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
-            .build();
+
+    private CheckResponse getResponse(boolean exists) {
+        return CheckResponse.builder().exists(exists).build();
     }
 
     private TokenInfoDTO getTokenInfoDTO(HttpServletResponse response, Authentication authenticate) {
