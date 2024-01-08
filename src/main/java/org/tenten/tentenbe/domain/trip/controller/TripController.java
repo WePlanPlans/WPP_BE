@@ -100,7 +100,7 @@ public class TripController {
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, tripService.getTripLikedItems(tripId, category, PageRequest.of(page, size)))
+            .ok(SUCCESS, tripService.getTripLikedItems(getCurrentMemberId(), tripId, category, PageRequest.of(page, size)))
         );
     }
 

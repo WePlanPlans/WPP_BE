@@ -21,6 +21,7 @@ import org.tenten.tentenbe.domain.trip.repository.TripItemRepository;
 import org.tenten.tentenbe.domain.trip.repository.TripLikedItemRepository;
 import org.tenten.tentenbe.domain.trip.repository.TripRepository;
 import org.tenten.tentenbe.domain.trip.repository.TripMemberRepository;
+import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.common.enums.TripAuthority;
 import org.tenten.tentenbe.global.common.enums.TripStatus;
 
@@ -109,7 +110,21 @@ public class TripService {
             .forEach(tripLikedItemRepository::save);
     }
 
-    public Page<TripLikedSimpleResponse> getTripLikedItems(Long tripId, String category, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<TripLikedSimpleResponse> getTripLikedItems(Long memberId, Long tripId, String categoryName, Pageable pageable) {
+        Member member = getMemberOrNullById(memberId);
+//        validateWriter(member);
+        Long categoryCode = findCategoryCode(categoryName);
+        Trip trip = tripRepository.getReferenceById(tripId);
+        tripLikedItemRepository.findTripLikedItemsById(memberId, tripId, categoryCode, pageable);
+
+        return null;
+    }
+
+    private Long findCategoryCode(String categoryName) {
+        if (categoryName != null) {
+            return Category.fromName(categoryName).getCode();
+        }
         return null;
     }
 

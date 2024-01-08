@@ -7,8 +7,8 @@ public record TripLikedSimpleResponse(
     Long tripLikedItemId,
     @Schema(defaultValue = "5")
     Long tourItemId,
-    @Schema(defaultValue = "관광지")
-    String categoryName,
+    @Schema(defaultValue = "카테고리 Id")
+    Long contentTypeId,
     @Schema(defaultValue = "4.3")
     Double ratingAverage,
     @Schema(defaultValue = "100")
