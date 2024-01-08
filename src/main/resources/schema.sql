@@ -170,19 +170,20 @@ create table TourItemImage
 
 create table Trip
 (
-    endDate        date         null,
-    startDate      date         null,
-    createdTime    datetime(6)  null,
-    modifiedTime   datetime(6)  null,
-    numberOfPeople bigint       null,
-    tripId         bigint auto_increment
+    endDate           date         null,
+    startDate         date         null,
+    createdTime       datetime(6)  null,
+    modifiedTime      datetime(6)  null,
+    numberOfPeople    bigint       null,
+    tripId            bigint auto_increment
         primary key,
-    tripName       varchar(255)                    null,
-    isDeleted      boolean                         null,
-    tripStatus     enum ('BEFORE', 'AFTER', 'ING') null,
-    area           varchar(255)                    null,
-    subarea        varchar(255)                    null,
-    budget         bigint                          null
+    tripName          varchar(255)                    null,
+    isDeleted         boolean                         null,
+    tripStatus        enum ('BEFORE', 'AFTER', 'ING') null,
+    area              varchar(255)                    null,
+    subarea           varchar(255)                    null,
+    budget            bigint                          null,
+    calculatedPrice   bigint                          null
 );
 
 create table TripItem

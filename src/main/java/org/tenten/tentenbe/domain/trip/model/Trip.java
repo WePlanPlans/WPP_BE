@@ -41,6 +41,7 @@ public class Trip extends BaseTimeEntity {
     private Boolean isDeleted;
     private String tripName;
     private Long budget;
+    private Long calculatedPrice;
 
     @OneToMany(mappedBy = "trip", fetch = LAZY, cascade = REMOVE)
     private final List<TripMember> tripMembers = new ArrayList<>();
