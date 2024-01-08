@@ -53,17 +53,23 @@ public class TripService {
         return new TripCreateResponse(tripRepository.save(trip).getId());
     }
 
+    @Transactional(readOnly = true)
+    public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
+        getMemberOrNullById(memberId);
+        return tripRepository.findTripsByMemberId(memberId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public TripDetailResponse getTrip(Long memberId, Long tripId) {
+        Member member = getMemberOrNullById(memberId);
+        return null;
+    }
+
     private Member getMemberOrNullById(Long memberId) {
         if(memberId != null) {
             return memberRepository.getReferenceById(memberId);
         }
         throw new IllegalArgumentException("memberId가 유효하지 않습니다.");
-    }
-
-    @Transactional(readOnly = true)
-    public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
-        Member member = memberRepository.getReferenceById(memberId);
-        return tripRepository.findTripsByMemberId(memberId, pageable);
     }
 
     @Transactional
@@ -85,10 +91,6 @@ public class TripService {
 
     public void preferOrNotTourInOurTrip(Long memberId, Long tripId, Long tourId, Boolean prefer) {
 
-    }
-
-    public TripDetailResponse getTrip(Long memberId, Long tripId) {
-        return null;
     }
 
     public TripInfoUpdateResponse updateTrip(Long memberId, Long tripId) {

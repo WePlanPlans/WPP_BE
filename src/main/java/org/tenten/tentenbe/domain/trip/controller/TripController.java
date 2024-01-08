@@ -35,6 +35,17 @@ public class TripController {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.createTrip(getCurrentMemberId(), tripCreateRequest)));
     }
 
+    @Operation(summary = "나의 여정 조회 API", description = "나의 여정 조회 API 입니다.")
+    @GetMapping()
+    public ResponseEntity<GlobalDataResponse<Page<TripSimpleResponse>>> getTrips(
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrips(getCurrentMemberId(), PageRequest.of(page, size))));
+    }
+
     @Operation(summary = "여정 상세조회 API", description = "여정 상세조회 API 입니다.")
     @GetMapping("/{tripId}")
     public ResponseEntity<GlobalDataResponse<TripDetailResponse>> getTrip(
