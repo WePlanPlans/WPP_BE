@@ -11,7 +11,7 @@ public record MemberReviewResponse(
     Long reviewId,
     String authorNickname,
     String authorProfileImageUrl,
-    Long rating,
+    Double rating,
     LocalDateTime createdTime,
     String content,
     List<KeywordInfo> keywords,

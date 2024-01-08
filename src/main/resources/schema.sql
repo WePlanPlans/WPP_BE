@@ -105,7 +105,7 @@ create table Review
     createdTime  datetime(6) null,
     memberId     bigint      null,
     modifiedTime datetime(6) null,
-    rating       bigint      null,
+    rating       double precision      null,
     reviewId     bigint auto_increment
         primary key,
     tourItemId   bigint      null,
@@ -234,8 +234,8 @@ create table TripLikedItemPreference
 (
     tripLikedItemPreferenceId bigint not null
         primary key,
-    liked                     bit    null,
-    disliked                  bit    null,
+    prefer                    bit    null,
+    notPrefer                 bit    null,
     tripMemberId              bigint null,
     tripLikedItemId           bigint null,
     constraint FK_TRIPLIKEDITEMPREFERENCE_ON_TRIPLIKEDITEMID

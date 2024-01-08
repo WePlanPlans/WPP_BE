@@ -6,8 +6,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.tenten.tentenbe.domain.comment.model.Comment;
+import org.tenten.tentenbe.domain.liked.model.LikedItem;
+import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
+import org.tenten.tentenbe.domain.member.dto.request.SurveyUpdateRequest;
 import org.tenten.tentenbe.domain.review.model.Review;
-import org.tenten.tentenbe.domain.trip.model.TripItem;
 import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
 import org.tenten.tentenbe.global.common.enums.AgeType;
@@ -38,9 +40,9 @@ public class Member extends BaseTimeEntity {
     private Long id;
     private String email;
     private String password;
-    private String name; // 본명,
-    private String nickname; // 닉네임
-    private String profileImageUrl; // 프사 url
+    private String name;
+    private String nickname;
+    private String profileImageUrl;
     @Convert(converter = Survey.SurveyConverter.class)
     @Column(columnDefinition = "JSON")
     private Survey survey;
@@ -64,7 +66,22 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member", fetch = LAZY, cascade = REMOVE)
     private final List<LikedItem> likedItems = new ArrayList<>();
-  
+
     @OneToOne(mappedBy = "member", cascade = REMOVE)
     private RefreshToken refreshToken;
+
+    public void updateMember(MemberUpdateRequest updateRequest) {
+        this.nickname = updateRequest.nickname();
+        this.profileImageUrl = updateRequest.profileImageUrl();
+        this.ageType = updateRequest.ageType();
+        this.genderType = updateRequest.genderType();
+    }
+
+    public void updateSurvey(SurveyUpdateRequest surveyUpdateRequest) {
+        this.survey = surveyUpdateRequest.survey();
+    }
+
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }
