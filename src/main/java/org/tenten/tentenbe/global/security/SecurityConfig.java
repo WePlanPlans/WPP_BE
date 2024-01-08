@@ -19,6 +19,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.tenten.tentenbe.global.security.filter.JwtFilter;
 import org.tenten.tentenbe.global.security.jwt.CustomLogoutSuccessHandler;
 import org.tenten.tentenbe.global.security.jwt.JwtAuthenticationEntryPoint;
+import org.tenten.tentenbe.global.security.oauth.OAuth2UserService;
+import org.tenten.tentenbe.global.security.oauth.OAuthLoginFailureHandler;
+import org.tenten.tentenbe.global.security.oauth.OAuthLoginSuccessHandler;
 
 import java.util.List;
 
@@ -28,6 +31,9 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final OAuth2UserService oAuth2UserService;
+    private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
+    private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -52,6 +58,13 @@ public class SecurityConfig {
             .logoutSuccessUrl("/api/auth/logout-redirect")
             .clearAuthentication(true)
             .logoutSuccessHandler(customLogoutSuccessHandler)
+        );
+
+        // OAuth2 로그인
+        http.oauth2Login(oauth2 -> oauth2
+            .userInfoEndpoint( //OAuth 2 로그인 성공 이후 사용자 정보를 가져올 때의 설정들을 담당한다.
+                userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService)) //userService 에 소셜 로그인 성공 시 진행할 OAuth2UserService 인터페이스의 구현체를 등록
+                .successHandler(oAuthLoginSuccessHandler)
         );
 
         return http.build();

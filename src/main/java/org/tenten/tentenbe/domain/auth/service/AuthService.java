@@ -56,6 +56,7 @@ public class AuthService {
         Authentication authenticate = getAuthenticate(signUpRequest.email(), signUpRequest.password());
         TokenInfoDTO tokenInfoDTO = getTokenInfoDTO(response, authenticate);
 
+
         RefreshToken refreshToken = RefreshToken.builder()
             .member(newMember)
             .token(tokenInfoDTO.getRefreshToken())
@@ -103,7 +104,7 @@ public class AuthService {
             return CheckResponse.builder().exists(false).build(); // 중복 아닐 시 false 반환
         }
     }
-
+  
     private LoginResponse getResponse(Member newMember, TokenInfoDTO tokenInfoDTO) {
         return LoginResponse.builder()
             .memberDto(MemberDto.fromEntity(newMember))
