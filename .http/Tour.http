@@ -4,3 +4,5 @@ Content-Type: application/json
 
 ### 인기 여행지 조회 API
 GET https://api.weplanplans.site/api/tours?page=0&size=10
+Origin: http://localhost:5173
+Content-Type: application/json
