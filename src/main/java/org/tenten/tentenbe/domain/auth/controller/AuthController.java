@@ -14,7 +14,6 @@ import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
 import org.tenten.tentenbe.domain.auth.service.AuthService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
-import org.tenten.tentenbe.global.response.GlobalResponse;
 import org.tenten.tentenbe.global.util.CookieUtil;
 
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
@@ -29,9 +28,10 @@ public class AuthController {
 
     @Operation(summary = "회원가입 API", description = "회원가입 API 입니다.")
     @PostMapping("/signup")
-    public ResponseEntity<GlobalResponse> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-        authService.signUp(signUpRequest);
-        return ResponseEntity.ok(GlobalResponse.ok(SUCCESS));
+    public ResponseEntity<GlobalDataResponse<LoginResponse>> signUp(
+        @Valid @RequestBody SignUpRequest signUpRequest, HttpServletResponse response
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.signUp(signUpRequest, response)));
     }
 
     @Operation(summary = "로그인-이메일 API", description = "로그인-이메일 API 입니다.")
@@ -47,9 +47,15 @@ public class AuthController {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.loginKakao(null, loginRequest)));
     }
 
-    @Operation(summary = "로그아웃시 리다이렉트 API", description = "로그아웃시 호출되는 API 입니다. Url = /logout")
+    @Operation(summary = "로그아웃 API", description = "로그아웃 API 입니다.")
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        return ResponseEntity.ok("LOGOUT!");
+    }
+
+    @Operation(summary = "로그아웃시 리다이렉트 API", description = "로그아웃시 호출되는 API 입니다. Url = /logout", hidden = true)
     @GetMapping(value = "/logout-redirect")
-    public ResponseEntity<String> logoutRedirect(@RequestBody HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> logoutRedirect(HttpServletRequest request, HttpServletResponse response) {
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME); // 쿠키 삭제
         return ResponseEntity.ok("LOGOUT");
     }

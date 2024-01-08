@@ -14,6 +14,7 @@ import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
 import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.MemberDto;
+import org.tenten.tentenbe.domain.auth.exception.DuplicateNicknameException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
@@ -36,36 +37,39 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    public void signUp(SignUpRequest signUpRequest) {
-//        //  TODO : 커스텀 예외처리 -> 이미 존재하는 유저(이메일) 일때
-//        if (memberRepository.existsByEmail(signUpRequest.email())) {
-//             throw new DuplicateNicknameException("이미 존재하는 이메일입니다.");
-//        }
-//        // TODO : 커스텀 예외처리 -> 이미 존재하는 닉네임 일때
-//        if (memberRepository.existsByNickname(signUpRequest.nickname())) {
-//            throw new DuplicateNicknameException("이미 존재하는 닉네임입니다.");
-//        }
-        // TODO : 이메일 인증
+    public LoginResponse signUp(SignUpRequest signUpRequest, HttpServletResponse response) {
+        if (memberRepository.existsByEmail(signUpRequest.email())) {
+             throw new DuplicateNicknameException("이미 존재하는 이메일입니다.");
+        }
+        // TODO : 닉네임 임의값 생성 + 이메일 인증
         // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
         Member newMember = signUpRequest.toEntity(encodedPassword, EMAIL, ROLE_USER);
+
+        memberRepository.save(newMember);
+        return firstLogin(signUpRequest, response, newMember);
+    }
+
+    @Transactional
+    public LoginResponse firstLogin(SignUpRequest signUpRequest, HttpServletResponse response, Member newMember) {
+
+        Authentication authenticate = getAuthenticate(signUpRequest.email(), signUpRequest.password());
+        TokenInfoDTO tokenInfoDTO = getTokenInfoDTO(response, authenticate);
+
         RefreshToken refreshToken = RefreshToken.builder()
             .member(newMember)
+            .token(tokenInfoDTO.getRefreshToken())
             .build();
-        memberRepository.save(newMember);
         refreshTokenRepository.save(refreshToken);
+
+        return getResponse(newMember, tokenInfoDTO);
     }
 
     @Transactional
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
-        UsernamePasswordAuthenticationToken authenticationToken = loginRequest.toAuthentication();
-        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
-        log.info("로그인 API 중 토큰 생성 로직 실행");
-        // 쿠키 심는 로직
-        CookieUtil.storeRefreshTokenInCookie(response, tokenInfoDTO.getRefreshToken());
+        Authentication authenticate = getAuthenticate(loginRequest.email(), loginRequest.password());
+        TokenInfoDTO tokenInfoDTO = getTokenInfoDTO(response, authenticate);
 
         String memberId = authenticate.getName();
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
@@ -73,10 +77,7 @@ public class AuthService {
         String refreshToken = tokenInfoDTO.getRefreshToken();
         member.getRefreshToken().updateToken(refreshToken);
 
-        return LoginResponse.builder()
-            .memberDto(MemberDto.fromEntity(member))
-            .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
-            .build();
+        return getResponse(member, tokenInfoDTO);
     }
 
     @Transactional
@@ -88,18 +89,39 @@ public class AuthService {
     @Transactional(readOnly = true)
     public CheckResponse nicknameCheck(String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
-            return CheckResponse.builder().exists(false).build(); // 닉네임 중복 시 false 반환
+            return CheckResponse.builder().exists(true).build(); // 닉네임 중복 시 true 반환
         } else {
-            return CheckResponse.builder().exists(true).build(); // 중복 아닐 시 true 반환
+            return CheckResponse.builder().exists(false).build(); // 중복 아닐 시 false 반환
         }
     }
 
     @Transactional(readOnly = true)
     public CheckResponse emailCheck(String email) {
         if (memberRepository.existsByEmail(email)) {
-            return CheckResponse.builder().exists(false).build(); // 이메일 중복 시 false 반환
+            return CheckResponse.builder().exists(true).build(); // 이메일 중복 시 true 반환
         } else {
-            return CheckResponse.builder().exists(true).build(); // 중복 아닐 시 true 반환
+            return CheckResponse.builder().exists(false).build(); // 중복 아닐 시 false 반환
         }
+    }
+
+    private LoginResponse getResponse(Member newMember, TokenInfoDTO tokenInfoDTO) {
+        return LoginResponse.builder()
+            .memberDto(MemberDto.fromEntity(newMember))
+            .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
+            .build();
+    }
+
+    private TokenInfoDTO getTokenInfoDTO(HttpServletResponse response, Authentication authenticate) {
+        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
+        log.info("로그인 API 중 토큰 생성 로직 실행");
+
+        CookieUtil.storeRefreshTokenInCookie(response, tokenInfoDTO.getRefreshToken()); // 쿠키 심는 로직
+        return tokenInfoDTO;
+    }
+
+    private Authentication getAuthenticate(String email, String password) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+            new UsernamePasswordAuthenticationToken(email, password);
+        return authenticationManagerBuilder.getObject().authenticate(authenticationToken);
     }
 }

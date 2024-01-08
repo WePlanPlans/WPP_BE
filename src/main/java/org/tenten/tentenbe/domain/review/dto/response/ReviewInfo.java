@@ -16,8 +16,8 @@ public record ReviewInfo(
     String authorNickname,
     @Schema(defaultValue = "https://~~~.png")
     String authorProfileImageUrl,
-    @Schema(defaultValue = "4")
-    Long rating,
+    @Schema(defaultValue = "4.5")
+    Double rating,
     @Schema(defaultValue = "2023-12-26T12:00:00")
     LocalDateTime createdTime,
     @Schema(defaultValue = "~~~여서 ~~~ 해서 ~~로 좋았습니다.")

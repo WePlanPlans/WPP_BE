@@ -26,7 +26,7 @@ class CommentServiceTest {
 	@DisplayName("댓글 생성 성공")
 	public void createCommentTest(){
 
-		Review review = new Review(1L, 10L, "좋은 여행", null, null);
+		Review review = new Review(1L, 4.5, "좋은 여행", null, null);
 
 		CommentCreateRequest commentCreateRequest = new CommentCreateRequest(
 			"여행 즐거웠습니다. ",

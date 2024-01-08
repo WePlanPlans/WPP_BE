@@ -29,7 +29,7 @@ public class Review extends BaseTimeEntity {
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "reviewId")
     private Long id;
-    private Long rating;
+    private Double rating;
     @Column(columnDefinition = "TEXT")
     private String content;
 
@@ -47,7 +47,7 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "memberId")
     private Member creator;
 
-    public void updateRating(Long rating) {
+    public void updateRating(Double rating) {
         this.rating = rating;
     }
 
