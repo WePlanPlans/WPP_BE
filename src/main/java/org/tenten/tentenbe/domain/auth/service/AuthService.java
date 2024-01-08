@@ -57,6 +57,7 @@ public class AuthService {
         Authentication authenticate = getAuthenticate(signUpRequest.email(), signUpRequest.password());
         TokenInfoDTO tokenInfoDTO = getTokenInfoDTO(response, authenticate);
 
+
         RefreshToken refreshToken = RefreshToken.builder()
             .member(newMember)
             .token(tokenInfoDTO.getRefreshToken())
