@@ -52,6 +52,20 @@ create table Member
     genderType      enum ('MALE', 'FEMALE', 'NON_BINARY', 'DEFAULT')      null
 );
 
+create table RefreshToken
+(
+    refreshTokenId bigint  auto_increment
+        primary key,
+    token          varchar(255) null,
+    memberId       bigint       not null,
+    constraint uc_refreshtoken_member
+        unique (memberId),
+    constraint uc_refreshtoken_token
+        unique (token),
+    constraint FK_REFRESHTOKEN_ON_MEMBER
+        foreign key (memberId) references Member (memberId)
+);
+
 
 create table TourItem
 (

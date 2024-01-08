@@ -33,8 +33,7 @@ public class JwtTokenProvider {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret) { // Todo : jwtSecret 환경변수 설정 필요
-
+    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret) {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret); // Base64로 인코딩된 jwtSecret 값을 디코딩하여 byte 배열로 변환
         this.key = Keys.hmacShaKeyFor(keyBytes); // 디코딩된 바이트 배열을 사용하여 HmacSHA 알고리즘에 기반한 SecretKey를 생성
     }
@@ -98,7 +97,6 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String accessToken) {
         // 토큰 복호화
         Claims claims = parseClaims(accessToken);
-
         if (claims.get(AUTHORITIES_KEY) == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }

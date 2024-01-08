@@ -23,6 +23,29 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+  security:
+    oauth2:
+      client:
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+        registration:
+          kakao:
+            client-id: ${oauth.client.id}
+            client-authentication-method: client_secret_post
+            redirect-uri: https://dev-weplanplans.vercel.app/login/oauth2/code/kakao #배포
+            authorization-grant-type: authorization_code
+            client-name: kakao
+            scope:
+              - profile_nickname
+              - profile_image
+              - gender
+              - age_range
+              - account_email
 logging:
   level:
     '[org.springframework.boot.web]': INFO
@@ -43,3 +66,19 @@ springdoc:
 open-api:
   url: ${OPEN_API_URL}
   key: ${OPEN_API_KEY}
+
+jwt:
+  secret: ${JWT_SECRET}
+
+#s3
+cloud:
+  aws:
+    credentials:
+      access-key: ${aws.credentials.access.key}
+      secret-key: ${aws.credentials.secret.key}
+    s3:
+      bucket: ${aws.s3.bucket}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: 'false'

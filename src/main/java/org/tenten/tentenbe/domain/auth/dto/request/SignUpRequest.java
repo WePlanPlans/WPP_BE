@@ -15,36 +15,37 @@ import org.tenten.tentenbe.global.common.enums.UserAuthority;
 
 public record SignUpRequest(
     @Email(message = "올바르지 않은 이메일 형식입니다.")
-    @Schema(description = "회원가입 이메일", defaultValue = "example@mail.com")
+    @Schema(defaultValue = "example@mail.com")
     String email,
 
     @NotNull(message = "비밀번호는 최소 8글자 이상입니다.")
     @Size(min = 8, max = 20)
-    @Schema(description = "회원가입 비밀번호", defaultValue = "as@#SD23/&DFd%fs@a1")
+    @Schema(defaultValue = "as@#SD23/&DFd%fs@a1")
     String password,
 
     @NotNull(message = "이름을 입력해주세요.")
-    @Schema(description = "이름", defaultValue = "name")
+    @Schema(defaultValue = "John")
     String name,
 
     @NotNull(message = "닉네임은 2글자 이상 20글자 이하입니다.")
     @Size(min = 2, max = 20)
-    @Schema(description = "닉네임", defaultValue = "nickName")
+    @Schema(defaultValue = "johnnyiq")
     String nickname,
 
-    @Schema(description = "성별", defaultValue = "genderType")
+    @Schema(defaultValue = "MALE")
     @Enumerated(EnumType.STRING)
     GenderType genderType,
 
-    @Schema(description = "연령대", defaultValue = "ageType")
+    @Schema(defaultValue = "TEENAGER")
     @Enumerated(EnumType.STRING)
     AgeType ageType,
 
-    @Schema(description = "프로필 이미지", defaultValue = "http://~~~~~~image.jpg")
+    @Schema(defaultValue = "http://asiduheimage.jpg")
     String profileImage,
 
-    @Schema(description = "설문조사 결과", defaultValue = "{}")
+    @Schema(defaultValue = "설문조사")
     Survey survey
+
 ) {
     public Member toEntity(
         String encodedPassword, LoginType loginTypeEmail, UserAuthority userAuthority) {

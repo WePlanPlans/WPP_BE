@@ -19,7 +19,6 @@ public record MemberResponse(
     AgeType ageType,
     @Schema(defaultValue = "성별")
     GenderType genderType,
-    @Schema(defaultValue = "설문조사 결과")
     Survey survey,
     @Schema(defaultValue = "로그인 타입")
     LoginType loginType

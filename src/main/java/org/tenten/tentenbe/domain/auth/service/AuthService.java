@@ -48,7 +48,7 @@ public class AuthService {
         // TODO : 이메일 인증
         // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
-        Member newMember = signUpRequest.toEntity(encodedPassword, EMAIL, ROLE_USER);
+        Member newMember = signUpRequest.toEntity(encodedPassword, EMAIL, ROLE_USER); // TODO : 로그인타입 추가
         RefreshToken refreshToken = RefreshToken.builder()
             .member(newMember)
             .build();
@@ -67,8 +67,8 @@ public class AuthService {
         // 쿠키 심는 로직
         CookieUtil.storeRefreshTokenInCookie(response, tokenInfoDTO.getRefreshToken());
 
-        String userEmail = authenticate.getName();
-        Member member = memberRepository.findByEmail(userEmail).orElseThrow(RuntimeException::new);
+        String memberId = authenticate.getName();
+        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
 
         String refreshToken = tokenInfoDTO.getRefreshToken();
         member.getRefreshToken().updateToken(refreshToken);
@@ -102,4 +102,5 @@ public class AuthService {
             return CheckResponse.builder().exists(true).build(); // 중복 아닐 시 true 반환
         }
     }
+
 }

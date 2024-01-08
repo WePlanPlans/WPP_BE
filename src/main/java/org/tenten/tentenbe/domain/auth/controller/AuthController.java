@@ -47,7 +47,7 @@ public class AuthController {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.loginKakao(null, loginRequest)));
     }
 
-    @Operation(summary = "로그아웃시 리다이렉트 API", description = "로그아웃시 호출되는 API 입니다")
+    @Operation(summary = "로그아웃시 리다이렉트 API", description = "로그아웃시 호출되는 API 입니다. Url = /logout")
     @GetMapping(value = "/logout-redirect")
     public ResponseEntity<String> logoutRedirect(@RequestBody HttpServletRequest request, HttpServletResponse response) {
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME); // 쿠키 삭제

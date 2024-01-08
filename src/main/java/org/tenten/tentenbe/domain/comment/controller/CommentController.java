@@ -35,7 +35,8 @@ public class CommentController {
         // Security 의존성 추가될시
         // @AuthenticationPrincipal Member,
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.createComment(commentCreateRequest)));
+        Long currentMemberId = 1L;
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.createComment(currentMemberId, commentCreateRequest)));
     }
 
     @Operation(summary = "댓글 수정 API", description = "댓글 수정 API 입니다.")

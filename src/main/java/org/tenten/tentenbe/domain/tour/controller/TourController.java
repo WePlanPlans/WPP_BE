@@ -2,16 +2,10 @@ package org.tenten.tentenbe.domain.tour.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewResponse;
@@ -62,8 +56,8 @@ public class TourController {
     @Operation(summary = "여행지 검색 API", description = "여행지 검색 API 입니다.")
     @GetMapping("/search")
     public ResponseEntity<GlobalDataResponse<Page<TourSimpleResponse>>> searchTours(
-        @Parameter(name = "region", description = "검색할 지역", in = QUERY, required = true)
-        @RequestParam(value = "region", required = true) String region,
+        @Parameter(name = "region", description = "검색할 지역", in = QUERY, required = false)
+        @RequestParam(value = "region", required = false) String region,
         @Parameter(name = "category", description = "검색할 여행 상품 타입, 미지정 가능", in = QUERY, required = false)
         @RequestParam(value = "category", required = false) String category,
         @Parameter(name = "searchWord", description = "검색할 상품명", in = QUERY, required = true)
@@ -95,9 +89,14 @@ public class TourController {
 
     @Operation(summary = "여행 상품 리뷰 조회 API", description = "여행 상품 리뷰 & 키워드 조회 API 입니다")
     @GetMapping("/{tourItemId}/reviews")
-    public ResponseEntity<GlobalDataResponse<ReviewResponse>> getTourReviews(@PathVariable(name = "tourItemId") Long tourItemId, Pageable pageable) {
+    public ResponseEntity<GlobalDataResponse<ReviewResponse>> getTourReviews(
+        @PathVariable(name = "tourItemId") Long tourItemId,
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, reviewService.getTourReviews(tourItemId, pageable)));
+            .ok(SUCCESS, reviewService.getTourReviews(tourItemId, PageRequest.of(page, size))));
     }
 
 }

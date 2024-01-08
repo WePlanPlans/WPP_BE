@@ -4,10 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.response.MemberDetailResponse;
 import org.tenten.tentenbe.domain.member.dto.response.MemberResponse;
@@ -18,6 +21,8 @@ import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.response.GlobalResponse;
+import org.tenten.tentenbe.global.s3.ImageUploadDto;
+import org.tenten.tentenbe.global.s3.S3Uploader;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
@@ -30,6 +35,7 @@ import static org.tenten.tentenbe.global.util.SecurityUtil.getCurrentMemberId;
 @RequestMapping("/api/member")
 public class MemberController {
     private final MemberService memberService;
+    private final S3Uploader s3Uploader;
 
     @Operation(summary = "나의 여정 조회 API", description = "나의 여정 조회 API 입니다.")
     @GetMapping("/trips")
@@ -87,4 +93,14 @@ public class MemberController {
         memberService.deleteMember(getCurrentMemberId());
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
+
+    @Operation(
+        summary = "프로필 이미지 업로드 API",
+        description = "MultipartFile 형태의 이미지 파일을 'images'라는 키로 form-data 형태로 전송해주세요. 이 API는 전송된 이미지를 S3에 저장하고, 저장된 이미지의 URL을 반환합니다."
+    )
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GlobalDataResponse<ImageUploadDto>> uploadImage(@RequestParam("images") MultipartFile multipartFile) throws BadRequestException {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.uploadImage(multipartFile)));
+    }
+
 }
