@@ -30,7 +30,7 @@ public class TripService {
 
     @Transactional
     public TripCreateResponse createTrip(Long memberId, TripCreateRequest request) {
-        Member member = memberRepository.getReferenceById(memberId);
+        Member member = getMemberOrNullById(memberId);
         Long numberOfTrip = tripUserRepository.countTripMemberByMember(member) + 1L;
         Trip trip = Trip.builder()
             .tripName(request.tripName()
@@ -51,6 +51,13 @@ public class TripService {
         tripUserRepository.save(tripMember);
 
         return new TripCreateResponse(tripRepository.save(trip).getId());
+    }
+
+    private Member getMemberOrNullById(Long memberId) {
+        if(memberId != null) {
+            return memberRepository.getReferenceById(memberId);
+        }
+        throw new IllegalArgumentException("memberId가 유효하지 않습니다.");
     }
 
     @Transactional(readOnly = true)

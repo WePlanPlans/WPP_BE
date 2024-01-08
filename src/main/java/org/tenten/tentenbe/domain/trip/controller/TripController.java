@@ -20,6 +20,7 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
+import static org.tenten.tentenbe.global.util.SecurityUtil.*;
 
 @Tag(name = "여정 관련 API", description = "여정 관련 API 모음입니다. 소켓 통신 문서화는 노션에 별도로 작성해놓겠습니다.")
 @RestController
@@ -31,7 +32,7 @@ public class TripController {
     @Operation(summary = "여정 생성 API", description = "여정 생성 API 입니다.")
     @PostMapping()
     public ResponseEntity<GlobalDataResponse<TripCreateResponse>> createTrip(@RequestBody TripCreateRequest tripCreateRequest) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.createTrip(1L, tripCreateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.createTrip(getCurrentMemberId(), tripCreateRequest)));
     }
 
     @Operation(summary = "여정 상세조회 API", description = "여정 상세조회 API 입니다.")
