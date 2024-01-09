@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
+import org.tenten.tentenbe.domain.token.exception.InvalidRefreshTokenException;
 import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
 
@@ -43,7 +45,7 @@ public class JwtTokenProvider {
         if (token.isPresent()) {
             return true;
         } else {
-            throw new RuntimeException("리프레시 토큰이 정상적이지 않습니다.");
+            throw new InvalidRefreshTokenException("리프레시 토큰이 정상적이지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
     }
 

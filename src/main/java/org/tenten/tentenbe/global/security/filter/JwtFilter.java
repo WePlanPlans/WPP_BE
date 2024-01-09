@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.ReissueTokenDto;
 import org.tenten.tentenbe.domain.token.exception.ExpireAccessTokenException;
+import org.tenten.tentenbe.domain.token.exception.InvalidRefreshTokenException;
 import org.tenten.tentenbe.domain.token.exception.RefreshTokenNotFoundException;
 import org.tenten.tentenbe.global.response.ErrorResponse;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
@@ -77,20 +78,32 @@ public class JwtFilter extends OncePerRequestFilter {
                 String refreshToken = cookie.get().getValue(); // 쿠키에서 리프레쉬 토큰 가져오기
 
                 // 리프레쉬 토큰이 db에 있는 리프레쉬 토큰과 일치하는지 확인
-                if (jwtTokenProvider.validateRefreshTokenInDatabase(refreshToken)) {
-                    // 액세스 토큰 재발급
-                    Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-                    String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
-                    ReissueTokenDto reissueTokenDto = ReissueTokenDto.builder()
-                        .accessToken(newAccessToken)
-                        .build();
-                    String result = mapper.writeValueAsString(reissueTokenDto);
-                    response.setStatus(response.SC_CREATED);
+                try {
+                    if (jwtTokenProvider.validateRefreshTokenInDatabase(refreshToken)) {
+                        // 액세스 토큰 재발급
+                        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+                        String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+                        ReissueTokenDto reissueTokenDto = ReissueTokenDto.builder()
+                            .accessToken(newAccessToken)
+                            .build();
+                        String result = mapper.writeValueAsString(reissueTokenDto);
+                        response.setStatus(response.SC_CREATED);
+                        setResponse(request, response);
+                        try {
+                            response.getWriter().write(result);
+                        } catch (IOException exception) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (InvalidRefreshTokenException ex) {
+                    logException(ex);
+                    String result = mapper.writeValueAsString(new ErrorResponse(SC_UNAUTHORIZED, ex.getMessage()));
+                    response.setStatus(response.SC_UNAUTHORIZED);
                     setResponse(request, response);
                     try {
                         response.getWriter().write(result);
                     } catch (IOException exception) {
-                        e.printStackTrace();
+                        ex.printStackTrace();
                     }
                 }
             }
