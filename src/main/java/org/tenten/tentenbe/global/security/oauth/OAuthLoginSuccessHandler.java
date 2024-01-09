@@ -22,6 +22,9 @@ import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
@@ -60,14 +63,15 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         String refreshToken = tokenInfoDTO.getRefreshToken();
         member.getRefreshToken().updateToken(refreshToken);
 
-        OAuthLoginResponse oAuthLoginResponse =
-            OAuthLoginResponse.builder()
-                .memberDto(MemberDto.fromEntity(member))
-                .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
-                .redirectUrl("https://weplanplans.vercel.app/")
-                .build();
+        StringBuilder sb = new StringBuilder();
+            sb.append("https://weplanplans.vercel.app/")
+                .append("?nickname=").append(URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8))
+                .append("&email=").append(email)
+                .append("&gender=").append(member.getGenderType())
+                .append("&age_range=").append(member.getAgeType())
+                .append("&profile_image=").append(member.getProfileImageUrl());
 
-        String loginGlobalResponseJsonString = mapper.writeValueAsString(ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, oAuthLoginResponse)));
-        response.getWriter().write(loginGlobalResponseJsonString);
+        String redirectURI = sb.toString();
+        response.sendRedirect(redirectURI);
     }
 }
