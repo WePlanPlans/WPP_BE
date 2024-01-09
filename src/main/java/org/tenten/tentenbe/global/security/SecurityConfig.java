@@ -25,6 +25,9 @@ import org.tenten.tentenbe.global.security.oauth.OAuthLoginSuccessHandler;
 
 import java.util.List;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.OPTIONS;
+
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -44,7 +47,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((request) -> request
                 .requestMatchers("/api/auth/logout").authenticated()
-                .requestMatchers(HttpMethod.OPTIONS, "**").permitAll()
+                .requestMatchers(OPTIONS, "**").permitAll()
+                .requestMatchers(GET, "/").permitAll()
                 .requestMatchers("/api/auth/**", "/swagger-ui/**", "/api/region/**", "/api/category"
                 , "/api/tours/**", "api/trips/**", "api/reviews/{reviewId}/comments").permitAll()
                 .anyRequest().authenticated()
