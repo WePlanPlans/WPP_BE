@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.ReissueTokenDto;
 import org.tenten.tentenbe.domain.token.exception.ExpireAccessTokenException;
+import org.tenten.tentenbe.domain.token.exception.ExpireRefreshTokenException;
 import org.tenten.tentenbe.global.response.ErrorResponse;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.util.CookieUtil;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.*;
 
 @RequiredArgsConstructor
@@ -57,7 +60,19 @@ public class JwtFilter extends OncePerRequestFilter {
 
             Optional<Cookie> cookie = CookieUtil.getCookie(request, REFRESH_TOKEN_COOKIE_NAME);
             if (cookie.isEmpty()) { // 쿠키가 만료됐는지 확인
-                throw new ExpireAccessTokenException("Refresh Token 만료!");
+                try {
+                    throw new ExpireRefreshTokenException("Refresh Token 만료!", HttpStatus.UNAUTHORIZED);
+                } catch (ExpireRefreshTokenException ex) {
+                    logException(ex);
+                    String result = mapper.writeValueAsString(new ErrorResponse(SC_UNAUTHORIZED, e.getMessage()));
+                    response.setStatus(response.SC_UNAUTHORIZED);
+                    setResponse(request, response);
+                    try {
+                        response.getWriter().write(result);
+                    } catch (IOException exception) {
+                        e.printStackTrace();
+                    }
+                }
             }
             String refreshToken = cookie.get().getValue(); // 쿠키에서 리프레쉬 토큰 가져오기
 
