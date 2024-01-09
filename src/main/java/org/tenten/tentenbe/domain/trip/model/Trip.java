@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.tenten.tentenbe.domain.trip.dto.request.TripInfoUpdateRequest;
 import org.tenten.tentenbe.domain.trip.dto.response.TripInfoUpdateResponse;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
@@ -41,7 +42,10 @@ public class Trip extends BaseTimeEntity {
     private Boolean isDeleted;
     private String tripName;
     private Long budget;
-    private Long calculatedPrice;
+    @ColumnDefault("0")
+    private Long tripItemPriceSum;
+    @ColumnDefault("0")
+    private Long transportationPriceSum;
 
     @OneToMany(mappedBy = "trip", fetch = LAZY, cascade = REMOVE)
     private final List<TripMember> tripMembers = new ArrayList<>();

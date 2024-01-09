@@ -183,7 +183,8 @@ create table Trip
     area              varchar(255)                    null,
     subarea           varchar(255)                    null,
     budget            bigint                          null,
-    calculatedPrice   bigint                          null
+    tripItemPriceSum   bigint    default 0                      null,
+    transportationPriceSum bigint default 0  null
 );
 
 create table TripItem
