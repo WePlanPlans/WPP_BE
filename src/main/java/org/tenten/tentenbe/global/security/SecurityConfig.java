@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -49,8 +48,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/logout").authenticated()
                 .requestMatchers(OPTIONS, "**").permitAll()
                 .requestMatchers(GET, "/").permitAll()
-                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/api/region/**", "/api/category"
-                , "/api/tours/**", "/api/trips/**", "/api/reviews/**", "/api/comments/**").permitAll()
+                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**"
+                    , "/api/region/**", "/api/category", "/api/tours/**"
+                    , "/api/trips/**", "/api/reviews/**", "/api/comments/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
