@@ -40,7 +40,6 @@ public class Member extends BaseTimeEntity {
     private Long id;
     private String email;
     private String password;
-    private String name;
     private String nickname;
     private String profileImageUrl;
     @Convert(converter = Survey.SurveyConverter.class)
