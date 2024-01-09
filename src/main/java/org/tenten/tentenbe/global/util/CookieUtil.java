@@ -36,8 +36,8 @@ public class CookieUtil {
             .httpOnly(true)
             .secure(true)
             .path("/")
-//            .domain("weplanplans.site") // 로컬 테스트 시 주석처리
-            .sameSite("Strict")
+//            .domain("weplanplans.site") // 테스트 시 주석처리
+            .sameSite("None")
             .maxAge(REFRESH_TOKEN_EXPIRE_TIME)
             .build();
         response.addHeader("Set-Cookie", cookie.toString());
