@@ -132,7 +132,12 @@ public class TripService {
         return null;
     }
 
-    public void preferOrNotTourInOurTrip(Long memberId, Long tripId, Long tourId, Boolean prefer) {
+    @Transactional
+    public void preferOrNotTourInOurTrip(Long memberId, Long tripId, Long tourItemId, Boolean prefer, Boolean notPrefer) {
+        Member member = getMemberOrNullById(memberId);
+        Trip trip = tripRepository.getReferenceById(tripId);
+        tourItemRepository.findById(tourItemId)
+            .orElseThrow(() -> new TourException("아이디에 해당하는 여행지가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
 
     }
 
