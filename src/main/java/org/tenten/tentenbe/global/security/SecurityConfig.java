@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,7 +21,6 @@ import org.tenten.tentenbe.global.security.filter.JwtFilter;
 import org.tenten.tentenbe.global.security.jwt.CustomLogoutSuccessHandler;
 import org.tenten.tentenbe.global.security.jwt.JwtAuthenticationEntryPoint;
 import org.tenten.tentenbe.global.security.oauth.OAuth2UserService;
-import org.tenten.tentenbe.global.security.oauth.OAuthLoginFailureHandler;
 import org.tenten.tentenbe.global.security.oauth.OAuthLoginSuccessHandler;
 
 import java.util.List;
@@ -33,7 +33,6 @@ public class SecurityConfig {
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
     private final OAuth2UserService oAuth2UserService;
     private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
-    private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,7 +43,10 @@ public class SecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((request) -> request
-                .requestMatchers("/**").permitAll() // TODO: login이나 signup, 상품 조회처럼 인증 필요없는 url 넣기
+                .requestMatchers("/api/auth/logout").authenticated()
+                .requestMatchers(HttpMethod.OPTIONS, "**").permitAll()
+                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/api/region/**", "/api/category"
+                , "/api/tours/**", "api/trips/**", "api/reviews/{reviewId}/comments").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

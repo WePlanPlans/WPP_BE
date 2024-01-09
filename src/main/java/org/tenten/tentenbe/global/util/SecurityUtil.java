@@ -2,10 +2,8 @@ package org.tenten.tentenbe.global.util;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.tenten.tentenbe.domain.token.exception.AccessTokenNotFoundException;
 
 @Slf4j
 @NoArgsConstructor
@@ -15,7 +13,7 @@ public class SecurityUtil {
     public static Long getCurrentMemberId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getName() == null || authentication.getName().equals("anonymousUser")) {
-            throw new AccessTokenNotFoundException("Access Token이 존재하지 않습니다.", HttpStatus.UNAUTHORIZED);
+            return null;
         }
 
         return Long.parseLong(authentication.getName());
