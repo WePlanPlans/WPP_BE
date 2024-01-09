@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/logout").authenticated()
                 .requestMatchers(OPTIONS, "**").permitAll()
                 .requestMatchers(GET, "/").permitAll()
-                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**"
+                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/v1/api-docs/**"
                     , "/api/region/**", "/api/category", "/api/tours/**"
                     , "/api/trips/**", "/api/reviews/**", "/api/comments/**").permitAll()
                 .anyRequest().authenticated()

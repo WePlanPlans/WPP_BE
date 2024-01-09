@@ -34,7 +34,7 @@ public class CookieUtil {
     public static void storeRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
             .httpOnly(true)
-            .secure(true)
+//            .secure(true)
             .path("/")
 //            .domain("weplanplans.site") // 테스트 시 주석처리
             .sameSite("None")
