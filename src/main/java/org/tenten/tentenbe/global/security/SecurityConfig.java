@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .requestMatchers(OPTIONS, "**").permitAll()
                 .requestMatchers(GET, "/").permitAll()
                 .requestMatchers("/api/auth/**", "/swagger-ui/**", "/api/region/**", "/api/category"
-                , "/api/tours/**", "api/trips/**", "api/reviews/{reviewId}/comments").permitAll()
+                , "/api/tours/**", "/api/trips/**", "/api/reviews/**", "/api/comments/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
