@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -14,20 +13,15 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.tenten.tentenbe.domain.auth.dto.response.MemberDto;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO;
-import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
-
-import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
 
 @Slf4j
 @Component
@@ -64,12 +58,12 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         member.getRefreshToken().updateToken(refreshToken);
 
         StringBuilder sb = new StringBuilder();
-            sb.append("https://weplanplans.vercel.app/")
-                .append("?nickname=").append(URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8))
-                .append("&email=").append(email)
-                .append("&gender=").append(member.getGenderType())
-                .append("&age_range=").append(member.getAgeType())
-                .append("&profile_image=").append(member.getProfileImageUrl());
+        sb.append("https://weplanplans.vercel.app/") // todo : 배포 주소 url 확인
+            .append("?nickname=").append(URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8))
+            .append("&email=").append(email)
+            .append("&gender=").append(member.getGenderType())
+            .append("&age_range=").append(member.getAgeType())
+            .append("&profile_image=").append(member.getProfileImageUrl());
 
         String redirectURI = sb.toString();
         response.sendRedirect(redirectURI);
