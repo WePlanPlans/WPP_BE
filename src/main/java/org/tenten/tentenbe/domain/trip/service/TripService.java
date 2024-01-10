@@ -113,10 +113,13 @@ public class TripService {
         request.tourItemIds().stream()
             .map(tourItemId -> tourItemRepository.findById(tourItemId)
                 .orElseThrow(() -> new TourException("아이디에 해당하는 여행지가 없습니다. tourItemId : " + tourItemId, NOT_FOUND)))
-            .map(tourItem -> TripLikedItem.builder()
-                .trip(trip)
-                .tourItem(tourItem).build())
-            .forEach(tripLikedItemRepository::save);
+            .forEach(tourItem -> {
+                tripLikedItemRepository.findByTripAndTourItem(trip, tourItem)
+                        .orElse(tripLikedItemRepository.save(TripLikedItem.builder()
+                            .tourItem(tourItem)
+                            .trip(trip)
+                            .build()));
+            });
     }
 
     @Transactional(readOnly = true)

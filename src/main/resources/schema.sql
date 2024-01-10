@@ -223,7 +223,7 @@ create table TripMember
 
 create table TripLikedItem
 (
-    tripLikedItemId bigint not null
+    tripLikedItemId bigint auto_increment
         primary key,
     tripId          bigint null,
     tourItemId      bigint null,
