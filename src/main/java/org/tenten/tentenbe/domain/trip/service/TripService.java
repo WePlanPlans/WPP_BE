@@ -29,7 +29,6 @@ import org.tenten.tentenbe.global.common.enums.TripAuthority;
 import org.tenten.tentenbe.global.common.enums.TripStatus;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -46,7 +45,7 @@ public class TripService {
 
     @Transactional
     public TripCreateResponse createTrip(Long memberId, TripCreateRequest request) {
-        Member member = getMemberOrNullById(memberId);
+        Member member = getMemberById(memberId);
         Long numberOfTrip = tripMemberRepository.countTripMemberByMember(member) + 1L;
         Trip trip = Trip.builder()
             .tripName(request.tripName()
@@ -71,7 +70,7 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
-        getMemberOrNullById(memberId);
+        getMemberById(memberId);
         return tripRepository.findTripsByMemberId(memberId, pageable);
     }
 
@@ -88,7 +87,7 @@ public class TripService {
 
     @Transactional
     public TripInfoUpdateResponse updateTrip(Long memberId, Long tripId, TripInfoUpdateRequest request) {
-        Member member = getMemberOrNullById(memberId);
+        Member member = getMemberById(memberId);
 //        validateWriter(member);
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
@@ -104,7 +103,7 @@ public class TripService {
 
     @Transactional
     public void LikeTourInOurTrip(Long memberId, Long tripId, TripLikedItemRequest request) {
-        Member member = getMemberOrNullById(memberId);
+        Member member = getMemberById(memberId);
 //        validateWriter(member);
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
@@ -129,6 +128,13 @@ public class TripService {
         return null;
     }
 
+    private Member getMemberOrNullById(Long memberId) {
+        if(memberId != null) {
+            return memberRepository.getReferenceById(memberId);
+        }
+        return null;
+    }
+
     private Long findCategoryCode(String categoryName) {
         if (categoryName != null) {
             return Category.fromName(categoryName).getCode();
@@ -138,7 +144,7 @@ public class TripService {
 
     @Transactional
     public void preferOrNotTourInOurTrip(Long memberId, Long tripId, Long tourItemId, Boolean prefer, Boolean notPrefer) {
-        Member member = getMemberOrNullById(memberId);
+        Member member = getMemberById(memberId);
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         TourItem tourItem = tourItemRepository.findById(tourItemId)
@@ -171,7 +177,7 @@ public class TripService {
         return null;
     }
 
-    private Member getMemberOrNullById(Long memberId) { //TODO : 현재 코드는 로그인되어있는 회원만 여정조회 가능
+    private Member getMemberById(Long memberId) { //TODO : 현재 코드는 로그인되어있는 회원만 여정조회 가능
         if(memberId != null) {
             return memberRepository.getReferenceById(memberId);
         }
