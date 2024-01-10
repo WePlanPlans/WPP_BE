@@ -14,5 +14,7 @@ public record CommentInfo(
     @Schema(defaultValue = "잘보고 갑니다~")
     String content,
     @Schema(defaultValue = "2023-12-26T12:00:00")
-    LocalDateTime createdTime) {
+    LocalDateTime createdTime,
+    @Schema(defaultValue = "false")
+    Boolean isAuthor) {
 }

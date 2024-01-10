@@ -77,7 +77,7 @@ public class ReviewController {
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
 
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getReviewComments(reviewId, PageRequest.of(page, size))));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getReviewComments(reviewId, PageRequest.of(page, size), getCurrentMemberId())));
     }
 
     @Operation(summary = "리뷰 작성시 키워드 조회 API", description = "리뷰 작성시, 전체 키워드 혹은 조회 하고 싶은 키워드 타입별 키워드 목록 조회 API 입니다.")

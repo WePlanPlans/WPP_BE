@@ -45,11 +45,11 @@ public class ReviewService {
     private final ReviewKeywordRepository reviewKeywordRepository;
     private final CommentRepository commentRepository;
     @Transactional(readOnly = true) // TODO: tourItem.getReviews fetchJoin으로 한번에 가져오게 리팩터링
-    public ReviewResponse getTourReviews(Long tourItemId, Pageable pageable) {
+    public ReviewResponse getTourReviews(Long tourItemId, Pageable pageable, Long memberId) {
         TourItem tourItem = tourItemRepository.findById(tourItemId)
             .orElseThrow(() -> new TourException("해당 아이디로 존재하는 리뷰가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
         Page<Review> reviewPage = reviewRepository.findReviewByTourItemId(tourItem.getId(), pageable);
-        List<ReviewInfo> reviewInfos = reviewPage.stream().map(ReviewInfo::fromEntity).toList();
+        List<ReviewInfo> reviewInfos = reviewPage.stream().map(r -> ReviewInfo.fromEntity(r, memberId)).toList();
 
         KeywordType keywordType = KeywordType.fromCode(tourItem.getContentTypeId());
         Long keywordTotalCount = calculateKeywordTotalCount(tourItem.getId(), keywordType);
@@ -84,7 +84,7 @@ public class ReviewService {
         tourItem.increaseReviewCount();
         reviewRepository.save(review);
         List<ReviewKeyword> reviewKeywords = addKeywordToReview(review, reviewCreateRequest.keywords());
-        return ReviewInfo.fromEntity(review, reviewKeywords);
+        return ReviewInfo.fromEntity(review, reviewKeywords, memberId);
     }
 
 
@@ -99,7 +99,7 @@ public class ReviewService {
         review.updateRating(reviewUpdateRequest.rating());
         reviewKeywordRepository.deleteByReviewId(reviewId);
         List<ReviewKeyword> reviewKeywords = addKeywordToReview(review, reviewUpdateRequest.keywords());
-        return ReviewInfo.fromEntity(review, reviewKeywords);
+        return ReviewInfo.fromEntity(review, reviewKeywords, memberId);
     }
 
     private List<ReviewKeyword> addKeywordToReview(Review review, List<ReviewKeywordCreateRequest> keywords) {
@@ -133,9 +133,9 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public CommentResponse getReviewComments(Long reviewId, Pageable pageable) {
+    public CommentResponse getReviewComments(Long reviewId, Pageable pageable, Long memberId) {
         Page<Comment> comments = commentRepository.findCommentsByReviewId(reviewId, pageable);
-        List<CommentInfo> commentInfos = comments.stream().map(comment -> new CommentInfo(comment.getId(), comment.getCreator().getNickname(), comment.getCreator().getProfileImageUrl(), comment.getContent(), comment.getCreatedTime())).toList();
+        List<CommentInfo> commentInfos = comments.stream().map(comment -> new CommentInfo(comment.getId(), comment.getCreator().getNickname(), comment.getCreator().getProfileImageUrl(), comment.getContent(), comment.getCreatedTime(), comment.getCreator().getId().equals(memberId))).toList();
 
         return new CommentResponse(new PageImpl<>(commentInfos, pageable, comments.getTotalElements()));
     }
