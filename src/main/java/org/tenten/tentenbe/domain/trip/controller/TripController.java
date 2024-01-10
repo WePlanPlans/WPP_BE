@@ -35,7 +35,7 @@ public class TripController {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.createTrip(getCurrentMemberId(), tripCreateRequest)));
     }
 
-    @Operation(summary = "나의 여정 조회 API", description = "나의 여정 조회 API 입니다.")
+    @Operation(summary = "나의 여정목록 조회 API", description = "나의 여정목록 조회 API 입니다.")
     @GetMapping()
     public ResponseEntity<GlobalDataResponse<Page<TripSimpleResponse>>> getTrips(
         @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
@@ -52,7 +52,7 @@ public class TripController {
         @Parameter(name = "tripId", description = "상세 조회할 여정 아이디", in = PATH)
         @PathVariable(name = "tripId") Long tripId
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrip(getCurrentMemberId(), tripId)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrip(tripId)));
     }
 
     @Operation(summary = "여정 기본정보 수정 API", description = "여정 기본정보 수정 API 입니다.")
