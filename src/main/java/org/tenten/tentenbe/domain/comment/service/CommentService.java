@@ -1,14 +1,12 @@
 package org.tenten.tentenbe.domain.comment.service;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.comment.dto.request.CommentCreateRequest;
 import org.tenten.tentenbe.domain.comment.dto.request.CommentUpdateRequest;
 import org.tenten.tentenbe.domain.comment.dto.response.CommentInfo;
-import org.tenten.tentenbe.domain.comment.dto.response.CommentResponse;
 import org.tenten.tentenbe.domain.comment.exception.CommentException;
 import org.tenten.tentenbe.domain.comment.model.Comment;
 import org.tenten.tentenbe.domain.comment.repository.CommentRepository;
@@ -46,12 +44,14 @@ public class CommentService {
             member.getNickname(),
             member.getProfileImageUrl(),
             savedComment.getContent(),
-            savedComment.getCreatedTime()
+            savedComment.getCreatedTime(),
+            true
         );
     }
 
     @Transactional
     public CommentInfo updateComment(Long memberId, Long commentId, CommentUpdateRequest commentUpdateRequest) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException("주어진 아이디로 존재하는 멤버가 없습니다.", NOT_FOUND));
 
         Comment findCommentById = commentRepository.findById(commentId).orElseThrow(
             () -> new CommentException("해당 댓글이 없습니다.", HttpStatus.BAD_REQUEST)
@@ -60,10 +60,11 @@ public class CommentService {
         findCommentById.UpdateComment(commentUpdateRequest.content());
         return new CommentInfo(
             findCommentById.getId(),
-            "사용자 이름",
-            "사용자 프로필",
+            member.getNickname(),
+            member.getProfileImageUrl(),
             commentUpdateRequest.content(),
-            findCommentById.getModifiedTime()
+            findCommentById.getModifiedTime(),
+            true
         );
     }
 

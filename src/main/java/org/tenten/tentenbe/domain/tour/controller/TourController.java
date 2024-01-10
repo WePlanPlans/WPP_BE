@@ -18,7 +18,7 @@ import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
-import static org.tenten.tentenbe.global.util.SecurityUtil.*;
+import static org.tenten.tentenbe.global.util.SecurityUtil.getCurrentMemberId;
 
 @Tag(name = "여행지 관련 API", description = "여행지 관련 API 모음입니다.")
 @RestController
@@ -97,7 +97,7 @@ public class TourController {
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, reviewService.getTourReviews(tourItemId, PageRequest.of(page, size))));
+            .ok(SUCCESS, reviewService.getTourReviews(tourItemId, PageRequest.of(page, size), getCurrentMemberId())));
     }
 
 }

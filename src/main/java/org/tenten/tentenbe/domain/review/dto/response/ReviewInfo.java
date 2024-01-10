@@ -23,9 +23,10 @@ public record ReviewInfo(
     @Schema(defaultValue = "~~~여서 ~~~ 해서 ~~로 좋았습니다.")
     String content,
     List<KeywordInfo> keywords,
-    Long commentCount) {
+    Long commentCount,
+    Boolean isAuthor) {
 
-    public static ReviewInfo fromEntity(Review review) {
+    public static ReviewInfo fromEntity(Review review, Long memberId) {
         Member creator = review.getCreator();
         return new ReviewInfo(
             review.getId(),
@@ -38,11 +39,12 @@ public record ReviewInfo(
                 Keyword keyword = reviewKeyword.getKeyword();
                 return new KeywordInfo(keyword.getId(), keyword.getContent(), keyword.getType());
             }).toList(),
-            (long) review.getComments().size()
+            (long) review.getComments().size(),
+            creator.getId().equals(memberId)
         );
     }
 
-    public static ReviewInfo fromEntity(Review review, List<ReviewKeyword> reviewKeywords) {
+    public static ReviewInfo fromEntity(Review review, List<ReviewKeyword> reviewKeywords, Long memberId) {
         Member creator = review.getCreator();
         return new ReviewInfo(
             review.getId(),
@@ -55,7 +57,9 @@ public record ReviewInfo(
                 Keyword keyword = reviewKeyword.getKeyword();
                 return new KeywordInfo(keyword.getId(), keyword.getContent(), keyword.getType());
             }).toList(),
-            (long) review.getComments().size()
+            (long) review.getComments().size(),
+            creator.getId().equals(memberId)
+
         );
     }
 
