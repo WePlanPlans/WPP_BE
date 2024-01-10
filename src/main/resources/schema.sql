@@ -235,7 +235,7 @@ create table TripLikedItem
 
 create table TripLikedItemPreference
 (
-    tripLikedItemPreferenceId bigint not null
+    tripLikedItemPreferenceId bigint auto_increment
         primary key,
     prefer                    bit    null,
     notPrefer                 bit    null,
