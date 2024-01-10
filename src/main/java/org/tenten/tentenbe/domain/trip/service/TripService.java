@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.member.exception.MemberException;
 import org.tenten.tentenbe.domain.member.model.Member;
+import org.tenten.tentenbe.domain.member.model.Survey;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.tour.exception.TourException;
 import org.tenten.tentenbe.domain.tour.model.TourItem;
@@ -29,6 +30,7 @@ import org.tenten.tentenbe.global.common.enums.TripAuthority;
 import org.tenten.tentenbe.global.common.enums.TripStatus;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -164,15 +166,44 @@ public class TripService {
                 .build());
 
         tripLikedItemPreference.setPreferAndNotPrefer(prefer, notPrefer);
-
         tripLikedItemPreferenceRepository.save(tripLikedItemPreference);
     }
 
     @Transactional(readOnly = true)
-    public TripSurveyResponse getTripSurveys(Long tripId) {
+    public TripSurveyResponse getTripSurveys(Long tripId) { //TODO : 여행취향UI에 따라서 바뀔 가능성 있음.
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
-        return null;
+
+        List<TripMember> tripMembers = tripMemberRepository.findByTrip(trip);
+        long planningTotalCount = 0; long planningCount = 0;
+        long activeHoursTotalCount = 0; long activeHoursCount = 0;
+        long accommodationTotalCount = 0; long accommodationCount = 0;
+        long foodTotalCount = 0; long foodCount = 0;
+        long tripStyleTotalCount = 0; long tripStyleCount = 0;
+
+        for (TripMember tripMember : tripMembers) {
+            Member member = tripMember.getMember();
+            Survey survey = member.getSurvey();
+
+            planningTotalCount += survey.getPlanning() != null ? 1 : 0;
+            planningCount += "철저하게".equals(survey.getPlanning()) ? 1 : 0;
+            activeHoursTotalCount += survey.getActiveHours() != null ? 1 : 0;
+            activeHoursCount += "아침형".equals(survey.getActiveHours()) ? 1 : 0;
+            accommodationTotalCount += survey.getAccommodation() != null ? 1 : 0;
+            accommodationCount += "가성비".equals(survey.getAccommodation()) ? 1 : 0;
+            foodTotalCount += survey.getFood() != null ? 1 : 0;
+            foodCount += "인테리어".equals(survey.getFood()) ? 1 : 0;
+            tripStyleTotalCount += survey.getTripStyle() != null ? 1 : 0;
+            tripStyleCount += "액티비티".equals(survey.getTripStyle()) ? 1 : 0;
+        }
+
+        return new TripSurveyResponse(
+            planningTotalCount, planningCount,
+            activeHoursTotalCount, activeHoursCount,
+            accommodationTotalCount, accommodationCount,
+            foodTotalCount, foodCount,
+            tripStyleTotalCount, tripStyleCount
+        );
     }
 
     private Member getMemberById(Long memberId) { //TODO : 현재 코드는 로그인되어있는 회원만 여정조회 가능
