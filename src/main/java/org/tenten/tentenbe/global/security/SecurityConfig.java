@@ -17,7 +17,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.tenten.tentenbe.global.security.filter.JwtFilter;
-import org.tenten.tentenbe.global.security.jwt.CustomLogoutSuccessHandler;
 import org.tenten.tentenbe.global.security.jwt.JwtAuthenticationEntryPoint;
 import org.tenten.tentenbe.global.security.oauth.OAuth2UserService;
 import org.tenten.tentenbe.global.security.oauth.OAuthLoginSuccessHandler;
@@ -32,7 +31,6 @@ import static org.springframework.http.HttpMethod.OPTIONS;
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
     private final OAuth2UserService oAuth2UserService;
     private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
 
@@ -59,18 +57,11 @@ public class SecurityConfig {
             exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint);
         });
 
-        http.logout(logout -> logout
-            .logoutUrl("/api/auth/logout")
-            .logoutSuccessUrl("/api/auth/logout-redirect")
-            .clearAuthentication(true)
-            .logoutSuccessHandler(customLogoutSuccessHandler)
-        );
-
         // OAuth2 로그인
         http.oauth2Login(oauth2 -> oauth2
             .userInfoEndpoint( //OAuth 2 로그인 성공 이후 사용자 정보를 가져올 때의 설정들을 담당한다.
                 userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService)) //userService 에 소셜 로그인 성공 시 진행할 OAuth2UserService 인터페이스의 구현체를 등록
-                .successHandler(oAuthLoginSuccessHandler)
+            .successHandler(oAuthLoginSuccessHandler)
         );
 
         return http.build();
@@ -97,7 +88,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "spring.h2.console.enabled",havingValue = "true")
+    @ConditionalOnProperty(name = "spring.h2.console.enabled", havingValue = "true")
     public WebSecurityCustomizer configureH2ConsoleEnable() { // h2-console 화면설정
         return web -> web.ignoring()
             .requestMatchers(PathRequest.toH2Console());

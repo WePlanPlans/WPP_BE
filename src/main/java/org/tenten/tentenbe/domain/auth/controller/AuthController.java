@@ -15,10 +15,9 @@ import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.SignUpResponse;
 import org.tenten.tentenbe.domain.auth.service.AuthService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
-import org.tenten.tentenbe.global.util.CookieUtil;
 
-import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
+import static org.tenten.tentenbe.global.util.SecurityUtil.getCurrentMemberId;
 
 @Tag(name = "인증 관련 API", description = "유저 인증 관련 API 모음입니다.")
 @RestController
@@ -50,15 +49,9 @@ public class AuthController {
 
     @Operation(summary = "로그아웃 API", description = "로그아웃 API 입니다.")
     @PostMapping("/logout")
-    public ResponseEntity<String> logout() {
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        authService.logout(request, response, getCurrentMemberId());
         return ResponseEntity.ok("LOGOUT!");
-    }
-
-    @Operation(summary = "로그아웃시 리다이렉트 API", description = "로그아웃시 호출되는 API 입니다. Url = /logout", hidden = true)
-    @GetMapping(value = "/logout-redirect")
-    public ResponseEntity<String> logoutRedirect(HttpServletRequest request, HttpServletResponse response) {
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME); // 쿠키 삭제
-        return ResponseEntity.ok("LOGOUT");
     }
 
     @Operation(summary = "닉네임 중복 조회 API", description = "닉네임 중복 조회 API 입니다.")
