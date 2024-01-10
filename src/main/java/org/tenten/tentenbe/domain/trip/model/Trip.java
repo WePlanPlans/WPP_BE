@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.tenten.tentenbe.domain.trip.dto.request.TripInfoUpdateRequest;
+import org.tenten.tentenbe.domain.trip.dto.response.TripInfoUpdateResponse;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
 import org.tenten.tentenbe.global.common.enums.TripStatus;
 import org.tenten.tentenbe.global.converter.MapConverter;
@@ -49,6 +51,7 @@ public class Trip extends BaseTimeEntity {
     @Convert(converter = MapConverter.class)
     @Column(columnDefinition = "JSON")
     private Map<String, Long> tripPathPriceMap;
+
     @OneToMany(mappedBy = "trip", fetch = LAZY, cascade = REMOVE)
     private final List<TripMember> tripMembers = new ArrayList<>();
 
@@ -57,5 +60,22 @@ public class Trip extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "trip", fetch = LAZY, cascade = REMOVE)
     private final List<TripLikedItem> tripLikedItems = new ArrayList<>();
+
+    public TripInfoUpdateResponse updateTripInfo(TripInfoUpdateRequest request) {
+        this.tripName = request.tripName();
+        this.numberOfPeople = request.numberOfPeople();
+        this.startDate = request.startDate();
+        this.endDate = request.endDate();
+        this.area = request.area();
+        this.subarea = request.subarea();
+        return new TripInfoUpdateResponse(
+            request.tripName(),
+            request.numberOfPeople(),
+            request.startDate(),
+            request.endDate(),
+            request.area(),
+            request.subarea()
+        );
+    }
 
 }

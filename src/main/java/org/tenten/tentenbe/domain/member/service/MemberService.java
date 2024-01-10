@@ -26,7 +26,6 @@ import org.tenten.tentenbe.domain.review.dto.response.MemberReviewResponse;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.review.repository.ReviewRepository;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
-import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.global.s3.ImageUploadDto;
 import org.tenten.tentenbe.global.s3.S3Uploader;
 import org.tenten.tentenbe.global.util.CookieUtil;
@@ -43,12 +42,6 @@ public class MemberService {
     private final S3Uploader s3Uploader;
     private final PasswordEncoder passwordEncoder;
     private final LikedItemRepository likedItemRepository;
-
-    @Transactional(readOnly = true)
-    public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
-
-        return null;
-    }
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, Pageable pageable) {
