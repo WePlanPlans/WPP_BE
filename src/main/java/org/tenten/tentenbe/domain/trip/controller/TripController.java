@@ -113,8 +113,8 @@ public class TripController {
         @PathVariable("tourId") Long tourId,
         @Parameter(name = "prefer", description = "선호", in = QUERY)
         @RequestParam("prefer") Boolean prefer,
-        @Parameter(name = "prefer", description = "비선호", in = QUERY)
-        @RequestParam("prefer") Boolean notPrefer
+        @Parameter(name = "notPrefer", description = "비선호", in = QUERY)
+        @RequestParam("notPrefer") Boolean notPrefer
     ) {
         tripService.preferOrNotTourInOurTrip(getCurrentMemberId(), tripId, tourId, prefer, notPrefer);
         return ResponseEntity.ok(GlobalResponse.ok(SUCCESS));
