@@ -17,6 +17,7 @@ import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
+import org.tenten.tentenbe.global.util.CookieUtil;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -57,12 +58,15 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         String refreshToken = tokenInfoDTO.getRefreshToken();
         member.getRefreshToken().updateToken(refreshToken);
 
+        CookieUtil.storeRefreshTokenInCookie(response, refreshToken);
+
         StringBuilder sb = new StringBuilder();
-        sb.append("https://weplanplans.vercel.app/") // todo : 배포 주소 url 확인
+        sb.append("https://dev-weplanplans.vercel.app/kakao") // todo : 배포 주소 url 확인
             .append("?nickname=").append(URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8))
             .append("&email=").append(email)
             .append("&gender=").append(member.getGenderType())
             .append("&age_range=").append(member.getAgeType())
+            .append("&token=").append(tokenInfoDTO.toTokenIssueDTO())
             .append("&profile_image=").append(member.getProfileImageUrl());
 
         String redirectURI = sb.toString();
