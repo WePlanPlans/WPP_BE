@@ -14,7 +14,9 @@ public record TripLikedSimpleResponse(
     @Schema(defaultValue = "100")
     Long reviewCount,
     @Schema(defaultValue = "false")
-    Boolean preferred,
+    Boolean prefer,
+    @Schema(defaultValue = "true")
+    Boolean notPrefer,
     @Schema(defaultValue = "4")
     Long preferTotalCount,
     @Schema(defaultValue = "2")
