@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.ReissueTokenDto;
 import org.tenten.tentenbe.domain.token.exception.ExpireAccessTokenException;
+import org.tenten.tentenbe.domain.token.exception.InvalidRefreshTokenException;
+import org.tenten.tentenbe.domain.token.exception.RefreshTokenNotFoundException;
 import org.tenten.tentenbe.global.response.ErrorResponse;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.util.CookieUtil;
@@ -23,6 +26,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.*;
 
 @RequiredArgsConstructor
@@ -35,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
-        log.info(request.getMethod()+" "+ request.getRequestURI());
+        log.info(request.getMethod() + " " + request.getRequestURI());
         log.info(request.getHeader("Origin"));
         try {
             String accessToken = extractTokenFromRequest(request);
@@ -47,7 +51,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     log.info("Access Token 만료!");
-                    throw new ExpireAccessTokenException("Access Token 만료!");
+                    throw new ExpireAccessTokenException();
                 }
             }
             filterChain.doFilter(request, response);
@@ -57,25 +61,50 @@ public class JwtFilter extends OncePerRequestFilter {
 
             Optional<Cookie> cookie = CookieUtil.getCookie(request, REFRESH_TOKEN_COOKIE_NAME);
             if (cookie.isEmpty()) { // 쿠키가 만료됐는지 확인
-                throw new ExpireAccessTokenException("Refresh Token 만료!");
-            }
-            String refreshToken = cookie.get().getValue(); // 쿠키에서 리프레쉬 토큰 가져오기
-
-            // 리프레쉬 토큰이 db에 있는 리프레쉬 토큰과 일치하는지 확인
-            if (jwtTokenProvider.validateRefreshTokenInDatabase(refreshToken)) {
-                // 액세스 토큰 재발급
-                Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-                String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
-                ReissueTokenDto reissueTokenDto = ReissueTokenDto.builder()
-                    .accessToken(newAccessToken)
-                    .build();
-                String result = mapper.writeValueAsString(reissueTokenDto);
-                response.setStatus(response.SC_CREATED);
-                setResponse(request, response);
                 try {
-                    response.getWriter().write(result);
-                } catch (IOException exception) {
-                    e.printStackTrace();
+                    throw new RefreshTokenNotFoundException("Refresh Token이 존재하지 않습니다.", HttpStatus.UNAUTHORIZED);
+                } catch (RefreshTokenNotFoundException ex) {
+                    logException(ex);
+                    String result = mapper.writeValueAsString(new ErrorResponse(SC_UNAUTHORIZED, ex.getMessage()));
+                    response.setStatus(response.SC_UNAUTHORIZED);
+                    setResponse(request, response);
+                    try {
+                        response.getWriter().write(result);
+                    } catch (IOException exception) {
+                        ex.printStackTrace();
+                    }
+                }
+            } else {
+                String refreshToken = cookie.get().getValue(); // 쿠키에서 리프레쉬 토큰 가져오기
+
+                // 리프레쉬 토큰이 db에 있는 리프레쉬 토큰과 일치하는지 확인
+                try {
+                    if (jwtTokenProvider.validateRefreshTokenInDatabase(refreshToken)) {
+                        // 액세스 토큰 재발급
+                        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+                        String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+                        ReissueTokenDto reissueTokenDto = ReissueTokenDto.builder()
+                            .accessToken(newAccessToken)
+                            .build();
+                        String result = mapper.writeValueAsString(reissueTokenDto);
+                        response.setStatus(response.SC_CREATED);
+                        setResponse(request, response);
+                        try {
+                            response.getWriter().write(result);
+                        } catch (IOException exception) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (InvalidRefreshTokenException ex) {
+                    logException(ex);
+                    String result = mapper.writeValueAsString(new ErrorResponse(SC_UNAUTHORIZED, ex.getMessage()));
+                    response.setStatus(response.SC_UNAUTHORIZED);
+                    setResponse(request, response);
+                    try {
+                        response.getWriter().write(result);
+                    } catch (IOException exception) {
+                        ex.printStackTrace();
+                    }
                 }
             }
 
@@ -102,7 +131,6 @@ public class JwtFilter extends OncePerRequestFilter {
         } else {
             response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
         }
-
     }
 
     private static void logException(Exception e) {

@@ -10,10 +10,12 @@ import org.tenten.tentenbe.domain.trip.dto.request.TripInfoUpdateRequest;
 import org.tenten.tentenbe.domain.trip.dto.response.TripInfoUpdateResponse;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
 import org.tenten.tentenbe.global.common.enums.TripStatus;
+import org.tenten.tentenbe.global.converter.MapConverter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.EnumType.STRING;
@@ -46,6 +48,9 @@ public class Trip extends BaseTimeEntity {
     private Long tripItemPriceSum;
     @ColumnDefault("0")
     private Long transportationPriceSum;
+    @Convert(converter = MapConverter.class)
+    @Column(columnDefinition = "JSON")
+    private Map<String, Long> tripPathPriceMap;
 
     @OneToMany(mappedBy = "trip", fetch = LAZY, cascade = REMOVE)
     private final List<TripMember> tripMembers = new ArrayList<>();

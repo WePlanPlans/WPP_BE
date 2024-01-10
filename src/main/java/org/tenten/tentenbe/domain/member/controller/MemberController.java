@@ -3,6 +3,8 @@ package org.tenten.tentenbe.domain.member.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -95,8 +97,8 @@ public class MemberController {
 
     @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API 입니다.")
     @DeleteMapping()
-    public ResponseEntity<GlobalResponse> deleteMember() {
-        memberService.deleteMember(getCurrentMemberId());
+    public ResponseEntity<GlobalResponse> deleteMember(HttpServletRequest request, HttpServletResponse response) {
+        memberService.deleteMember(getCurrentMemberId(), request, response);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
 
