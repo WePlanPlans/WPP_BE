@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tenten.tentenbe.domain.member.exception.MemberException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.tour.exception.TourException;
@@ -77,7 +78,8 @@ public class TripService {
     @Transactional(readOnly = true)
     public TripDetailResponse getTrip(Long memberId, Long tripId) {
         getMemberOrNullById(memberId);
-        Trip trip = tripRepository.getReferenceById(tripId);
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         return new TripDetailResponse(
             trip.getTripName(),
             trip.getStartDate(),
@@ -89,7 +91,8 @@ public class TripService {
     public TripInfoUpdateResponse updateTrip(Long memberId, Long tripId, TripInfoUpdateRequest request) {
         Member member = getMemberOrNullById(memberId);
 //        validateWriter(member);
-        Trip trip = tripRepository.getReferenceById(tripId);
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         TripInfoUpdateResponse tripInfoUpdateResponse = trip.updateTripInfo(request);
         tripRepository.save(trip);
         return tripInfoUpdateResponse;
@@ -104,7 +107,8 @@ public class TripService {
     public void LikeTourInOurTrip(Long memberId, Long tripId, TripLikedItemRequest request) {
         Member member = getMemberOrNullById(memberId);
 //        validateWriter(member);
-        Trip trip = tripRepository.getReferenceById(tripId);
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         request.tourItemIds().stream()
             .map(tourItemId -> tourItemRepository.findById(tourItemId)
                 .orElseThrow(() -> new TourException("아이디에 해당하는 여행지가 없습니다. tourItemId : " + tourItemId, NOT_FOUND)))
@@ -119,7 +123,8 @@ public class TripService {
         Member member = getMemberOrNullById(memberId);
 //        validateWriter(member);
         Long categoryCode = findCategoryCode(categoryName);
-        Trip trip = tripRepository.getReferenceById(tripId);
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         tripLikedItemRepository.findTripLikedItemsById(memberId, tripId, categoryCode, pageable);
 
         return null;
@@ -160,7 +165,10 @@ public class TripService {
         tripLikedItemPreferenceRepository.save(tripLikedItemPreference);
     }
 
+    @Transactional(readOnly = true)
     public TripSurveyResponse getTripSurveys(Long tripId) {
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         return null;
     }
 
@@ -168,7 +176,7 @@ public class TripService {
         if(memberId != null) {
             return memberRepository.getReferenceById(memberId);
         }
-        throw new IllegalArgumentException("memberId가 유효하지 않습니다.");
+        throw new MemberException("memberId가 유효하지 않습니다.", NOT_FOUND);
     }
 
 //    private void validateWriter(Member member) {
