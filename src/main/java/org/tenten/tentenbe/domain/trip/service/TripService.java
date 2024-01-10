@@ -76,8 +76,7 @@ public class TripService {
     }
 
     @Transactional(readOnly = true)
-    public TripDetailResponse getTrip(Long memberId, Long tripId) {
-        getMemberOrNullById(memberId);
+    public TripDetailResponse getTrip(Long tripId) {
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         return new TripDetailResponse(
