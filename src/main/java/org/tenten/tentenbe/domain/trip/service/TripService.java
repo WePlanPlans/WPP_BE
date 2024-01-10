@@ -31,6 +31,7 @@ import org.tenten.tentenbe.global.common.enums.TripStatus;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -114,11 +115,14 @@ public class TripService {
             .map(tourItemId -> tourItemRepository.findById(tourItemId)
                 .orElseThrow(() -> new TourException("아이디에 해당하는 여행지가 없습니다. tourItemId : " + tourItemId, NOT_FOUND)))
             .forEach(tourItem -> {
-                tripLikedItemRepository.findByTripAndTourItem(trip, tourItem)
-                        .orElse(tripLikedItemRepository.save(TripLikedItem.builder()
-                            .tourItem(tourItem)
-                            .trip(trip)
-                            .build()));
+                Optional<TripLikedItem> existingTripLikedItem = tripLikedItemRepository.findByTripAndTourItem(trip, tourItem);
+                if (existingTripLikedItem.isEmpty()) {
+                    TripLikedItem newTripLikedItem = TripLikedItem.builder()
+                        .tourItem(tourItem)
+                        .trip(trip)
+                        .build();
+                    tripLikedItemRepository.save(newTripLikedItem);
+                }
             });
     }
 
