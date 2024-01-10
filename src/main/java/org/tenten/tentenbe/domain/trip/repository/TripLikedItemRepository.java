@@ -5,8 +5,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.tenten.tentenbe.domain.tour.model.TourItem;
 import org.tenten.tentenbe.domain.trip.dto.response.TripLikedSimpleResponse;
+import org.tenten.tentenbe.domain.trip.model.Trip;
 import org.tenten.tentenbe.domain.trip.model.TripLikedItem;
+
+import java.util.Optional;
 
 public interface TripLikedItemRepository extends JpaRepository<TripLikedItem, Long> {
     @Query("SELECT new org.tenten.tentenbe.domain.trip.dto.response.TripLikedSimpleResponse(" +
@@ -30,4 +34,6 @@ public interface TripLikedItemRepository extends JpaRepository<TripLikedItem, Lo
         @Param("category") Long category,
         Pageable pageable
     );
+
+    Optional<TripLikedItem> findByTripAndTourItem(Trip trip, TourItem tourItem);
 }
