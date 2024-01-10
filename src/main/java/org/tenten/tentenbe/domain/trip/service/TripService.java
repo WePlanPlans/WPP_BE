@@ -170,40 +170,68 @@ public class TripService {
     }
 
     @Transactional(readOnly = true)
-    public TripSurveyResponse getTripSurveys(Long tripId) { //TODO : 여행취향UI에 따라서 바뀔 가능성 있음.
+    public TripSurveyResponse getTripSurveys(Long tripId) {
         Trip trip = tripRepository.findById(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : " + tripId, NOT_FOUND));
 
         List<TripMember> tripMembers = tripMemberRepository.findByTrip(trip);
-        long planningTotalCount = 0; long planningCount = 0;
-        long activeHoursTotalCount = 0; long activeHoursCount = 0;
-        long accommodationTotalCount = 0; long accommodationCount = 0;
-        long foodTotalCount = 0; long foodCount = 0;
-        long tripStyleTotalCount = 0; long tripStyleCount = 0;
 
-        for (TripMember tripMember : tripMembers) {
-            Member member = tripMember.getMember();
-            Survey survey = member.getSurvey();
-
-            planningTotalCount += survey.getPlanning() != null ? 1 : 0;
-            planningCount += "철저하게".equals(survey.getPlanning()) ? 1 : 0;
-            activeHoursTotalCount += survey.getActiveHours() != null ? 1 : 0;
-            activeHoursCount += "아침형".equals(survey.getActiveHours()) ? 1 : 0;
-            accommodationTotalCount += survey.getAccommodation() != null ? 1 : 0;
-            accommodationCount += "가성비".equals(survey.getAccommodation()) ? 1 : 0;
-            foodTotalCount += survey.getFood() != null ? 1 : 0;
-            foodCount += "인테리어".equals(survey.getFood()) ? 1 : 0;
-            tripStyleTotalCount += survey.getTripStyle() != null ? 1 : 0;
-            tripStyleCount += "액티비티".equals(survey.getTripStyle()) ? 1 : 0;
-        }
+        SurveyCounter counter = new SurveyCounter();
+        tripMembers.stream()
+            .map(TripMember::getMember)
+            .map(Member::getSurvey)
+            .forEach(counter::countSurvey);
 
         return new TripSurveyResponse(
-            planningTotalCount, planningCount,
-            activeHoursTotalCount, activeHoursCount,
-            accommodationTotalCount, accommodationCount,
-            foodTotalCount, foodCount,
-            tripStyleTotalCount, tripStyleCount
+            counter.planningTotal, counter.planningCount,
+            counter.activeHoursTotal, counter.activeHoursCount,
+            counter.accommodationTotal, counter.accommodationCount,
+            counter.foodTotal, counter.foodCount,
+            counter.tripStyleTotal, counter.tripStyleCount
         );
+    }
+
+    private static class SurveyCounter {
+        long planningTotal = 0, planningCount = 0;
+        long activeHoursTotal = 0, activeHoursCount = 0;
+        long accommodationTotal = 0, accommodationCount = 0;
+        long foodTotal = 0, foodCount = 0;
+        long tripStyleTotal = 0, tripStyleCount = 0;
+
+        void countSurvey(Survey survey) {
+            if (survey != null) {
+                incrementIfNotNull(survey.getPlanning(), "철저하게", this::incrementPlanning);
+                incrementIfNotNull(survey.getActiveHours(), "아침형", this::incrementActiveHours);
+                incrementIfNotNull(survey.getAccommodation(), "가성비", this::incrementAccommodation);
+                incrementIfNotNull(survey.getFood(), "인테리어", this::incrementFood);
+                incrementIfNotNull(survey.getTripStyle(), "액티비티", this::incrementTripStyle);
+            }
+        }
+
+        private void incrementIfNotNull(String value, String expectedValue, Runnable incrementMethod) {
+            if (value != null) {
+                incrementMethod.run();
+                if (expectedValue.equals(value)) {
+                    incrementMethod.run();
+                }
+            }
+        }
+
+        private void incrementPlanning() {
+            planningTotal++;
+        }
+        private void incrementActiveHours() {
+            activeHoursTotal++;
+        }
+        private void incrementAccommodation() {
+            accommodationTotal++;
+        }
+        private void incrementFood() {
+            foodTotal++;
+        }
+        private void incrementTripStyle() {
+            tripStyleTotal++;
+        }
     }
 
     private Member getMemberById(Long memberId) { //TODO : 현재 코드는 로그인되어있는 회원만 여정조회 가능

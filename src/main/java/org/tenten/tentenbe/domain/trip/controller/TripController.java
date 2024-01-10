@@ -72,7 +72,7 @@ public class TripController {
         @Parameter(name = "tripId", description = "탈퇴할 여정 아이디", in = PATH)
         @PathVariable(name = "tripId") Long tripId
     ) {
-        tripService.deleteTripMember(null, tripId);
+        tripService.deleteTripMember(getCurrentMemberId(), tripId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
 
