@@ -66,7 +66,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             .append("&email=").append(email)
             .append("&gender=").append(member.getGenderType())
             .append("&age_range=").append(member.getAgeType())
-            .append("&token=").append(tokenInfoDTO.toTokenIssueDTO())
+            .append("&token=").append(tokenInfoDTO.toTokenIssueDTO().getAccessToken())// access token
             .append("&profile_image=").append(member.getProfileImageUrl());
 
         String redirectURI = sb.toString();
