@@ -55,6 +55,7 @@ public class TripService {
             .numberOfPeople(request.numberOfPeople().orElse(1L))
             .startDate(request.startDate().orElse(LocalDate.now()))
             .endDate(request.endDate().orElse(LocalDate.now()))
+            .isDeleted(false)
             .area(request.area().orElse(null))
             .subarea(request.subarea().orElse(null))
             .tripStatus(TripStatus.BEFORE)

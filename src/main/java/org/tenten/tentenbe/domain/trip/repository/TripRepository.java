@@ -24,7 +24,7 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
         "LEFT OUTER JOIN TourItem tri ON ti.tourItem.id = tri.id " +
         "LEFT OUTER JOIN TripMember tmAll ON t.id = tmAll.trip.id " +
         "LEFT OUTER JOIN TripMember tm ON t.id = tm.trip.id " +
-        "WHERE tm.member.id =: memberId " +
+        "WHERE tm.member.id =: memberId AND t.isDeleted = FALSE " +
         "GROUP BY t.id ORDER BY t.createdTime")
     Page<TripSimpleResponse> findTripsByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 }
