@@ -12,6 +12,7 @@ import org.tenten.tentenbe.domain.auth.dto.request.LoginRequest;
 import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
 import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
+import org.tenten.tentenbe.domain.auth.dto.response.SignUpResponse;
 import org.tenten.tentenbe.domain.auth.service.AuthService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.util.CookieUtil;
@@ -28,7 +29,7 @@ public class AuthController {
 
     @Operation(summary = "회원가입 API", description = "회원가입 API 입니다.")
     @PostMapping("/signup")
-    public ResponseEntity<GlobalDataResponse<LoginResponse>> signUp(
+    public ResponseEntity<GlobalDataResponse<SignUpResponse>> signUp(
         @Valid @RequestBody SignUpRequest signUpRequest, HttpServletResponse response
     ) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.signUp(signUpRequest, response)));

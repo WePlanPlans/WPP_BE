@@ -33,7 +33,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-//    private final AuthService authService;
 
     @Override
     @Transactional
@@ -65,22 +64,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         GenderType genderEnum = extractGenderType(genderType);
         AgeType ageEnum = extractAgeType(ageType);
 
-        log.info("-------------------");
-        log.info("ageEnum={}", ageEnum); //연령대
-        log.info("genderEnum={}", genderEnum);  //성별
-        log.info("profile_image={}", profile_image); //프로필이미지
-        log.info("nickname={}", nickname);
-        log.info("-------------------");
-        log.info("kakaoAccountValue={}", kakaoAccountValue);
-
-        // 닉네임(중복체크 및 랜덤생성)
-//        log.info("nickname={}", nickname);
-//        // 닉네임이 중복이면
-//        if (authService.nicknameCheck(nickname).exists()) {
-//
-//        } else {
-//
-//        }
+        boolean nicknameCheck = nicknameCheck(nickname);
 
         boolean isExist = memberRepository.existsByEmailAndLoginType(email, KAKAO);
 
@@ -105,9 +89,24 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
             memberRepository.save(member);
             refreshTokenRepository.save(refreshToken);
+
+            if (nicknameCheck) {
+                nickname = "위플러" + (member.getId() + 321);
+                member.updateNickname(nickname);
+            }
+
         }
 
         return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), userNameAttributeName);
+    }
+
+    // 닉네임 중복 체크 및 임의 생성
+    private boolean nicknameCheck(String nickname) {
+
+        if (memberRepository.existsByNickname(nickname)) { // 존재하면
+            return true;
+        }
+        return false;
     }
 
     // 성별 추출
@@ -129,23 +128,13 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
         if (ageType != null && ageType.length() >= 1) {
             char firstChar = ageType.charAt(0);
-            switch (firstChar) {
-                case '2':
-                    ageEnum = AgeType.TWENTIES;
-                    break;
-                case '3':
-                    ageEnum = AgeType.THIRTIES;
-                    break;
-                case '4':
-                    ageEnum = AgeType.FOURTIES;
-                    break;
-                case '5':
-                    ageEnum = AgeType.ABOVE_FIFTIES;
-                    break;
-                default:
-                    ageEnum = AgeType.DEFATULT;
-                    break;
-            }
+            ageEnum = switch (firstChar) {
+                case '2' -> AgeType.TWENTIES;
+                case '3' -> AgeType.THIRTIES;
+                case '4' -> AgeType.FOURTIES;
+                case '5' -> AgeType.ABOVE_FIFTIES;
+                default -> AgeType.DEFATULT;
+            };
         }
         return ageEnum;
     }

@@ -1,5 +1,7 @@
 package org.tenten.tentenbe.domain.member.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -27,8 +29,11 @@ import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.global.s3.ImageUploadDto;
 import org.tenten.tentenbe.global.s3.S3Uploader;
+import org.tenten.tentenbe.global.util.CookieUtil;
 
 import java.util.List;
+
+import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
 
 @Service
 @RequiredArgsConstructor
@@ -91,9 +96,10 @@ public class MemberService {
     }
 
     @Transactional
-    public void deleteMember(Long memberId) {
+    public void deleteMember(Long memberId, HttpServletRequest request, HttpServletResponse response) {
         Member member = getMember(memberId);
-        memberRepository.delete(member); // TODO: 쿠키 삭제 필요성 검토
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
+        memberRepository.delete(member);
     }
 
     @Transactional

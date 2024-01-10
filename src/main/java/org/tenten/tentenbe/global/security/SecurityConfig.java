@@ -20,10 +20,12 @@ import org.tenten.tentenbe.global.security.filter.JwtFilter;
 import org.tenten.tentenbe.global.security.jwt.CustomLogoutSuccessHandler;
 import org.tenten.tentenbe.global.security.jwt.JwtAuthenticationEntryPoint;
 import org.tenten.tentenbe.global.security.oauth.OAuth2UserService;
-import org.tenten.tentenbe.global.security.oauth.OAuthLoginFailureHandler;
 import org.tenten.tentenbe.global.security.oauth.OAuthLoginSuccessHandler;
 
 import java.util.List;
+
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.OPTIONS;
 
 @Configuration
 @RequiredArgsConstructor
@@ -33,7 +35,6 @@ public class SecurityConfig {
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
     private final OAuth2UserService oAuth2UserService;
     private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
-    private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,7 +45,12 @@ public class SecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((request) -> request
-                .requestMatchers("/**").permitAll() // TODO: login이나 signup, 상품 조회처럼 인증 필요없는 url 넣기
+                .requestMatchers("/api/auth/logout").authenticated()
+                .requestMatchers(OPTIONS, "**").permitAll()
+                .requestMatchers(GET, "/").permitAll()
+                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/v1/api-docs/**"
+                    , "/api/region/**", "/api/category", "/api/tours/**", "/api-docs/**"
+                    , "/api/trips/**", "/api/reviews/**", "/api/comments/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
