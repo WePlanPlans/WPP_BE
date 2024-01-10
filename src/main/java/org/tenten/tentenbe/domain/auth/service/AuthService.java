@@ -1,5 +1,6 @@
 package org.tenten.tentenbe.domain.auth.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +17,19 @@ import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.MemberDto;
 import org.tenten.tentenbe.domain.auth.dto.response.SignUpResponse;
 import org.tenten.tentenbe.domain.auth.exception.DuplicateNicknameException;
+import org.tenten.tentenbe.domain.member.exception.UserNotFoundException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
+import org.tenten.tentenbe.domain.token.exception.LogoutMemberException;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
 import org.tenten.tentenbe.global.util.CookieUtil;
 
+import java.util.Optional;
+
+import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
 import static org.tenten.tentenbe.global.common.enums.LoginType.EMAIL;
 import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
 
@@ -40,7 +46,7 @@ public class AuthService {
     @Transactional
     public SignUpResponse signUp(SignUpRequest signUpRequest, HttpServletResponse response) {
         if (memberRepository.existsByEmail(signUpRequest.email())) {
-             throw new DuplicateNicknameException("이미 존재하는 이메일입니다.");
+            throw new DuplicateNicknameException("이미 존재하는 이메일입니다.");
         }
         // TODO : 이메일 인증
         // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
@@ -91,6 +97,21 @@ public class AuthService {
             .memberDto(MemberDto.fromEntity(member))
             .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
             .build();
+    }
+
+    @Transactional
+    public void logout(HttpServletRequest request, HttpServletResponse response, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+
+        Optional<RefreshToken> refreshTokenEntityOptional = refreshTokenRepository.findByMember_Id(memberId);
+        if (refreshTokenEntityOptional.isPresent()) {
+            member.getRefreshToken().updateToken(null);
+        } else {
+            throw new LogoutMemberException("리프레시 토큰이 데이터베이스에 없습니다.");
+        }
+
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
     }
 
     @Transactional
