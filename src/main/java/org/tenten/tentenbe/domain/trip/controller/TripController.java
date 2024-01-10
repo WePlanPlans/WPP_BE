@@ -20,6 +20,7 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
+import static org.tenten.tentenbe.global.util.SecurityUtil.*;
 
 @Tag(name = "여정 관련 API", description = "여정 관련 API 모음입니다. 소켓 통신 문서화는 노션에 별도로 작성해놓겠습니다.")
 @RestController
@@ -31,7 +32,18 @@ public class TripController {
     @Operation(summary = "여정 생성 API", description = "여정 생성 API 입니다.")
     @PostMapping()
     public ResponseEntity<GlobalDataResponse<TripCreateResponse>> createTrip(@RequestBody TripCreateRequest tripCreateRequest) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.createTrip(1L, tripCreateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.createTrip(getCurrentMemberId(), tripCreateRequest)));
+    }
+
+    @Operation(summary = "나의 여정목록 조회 API", description = "나의 여정목록 조회 API 입니다.")
+    @GetMapping()
+    public ResponseEntity<GlobalDataResponse<Page<TripSimpleResponse>>> getTrips(
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrips(getCurrentMemberId(), PageRequest.of(page, size))));
     }
 
     @Operation(summary = "여정 상세조회 API", description = "여정 상세조회 API 입니다.")
@@ -40,7 +52,7 @@ public class TripController {
         @Parameter(name = "tripId", description = "상세 조회할 여정 아이디", in = PATH)
         @PathVariable(name = "tripId") Long tripId
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrip(1L, tripId)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrip(tripId)));
     }
 
     @Operation(summary = "여정 기본정보 수정 API", description = "여정 기본정보 수정 API 입니다.")
@@ -50,7 +62,8 @@ public class TripController {
         @PathVariable(name = "tripId") Long tripId,
         @RequestBody TripInfoUpdateRequest tripInfoUpdateRequest
     ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.updateTrip(1L, tripId)));
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, tripService.updateTrip(getCurrentMemberId(), tripId, tripInfoUpdateRequest)));
     }
 
     @Operation(summary = "여정 탈퇴 API", description = "본인이 속한 여정에서 나가는 API 입니다.")
@@ -59,7 +72,7 @@ public class TripController {
         @Parameter(name = "tripId", description = "탈퇴할 여정 아이디", in = PATH)
         @PathVariable(name = "tripId") Long tripId
     ) {
-        tripService.deleteTripMember(null, tripId);
+        tripService.deleteTripMember(getCurrentMemberId(), tripId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
 
@@ -70,7 +83,7 @@ public class TripController {
         @PathVariable(name = "tripId") Long tripId,
         @RequestBody TripLikedItemRequest request
     ) {
-        tripService.LikeTourInOurTrip(tripId, request);
+        tripService.LikeTourInOurTrip(getCurrentMemberId(), tripId, request);
         return ResponseEntity.ok(GlobalResponse.ok(SUCCESS));
     }
 
@@ -87,7 +100,7 @@ public class TripController {
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, tripService.getTripLikedItems(tripId, category, PageRequest.of(page, size)))
+            .ok(SUCCESS, tripService.getTripLikedItems(getCurrentMemberId(), tripId, category, PageRequest.of(page, size)))
         );
     }
 
@@ -98,10 +111,12 @@ public class TripController {
         @PathVariable("tripId") Long tripId,
         @Parameter(name = "tourId", description = "우리의 관심 여행지 좋아요/싫어요할 여행지 아이디", in = PATH)
         @PathVariable("tourId") Long tourId,
-        @Parameter(name = "prefer", description = "true(선호)/false(비선호)", in = QUERY)
-        @RequestParam("prefer") Boolean prefer
+        @Parameter(name = "prefer", description = "선호", in = QUERY)
+        @RequestParam("prefer") Boolean prefer,
+        @Parameter(name = "notPrefer", description = "비선호", in = QUERY)
+        @RequestParam("notPrefer") Boolean notPrefer
     ) {
-        tripService.preferOrNotTourInOurTrip(1L, tripId, tourId, prefer);
+        tripService.preferOrNotTourInOurTrip(getCurrentMemberId(), tripId, tourId, prefer, notPrefer);
         return ResponseEntity.ok(GlobalResponse.ok(SUCCESS));
     }
 

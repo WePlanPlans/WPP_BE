@@ -170,12 +170,12 @@ create table TourItemImage
 
 create table Trip
 (
-    endDate        date         null,
-    startDate      date         null,
-    createdTime    datetime(6)  null,
-    modifiedTime   datetime(6)  null,
-    numberOfPeople bigint       null,
-    tripId         bigint auto_increment
+    endDate           date         null,
+    startDate         date         null,
+    createdTime       datetime(6)  null,
+    modifiedTime      datetime(6)  null,
+    numberOfPeople    bigint       null,
+    tripId            bigint auto_increment
         primary key,
     tripName       varchar(255)                    null,
     isDeleted      boolean                         null,
@@ -223,7 +223,7 @@ create table TripMember
 
 create table TripLikedItem
 (
-    tripLikedItemId bigint not null
+    tripLikedItemId bigint auto_increment
         primary key,
     tripId          bigint null,
     tourItemId      bigint null,
@@ -235,7 +235,7 @@ create table TripLikedItem
 
 create table TripLikedItemPreference
 (
-    tripLikedItemPreferenceId bigint not null
+    tripLikedItemPreferenceId bigint auto_increment
         primary key,
     prefer                    bit    null,
     notPrefer                 bit    null,

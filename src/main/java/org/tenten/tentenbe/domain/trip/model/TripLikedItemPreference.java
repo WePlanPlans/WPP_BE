@@ -29,4 +29,9 @@ public class TripLikedItemPreference {
     @ManyToOne
     @JoinColumn(name = "tripLikedItemId")
     private TripLikedItem tripLikedItem;
+
+    public void setPreferAndNotPrefer(Boolean prefer, Boolean notPrefer) {
+        this.prefer = prefer;
+        this.notPrefer = notPrefer;
+    }
 }

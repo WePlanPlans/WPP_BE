@@ -7,14 +7,16 @@ public record TripLikedSimpleResponse(
     Long tripLikedItemId,
     @Schema(defaultValue = "5")
     Long tourItemId,
-    @Schema(defaultValue = "관광지")
-    String categoryName,
+    @Schema(defaultValue = "카테고리 Id")
+    Long contentTypeId,
     @Schema(defaultValue = "4.3")
     Double ratingAverage,
     @Schema(defaultValue = "100")
     Long reviewCount,
     @Schema(defaultValue = "false")
-    Boolean preferred,
+    Boolean prefer,
+    @Schema(defaultValue = "true")
+    Boolean notPrefer,
     @Schema(defaultValue = "4")
     Long preferTotalCount,
     @Schema(defaultValue = "2")
