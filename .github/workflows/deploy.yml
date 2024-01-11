@@ -1,6 +1,6 @@
 name: tenten
 on:
-  push:
+  pull_request:
     branches:
       - main
     paths-ignore:
