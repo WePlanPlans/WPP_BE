@@ -19,8 +19,8 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
         "LEFT OUTER JOIN ReviewKeyword rk ON kw.id = rk.keyword.id " +
         "LEFT OUTER JOIN Review r ON rk.review.id = r.id " +
         "LEFT OUTER JOIN TourItem ti ON r.tourItem.id = ti.id " +
-        "WHERE ti.id IS NULL OR ti.id = :tourItemId GROUP BY kw.id HAVING kw.type = :keywordType")
-    List<TourKeywordInfo> findKeywordInfoByTourItemIdAndKeywordType(@Param("tourItemId") Long tourItemId, @Param("keywordType") KeywordType keywordType);
+        "WHERE ti.id IS NULL OR ti.id = :tourItemId GROUP BY kw.id")
+    List<TourKeywordInfo> findKeywordInfoByTourItemIdAndKeywordType(@Param("tourItemId") Long tourItemId);
 
     List<Keyword> findByType(KeywordType keywordType);
 }
