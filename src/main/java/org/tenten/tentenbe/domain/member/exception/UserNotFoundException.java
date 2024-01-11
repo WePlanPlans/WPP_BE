@@ -1,7 +1,10 @@
 package org.tenten.tentenbe.domain.member.exception;
 
-public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(String message) {
-        super(message);
+import org.springframework.http.HttpStatus;
+import org.tenten.tentenbe.global.exception.GlobalException;
+
+public class UserNotFoundException extends GlobalException {
+    public UserNotFoundException(String message, HttpStatus errorCode) {
+        super(message, errorCode);
     }
 }

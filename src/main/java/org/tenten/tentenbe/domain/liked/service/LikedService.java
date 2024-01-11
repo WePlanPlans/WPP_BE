@@ -1,6 +1,7 @@
 package org.tenten.tentenbe.domain.liked.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.liked.exception.ConflictException;
@@ -23,7 +24,7 @@ public class LikedService {
     @Transactional
     public void likeTour(Long tourId, Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다.", HttpStatus.NOT_FOUND));
         TourItem tourItem = tourItemRepository.findById(tourId)
             .orElseThrow(() -> new TourNotFoundException("해당 아이디로 존재하는 여행지가 없습니다."));
 
@@ -43,7 +44,7 @@ public class LikedService {
     @Transactional
     public void cancelLikeTour(Long tourId, Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다.", HttpStatus.NOT_FOUND));
         TourItem tourItem = tourItemRepository.findById(tourId)
             .orElseThrow(() -> new TourNotFoundException("해당 아이디로 존재하는 여행지가 없습니다."));
 
