@@ -51,15 +51,14 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findReviewByTourItemId(tourItem.getId(), pageable);
         List<ReviewInfo> reviewInfos = reviewPage.stream().map(r -> ReviewInfo.fromEntity(r, memberId)).toList();
 
-        KeywordType keywordType = KeywordType.fromCode(tourItem.getContentTypeId());
-        Long keywordTotalCount = calculateKeywordTotalCount(tourItem.getId(), keywordType);
+        Long keywordTotalCount = calculateKeywordTotalCount(tourItem.getId());
         Double ratingAverage = calculateRatingAverage(tourItem.getReviews());
         return new ReviewResponse(
             ratingAverage,
             tourItem.getReviewTotalCount(),
             keywordTotalCount,
             new PageImpl<>(reviewInfos, pageable, tourItem.getReviewTotalCount()),
-            keywordRepository.findKeywordInfoByTourItemIdAndKeywordType(tourItem.getId(), keywordType)
+            keywordRepository.findKeywordInfoByTourItemIdAndKeywordType(tourItem.getId())
         );
     }
 
@@ -70,8 +69,8 @@ public class ReviewService {
             .orElse(0.0);
     }
 
-    private Long calculateKeywordTotalCount(Long tourItemId, KeywordType keywordType) {
-        return keywordRepository.findKeywordInfoByTourItemIdAndKeywordType(tourItemId, keywordType).stream()
+    private Long calculateKeywordTotalCount(Long tourItemId) {
+        return keywordRepository.findKeywordInfoByTourItemIdAndKeywordType(tourItemId).stream()
             .mapToLong(TourKeywordInfo::keywordCount)
             .sum();
     }
