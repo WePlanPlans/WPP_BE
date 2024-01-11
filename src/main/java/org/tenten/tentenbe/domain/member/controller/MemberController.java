@@ -112,7 +112,7 @@ public class MemberController {
     )
     public ResponseEntity<GlobalDataResponse<ImageUploadDto>> uploadImage(
         @RequestParam("images") MultipartFile multipartFile) throws BadRequestException {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.uploadImage(multipartFile)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.uploadImage(multipartFile, getCurrentMemberId())));
     }
 
 }
