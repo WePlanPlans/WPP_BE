@@ -129,6 +129,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         if (ageType != null && ageType.length() >= 1) {
             char firstChar = ageType.charAt(0);
             ageEnum = switch (firstChar) {
+                case '1' -> AgeType.TEENAGER;
                 case '2' -> AgeType.TWENTIES;
                 case '3' -> AgeType.THIRTIES;
                 case '4' -> AgeType.FOURTIES;
