@@ -9,7 +9,6 @@ import org.hibernate.annotations.ColumnDefault;
 import org.tenten.tentenbe.domain.trip.dto.request.TripInfoUpdateRequest;
 import org.tenten.tentenbe.domain.trip.dto.response.TripInfoUpdateResponse;
 import org.tenten.tentenbe.global.common.BaseTimeEntity;
-import org.tenten.tentenbe.global.common.enums.TripStatus;
 import org.tenten.tentenbe.global.converter.MapConverter;
 
 import java.time.LocalDate;
@@ -39,8 +38,6 @@ public class Trip extends BaseTimeEntity {
     private LocalDate endDate;
     private String area;
     private String subarea;
-    @Enumerated(STRING)
-    private TripStatus tripStatus;
     private Boolean isDeleted;
     private String tripName;
     private Long budget;

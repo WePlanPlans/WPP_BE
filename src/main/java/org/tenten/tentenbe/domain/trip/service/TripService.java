@@ -27,7 +27,6 @@ import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.domain.trip.repository.*;
 import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.common.enums.TripAuthority;
-import org.tenten.tentenbe.global.common.enums.TripStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -59,7 +58,6 @@ public class TripService {
             .isDeleted(false)
             .area(request.area().orElse(null))
             .subarea(request.subarea().orElse(null))
-            .tripStatus(TripStatus.BEFORE)
             .budget(0L)
             .build();
         TripMember tripMember = TripMember.builder()
