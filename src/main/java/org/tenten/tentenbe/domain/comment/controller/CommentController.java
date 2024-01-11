@@ -2,9 +2,6 @@ package org.tenten.tentenbe.domain.comment.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import org.tenten.tentenbe.domain.comment.dto.request.CommentCreateRequest;
 import org.tenten.tentenbe.domain.comment.dto.request.CommentUpdateRequest;
 import org.tenten.tentenbe.domain.comment.dto.response.CommentInfo;
-import org.tenten.tentenbe.domain.comment.dto.response.CommentResponse;
+import org.tenten.tentenbe.domain.comment.exception.CommentException;
 import org.tenten.tentenbe.domain.comment.service.CommentService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.response.GlobalResponse;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
 import static org.tenten.tentenbe.global.util.SecurityUtil.getCurrentMemberId;
@@ -36,7 +34,7 @@ public class CommentController {
     ) {
         Long currentMemberId = getCurrentMemberId();
         if (currentMemberId == null) {
-            currentMemberId = 12L;
+            throw new CommentException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.createComment(currentMemberId, commentCreateRequest)));
     }
@@ -51,7 +49,7 @@ public class CommentController {
     ) {
         Long currentMemberId = getCurrentMemberId();
         if (currentMemberId == null) {
-            currentMemberId = 12L;
+            throw new CommentException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.updateComment(currentMemberId, commentId, commentUpdateRequest)));
     }
@@ -65,7 +63,7 @@ public class CommentController {
     ) {
         Long currentMemberId = getCurrentMemberId();
         if (currentMemberId == null) {
-            currentMemberId = 12L;
+            throw new CommentException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
         commentService.deleteComment(currentMemberId, commentId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));

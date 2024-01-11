@@ -12,12 +12,14 @@ import org.tenten.tentenbe.domain.review.dto.request.ReviewCreateRequest;
 import org.tenten.tentenbe.domain.review.dto.request.ReviewUpdateRequest;
 import org.tenten.tentenbe.domain.review.dto.response.KeywordResponse;
 import org.tenten.tentenbe.domain.review.dto.response.ReviewInfo;
+import org.tenten.tentenbe.domain.review.exception.ReviewException;
 import org.tenten.tentenbe.domain.review.service.ReviewService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.response.GlobalResponse;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
 import static org.tenten.tentenbe.global.util.SecurityUtil.getCurrentMemberId;
@@ -35,7 +37,7 @@ public class ReviewController {
     public ResponseEntity<GlobalDataResponse<ReviewInfo>> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
         Long currentMemberId = getCurrentMemberId();
         if (currentMemberId == null) {
-            currentMemberId = 12L;
+            throw new ReviewException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.createReview(currentMemberId, reviewCreateRequest)));
     }
@@ -49,7 +51,7 @@ public class ReviewController {
         @RequestBody ReviewUpdateRequest reviewUpdateRequest) {
         Long currentMemberId = getCurrentMemberId();
         if (currentMemberId == null) {
-            currentMemberId = 12L;
+            throw new ReviewException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.updateReview(currentMemberId, reviewId, reviewUpdateRequest)));
     }
@@ -61,7 +63,7 @@ public class ReviewController {
         @PathVariable("reviewId") Long reviewId) {
         Long currentMemberId = getCurrentMemberId();
         if (currentMemberId == null) {
-            currentMemberId = 12L;
+            throw new ReviewException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
         reviewService.deleteReview(currentMemberId, reviewId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
