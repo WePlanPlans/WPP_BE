@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,8 +85,13 @@ public class MemberService {
     @Transactional
     public void updatePassword(Long currentMemberId, PasswordUpdateRequest passwordUpdateRequest) {
         Member member = getMember(currentMemberId);
-        String encodedPassword = passwordEncoder.encode(passwordUpdateRequest.password());
-        member.updatePassword(encodedPassword);
+        String memberPassword = member.getPassword();
+        if (!passwordEncoder.matches(passwordUpdateRequest.password(), memberPassword)) {
+            throw new UserNotFoundException("비밀번호가 일치하지 않습니다.", HttpStatus.NOT_FOUND);
+        } else {
+            String encodedNewPassword = passwordEncoder.encode(passwordUpdateRequest.newPassword());
+            member.updatePassword(encodedNewPassword);
+        }
     }
 
     @Transactional
@@ -96,9 +102,11 @@ public class MemberService {
     }
 
     @Transactional
-    public ImageUploadDto uploadImage(MultipartFile multipartFile) throws BadRequestException {
+    public ImageUploadDto uploadImage(MultipartFile multipartFile, Long memberId) throws BadRequestException {
         try {
             String uploadedUrl = s3Uploader.uploadFiles(multipartFile, "static");
+            Member member = getMember(memberId);
+            member.updateProfileImageUrl(uploadedUrl);
             return ImageUploadDto.builder()
                 .imageUrl(uploadedUrl)
                 .message("이미지 업로드에 성공했습니다.")
@@ -110,7 +118,7 @@ public class MemberService {
 
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다."));
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다.", HttpStatus.NOT_FOUND));
     }
 
 }

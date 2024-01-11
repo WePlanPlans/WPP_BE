@@ -1,6 +1,7 @@
 package org.tenten.tentenbe.domain.member.dto.request;
 
 public record PasswordUpdateRequest(
-    String password
+    String password,
+    String newPassword
 ) {
 }
