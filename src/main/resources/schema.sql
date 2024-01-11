@@ -179,7 +179,6 @@ create table Trip
         primary key,
     tripName       varchar(255)                    null,
     isDeleted      boolean                         null,
-    tripStatus     enum ('BEFORE', 'AFTER', 'ING') null,
     area           varchar(255)                    null,
     subarea        varchar(255)                    null,
     budget         bigint                          null,
