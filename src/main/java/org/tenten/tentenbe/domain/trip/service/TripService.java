@@ -209,8 +209,8 @@ public class TripService {
             if (survey != null) {
                 incrementIfNotNull(survey.getPlanning(), "철저하게", this::incrementPlanning);
                 incrementIfNotNull(survey.getActiveHours(), "아침형", this::incrementActiveHours);
-                incrementIfNotNull(survey.getAccommodation(), "가성비", this::incrementAccommodation);
-                incrementIfNotNull(survey.getFood(), "인테리어", this::incrementFood);
+                incrementIfNotNull(survey.getAccommodation(), "분위기", this::incrementAccommodation);
+                incrementIfNotNull(survey.getFood(), "노포", this::incrementFood);
                 incrementIfNotNull(survey.getTripStyle(), "액티비티", this::incrementTripStyle);
             }
         }
