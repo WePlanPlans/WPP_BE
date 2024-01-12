@@ -62,6 +62,7 @@ public class CookieUtil {
             for (Cookie cookie : cookies) {
                 if (name.equals(cookie.getName())) {
                     cookie.setValue("");
+                    cookie.setSecure(true);
                     cookie.setPath("/");
                     cookie.setMaxAge(0);
                     response.addCookie(cookie);
