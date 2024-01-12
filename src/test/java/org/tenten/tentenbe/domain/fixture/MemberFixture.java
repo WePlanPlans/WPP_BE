@@ -13,7 +13,6 @@ import static org.tenten.tentenbe.domain.fixture.AuthFixture.*;
 public class MemberFixture {
 
     public static TourItem tourItem(){
-
         return TourItem.builder()
                 .id(1L)
                 .contentId(1L)
@@ -32,10 +31,28 @@ public class MemberFixture {
                 .reviewTotalCount(10L)
                 .likedTotalCount(20L)
                 .build();
-
-
     }
 
+    public static TourItem tourItemSecond(){
+        return TourItem.builder()
+                .id(1L)
+                .contentId(1L)
+                .contentTypeId(12L)
+                .areaCode(1L)
+                .subAreaCode(1L)
+                .address("search address")
+                .detailedAddress("search address")
+                .originalThumbnailUrl("origin thumnail url")
+                .smallThumbnailUrl("small thumnail url")
+                .title("test title")
+                .zipcode("test zip code")
+                .tel("test telephone")
+                .longitude("longitude")
+                .latitude("latitude")
+                .reviewTotalCount(10L)
+                .likedTotalCount(20L)
+                .build();
+    }
 
 
     public static LikedItem likedItem(){

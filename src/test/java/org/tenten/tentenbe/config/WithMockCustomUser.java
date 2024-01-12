@@ -1,4 +1,4 @@
-package org.tenten.tentenbe.common;
+package org.tenten.tentenbe.config;
 
 import org.springframework.security.test.context.support.WithSecurityContext;
 

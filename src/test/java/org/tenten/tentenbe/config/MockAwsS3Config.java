@@ -1,4 +1,4 @@
-package org.tenten.tentenbe.common;
+package org.tenten.tentenbe.config;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;

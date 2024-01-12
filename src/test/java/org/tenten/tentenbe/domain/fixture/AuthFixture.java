@@ -75,7 +75,7 @@ public class AuthFixture {
 
     public static Member updateMember(){
         return Member.builder()
-                .id(1L)
+                .id(2L)
                 .ageType(TEENAGER)
                 .loginType(LoginType.EMAIL)
                 .genderType(GenderType.DEFAULT)
