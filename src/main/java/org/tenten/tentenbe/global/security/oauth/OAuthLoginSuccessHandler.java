@@ -63,7 +63,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         boolean isExist = (boolean) kakaoAccountValue.get("isExist");
 
         StringBuilder sb = new StringBuilder();
-        sb.append("https://dev-weplanplans.vercel.app/kakao") // todo : 배포 주소 url 확인
+        sb.append("https://dev-weplanplans.vercel.app/login/kakao") // todo : 배포 주소 url 확인
             .append("?nickname=").append(URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8))
             .append("&email=").append(email)
             .append("&gender=").append(member.getGenderType())
