@@ -133,7 +133,7 @@ public class MemberServiceTest {
     public void updatePasswordSuccess() throws Exception {
 
         Member member = newBasicMember();
-        PasswordUpdateRequest passwordUpdateRequest = new PasswordUpdateRequest("changedPassword");
+        PasswordUpdateRequest passwordUpdateRequest = new PasswordUpdateRequest("changedPassword","newPassword");
 
         given(memberRepository.findById(member.getId())).willReturn(Optional.ofNullable(member));
         given(passwordEncoder.encode(any())).willReturn(String.valueOf(passwordUpdateRequest));

@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.tenten.tentenbe.common.WithMockCustomUser;
+import org.tenten.tentenbe.config.WithMockCustomUser;
 import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
 import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;

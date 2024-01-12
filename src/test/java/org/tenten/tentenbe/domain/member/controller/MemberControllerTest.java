@@ -19,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.tenten.tentenbe.common.WithMockCustomUser;
+import org.tenten.tentenbe.config.WithMockCustomUser;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.request.PasswordUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.request.SurveyUpdateRequest;
@@ -148,7 +148,7 @@ public class MemberControllerTest {
     @WithMockCustomUser
     @DisplayName("비밀번호 수정")
     public void updatePasswordSuccess() throws Exception {
-        PasswordUpdateRequest passwordUpdateRequest = new PasswordUpdateRequest("changedPassword");
+        PasswordUpdateRequest passwordUpdateRequest = new PasswordUpdateRequest("changedPassword","newPassword");
 
         mockMvc.perform(put("/api/member/password")
                         .contentType(MediaType.APPLICATION_JSON)

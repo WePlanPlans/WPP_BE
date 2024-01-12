@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
+import org.tenten.tentenbe.common.RepositoryTest;
 import org.tenten.tentenbe.domain.liked.model.LikedItem;
 import org.tenten.tentenbe.domain.liked.repository.LikedItemRepository;
 import org.tenten.tentenbe.domain.member.model.Member;
@@ -28,32 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.tenten.tentenbe.domain.fixture.AuthFixture.newBasicMember;
 import static org.tenten.tentenbe.domain.fixture.MemberFixture.*;
 
-@DataJpaTest
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class MemberRepositoryTest {
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private LikedItemRepository likedItemRepository;
-
-    @Autowired
-    private ReviewRepository reviewRepository;
-
-    @Autowired
-    private TourItemRepository tourItemRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @BeforeEach
-    public void reset() {
-        entityManager.flush();
-        memberRepository.deleteAll();
-        likedItemRepository.deleteAll();
-    }
+public class MemberRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("likedItemRepository 에서 회원을 조회할 수 있는지")
@@ -94,25 +70,17 @@ public class MemberRepositoryTest {
         @Test
         @DisplayName("회원 조회가 가능한지")
         public void findMemberSuccess() throws Exception {
-
             Member savedMember = memberRepository.save(newBasicMember());
-
             Optional<Member> findMember = memberRepository.findById(savedMember.getId());
-
             assertThat(savedMember.getId()).isEqualTo(findMember.get().getId());
-
         }
 
         @Test
         @DisplayName("회원 삭제가 가능한지")
         public void deleteMemberSuccess() throws Exception {
-
             Member savedMember = memberRepository.save(newBasicMember());
-
             memberRepository.delete(savedMember);
-
             List<Member> memberList = memberRepository.findAll();
-
             assertThat(memberList.size()).isEqualTo(0);
 
         }
