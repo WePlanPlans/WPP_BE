@@ -67,6 +67,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         boolean nicknameCheck = nicknameCheck(nickname);
 
         boolean isExist = memberRepository.existsByEmailAndLoginType(email, KAKAO);
+        kakaoAccountValue.put("isExist", isExist);
 
         if(!isExist) {
             //회원가입 처리
