@@ -67,6 +67,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         boolean nicknameCheck = nicknameCheck(nickname);
 
         boolean isExist = memberRepository.existsByEmailAndLoginType(email, KAKAO);
+        kakaoAccountValue.put("isExist", isExist);
 
         if(!isExist) {
             //회원가입 처리
@@ -129,6 +130,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         if (ageType != null && ageType.length() >= 1) {
             char firstChar = ageType.charAt(0);
             ageEnum = switch (firstChar) {
+                case '1' -> AgeType.TEENAGER;
                 case '2' -> AgeType.TWENTIES;
                 case '3' -> AgeType.THIRTIES;
                 case '4' -> AgeType.FOURTIES;
