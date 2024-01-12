@@ -83,7 +83,8 @@ public class TripService {
         return new TripDetailResponse(
             trip.getTripName(),
             trip.getStartDate(),
-            trip.getEndDate()
+            trip.getEndDate(),
+            trip.getNumberOfPeople()
         );
     }
 
