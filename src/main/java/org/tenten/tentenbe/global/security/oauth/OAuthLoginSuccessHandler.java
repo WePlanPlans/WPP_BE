@@ -60,6 +60,8 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         CookieUtil.storeRefreshTokenInCookie(response, refreshToken);
 
+        boolean isExist = (boolean) kakaoAccountValue.get("isExist");
+
         StringBuilder sb = new StringBuilder();
         sb.append("https://dev-weplanplans.vercel.app/kakao") // todo : 배포 주소 url 확인
             .append("?nickname=").append(URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8))
@@ -67,7 +69,8 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             .append("&gender=").append(member.getGenderType())
             .append("&age_range=").append(member.getAgeType())
             .append("&token=").append(tokenInfoDTO.toTokenIssueDTO().getAccessToken())// access token
-            .append("&profile_image=").append(member.getProfileImageUrl());
+            .append("&profile_image=").append(member.getProfileImageUrl())
+            .append("&signup=").append(isExist);
 
         String redirectURI = sb.toString();
         response.sendRedirect(redirectURI);
