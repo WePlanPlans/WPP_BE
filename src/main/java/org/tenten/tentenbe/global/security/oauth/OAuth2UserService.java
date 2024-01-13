@@ -125,7 +125,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     // 연령대 추출
     private static AgeType extractAgeType(String ageType) {
         log.info("ageType={}", ageType);
-        AgeType ageEnum = AgeType.DEFATULT;
+        AgeType ageEnum = AgeType.DEFAULT;
 
         if (ageType != null && ageType.length() >= 1) {
             char firstChar = ageType.charAt(0);
@@ -133,9 +133,9 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 case '1' -> AgeType.TEENAGER;
                 case '2' -> AgeType.TWENTIES;
                 case '3' -> AgeType.THIRTIES;
-                case '4' -> AgeType.FOURTIES;
+                case '4' -> AgeType.FORTIES;
                 case '5' -> AgeType.ABOVE_FIFTIES;
-                default -> AgeType.DEFATULT;
+                default -> AgeType.DEFAULT;
             };
         }
         return ageEnum;
