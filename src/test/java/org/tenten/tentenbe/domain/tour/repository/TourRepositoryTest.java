@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.tenten.tentenbe.domain.fixture.AuthFixture.newBasicMember;
-import static org.tenten.tentenbe.domain.fixture.AuthFixture.updateMember;
-import static org.tenten.tentenbe.domain.fixture.MemberFixture.*;
+import static org.tenten.tentenbe.common.fixture.AuthFixture.newBasicMember;
+import static org.tenten.tentenbe.common.fixture.AuthFixture.updateMember;
+import static org.tenten.tentenbe.common.fixture.MemberFixture.*;
 
 public class TourRepositoryTest extends RepositoryTest {
 

@@ -22,9 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.tenten.tentenbe.domain.fixture.AuthFixture.newBasicMember;
-import static org.tenten.tentenbe.domain.fixture.MemberFixture.tourItem;
-import static org.tenten.tentenbe.domain.fixture.TourFixture.tourSimpleResponsePage;
+import static org.tenten.tentenbe.common.fixture.AuthFixture.newBasicMember;
+import static org.tenten.tentenbe.common.fixture.MemberFixture.tourItem;
+import static org.tenten.tentenbe.common.fixture.TourFixture.tourSimpleResponsePage;
 
 public class TourServiceTest extends ServiceTest {
 

@@ -14,9 +14,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tenten.tentenbe.domain.fixture.MemberFixture.tourItem;
-import static org.tenten.tentenbe.domain.fixture.ReviewFixture.reviewResponse;
-import static org.tenten.tentenbe.domain.fixture.TourFixture.tourSimpleResponsePage;
+import static org.tenten.tentenbe.common.fixture.MemberFixture.tourItem;
+import static org.tenten.tentenbe.common.fixture.ReviewFixture.reviewResponse;
+import static org.tenten.tentenbe.common.fixture.TourFixture.tourSimpleResponsePage;
 
 public class TourControllerTest extends ControllerTest {
 
