@@ -85,7 +85,7 @@ public class TourRepositoryTest extends RepositoryTest {
             LikedItem likedItem = likedSaveItem(savedMember,savedTourItem);
             likedItemRepository.save(likedItem);
 
-            Boolean result = likedItemRepository.existsByMemberIdAndTourItemId(savedTourItem.getId(), savedTourItem.getId());
+            Boolean result = likedItemRepository.existsByMemberIdAndTourItemId(savedMember.getId(), savedTourItem.getId());
 
             assertThat(result).isEqualTo(true);
 
