@@ -4,18 +4,16 @@ package org.tenten.tentenbe.domain.auth.service;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
+import org.tenten.tentenbe.common.ServiceTest;
+import org.tenten.tentenbe.common.fixture.AuthFixture;
 import org.tenten.tentenbe.config.WithMockCustomUser;
 import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
 import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.LoginResponse;
 import org.tenten.tentenbe.domain.auth.dto.response.SignUpResponse;
-import org.tenten.tentenbe.domain.fixture.AuthFixture;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.global.common.enums.LoginType;
@@ -29,9 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
-public class AuthServiceTest {
+public class AuthServiceTest extends ServiceTest {
 
     @InjectMocks
     private AuthService authService;
@@ -56,7 +52,10 @@ public class AuthServiceTest {
         given(memberRepository.findByEmail(any())).willReturn(Optional.ofNullable(AuthFixture.newMember()));
         given(refreshTokenRepository.save(any())).willReturn(AuthFixture.refreshToken());
         given(passwordEncoder.encode(any())).willReturn("$10$ygrAExVYmFTkZn2d0.Pk3Ot5CNZwIBjZH5f.WW0AnUq4w4PtBi9Nm");
-        //when
+
+
+        //TODO:: 회원가입시 "this.authenticationManagerBuilder" is null 오류해결중
+
         SignUpResponse signUpResponse = authService.signUp(AuthFixture.signUpRequest(), httpServletResponse);
         assertThat(signUpResponse).extracting("memberId", "email", "nickName")
                 .containsExactly(1L, "test@gmail.com", "test");

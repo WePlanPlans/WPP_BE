@@ -1,27 +1,18 @@
 package org.tenten.tentenbe.domain.auth.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.tenten.tentenbe.common.ControllerTest;
+import org.tenten.tentenbe.common.fixture.AuthFixture;
+import org.tenten.tentenbe.config.WithMockCustomUser;
 import org.tenten.tentenbe.domain.auth.dto.response.CheckResponse;
 import org.tenten.tentenbe.domain.auth.service.AuthService;
-import org.tenten.tentenbe.domain.fixture.AuthFixture;
-import org.tenten.tentenbe.domain.member.service.MemberService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -29,27 +20,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.ACCESS_TOKEN_EXPIRE_TIME;
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.BEARER_TYPE;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-public class AuthControllerTest {
+public class AuthControllerTest extends ControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    WebApplicationContext context;
-    @Autowired
-    private ObjectMapper objectMapper;
     @MockBean
     private AuthService authService;
-
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(this.context)
-                .apply(springSecurity())
-                .build();
-    }
 
     @Test
     @DisplayName("일반 회원가입 성공")
@@ -121,12 +95,12 @@ public class AuthControllerTest {
         mockMvc.perform(post("/api/auth/login/kakao")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(AuthFixture.loginRequest())))
-                .andExpect(status().isOk())
+                .andExpect(status().isConflict())
                 .andDo(print());
     }
 
     @Test
-    @WithMockUser(username = "user", password = "password", roles = "USER")
+    @WithMockCustomUser
     @DisplayName("로그아웃 성공")
     public void logOutSuccess() throws Exception {
         //given

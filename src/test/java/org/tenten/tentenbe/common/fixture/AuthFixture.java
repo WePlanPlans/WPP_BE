@@ -1,4 +1,4 @@
-package org.tenten.tentenbe.domain.fixture;
+package org.tenten.tentenbe.common.fixture;
 
 import org.tenten.tentenbe.domain.auth.dto.request.LoginRequest;
 import org.tenten.tentenbe.domain.auth.dto.request.SignUpRequest;
@@ -69,9 +69,6 @@ public class AuthFixture {
                 .survey(new Survey("계획성", "활동성", "숙소", "음식", "여행 스타일"))
                 .build();
     }
-
-
-
 
     public static Member updateMember(){
         return Member.builder()

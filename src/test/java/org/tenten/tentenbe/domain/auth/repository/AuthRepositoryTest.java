@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.tenten.tentenbe.domain.fixture.AuthFixture;
+import org.tenten.tentenbe.common.RepositoryTest;
+import org.tenten.tentenbe.common.fixture.AuthFixture;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 
@@ -18,15 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
 
-@DataJpaTest
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class AuthRepositoryTest {
-
-    @Autowired
-    private MemberRepository memberRepository;
-    @PersistenceContext
-    private EntityManager entityManager;
+public class AuthRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("회원 저장 성공")
