@@ -1,24 +1,16 @@
 package org.tenten.tentenbe.domain.member.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.tenten.tentenbe.common.ControllerTest;
 import org.tenten.tentenbe.config.WithMockCustomUser;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.request.PasswordUpdateRequest;
@@ -36,40 +28,22 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tenten.tentenbe.domain.fixture.AuthFixture.*;
-import static org.tenten.tentenbe.domain.fixture.MemberFixture.*;
+import static org.tenten.tentenbe.common.fixture.AuthFixture.*;
+import static org.tenten.tentenbe.common.fixture.MemberFixture.survey;
+import static org.tenten.tentenbe.common.fixture.MemberFixture.tourItem;
+import static org.tenten.tentenbe.common.fixture.ReviewFixture.review;
 
-@SpringBootTest
-//@Import(MockAwsS3Config.class)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-
-public class MemberControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    WebApplicationContext context;
+public class MemberControllerTest extends ControllerTest {
 
     @MockBean
     private MemberService memberService;
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(this.context)
-                .apply(springSecurity())
-                .build();
-    }
 
     @Test
-    @WithMockCustomUser(customUserName = "test@gmail.com", customUserPassword = "password")
+    @WithMockCustomUser
     @DisplayName("나의 관심 여행지 조회")
     public void myFavoriteToursSuccess() throws Exception {
 
@@ -88,7 +62,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    @WithMockCustomUser(customUserName = "test@gmail.com", customUserPassword = "password")
+    @WithMockCustomUser
     @DisplayName("나의 리뷰 조회")
     public void getReviewsSuccess() throws Exception {
 
@@ -157,7 +131,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    @WithMockCustomUser
+    @WithMockCustomUser()
     @DisplayName("여행 취향 수정")
     public void updateSurveySuccess() throws Exception {
         SurveyUpdateRequest surveyUpdateRequest = new SurveyUpdateRequest(survey());
@@ -189,7 +163,7 @@ public class MemberControllerTest {
     @DisplayName("이미지 업로드")
     public void upLoadImageSuccess() throws Exception {
 
-      //TODO:s3 모킹
+      //TODO:s3 모킹 코드 작성 예정
 //
 //        mockMvc.perform(post("/api/member")
 //                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)

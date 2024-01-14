@@ -4,16 +4,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
+import org.tenten.tentenbe.common.ServiceTest;
 import org.tenten.tentenbe.domain.liked.model.LikedItem;
 import org.tenten.tentenbe.domain.liked.repository.LikedItemRepository;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
@@ -37,14 +35,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.tenten.tentenbe.domain.fixture.AuthFixture.*;
-import static org.tenten.tentenbe.domain.fixture.MemberFixture.*;
+import static org.tenten.tentenbe.common.fixture.AuthFixture.*;
+import static org.tenten.tentenbe.common.fixture.MemberFixture.serviceLikedItem;
+import static org.tenten.tentenbe.common.fixture.MemberFixture.updateSurvey;
+import static org.tenten.tentenbe.common.fixture.ReviewFixture.review;
 
 ;
-
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
-public class MemberServiceTest {
+public class MemberServiceTest extends ServiceTest {
 
     @InjectMocks
     private MemberService memberService;
@@ -131,16 +128,17 @@ public class MemberServiceTest {
     @Test
     @DisplayName("비밀번호 수정")
     public void updatePasswordSuccess() throws Exception {
-
         Member member = newBasicMember();
         PasswordUpdateRequest passwordUpdateRequest = new PasswordUpdateRequest("changedPassword","newPassword");
 
         given(memberRepository.findById(member.getId())).willReturn(Optional.ofNullable(member));
-        given(passwordEncoder.encode(any())).willReturn(String.valueOf(passwordUpdateRequest));
+        given(!passwordEncoder.matches(passwordUpdateRequest.password(), member.getPassword())).willReturn(true);
+        given(passwordEncoder.encode(any())).willReturn(passwordUpdateRequest.newPassword());
 
         memberService.updatePassword(member.getId(), passwordUpdateRequest);
 
-        assertThat(member.getPassword()).isEqualTo(passwordUpdateRequest.toString());
+        assertThat(member.getPassword()).isEqualTo(passwordUpdateRequest.newPassword());
+
     }
 
     @Test
@@ -166,6 +164,7 @@ public class MemberServiceTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         given(memberRepository.findById(member.getId())).willReturn(Optional.ofNullable(member));
+
         memberService.deleteMember(member.getId(), request, response);
 
         verify(memberRepository).delete(member);

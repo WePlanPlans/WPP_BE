@@ -1,33 +1,25 @@
 package org.tenten.tentenbe.domain.member.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
 import org.tenten.tentenbe.common.RepositoryTest;
 import org.tenten.tentenbe.domain.liked.model.LikedItem;
-import org.tenten.tentenbe.domain.liked.repository.LikedItemRepository;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.review.model.Review;
-import org.tenten.tentenbe.domain.review.repository.ReviewRepository;
 import org.tenten.tentenbe.domain.tour.model.TourItem;
-import org.tenten.tentenbe.domain.tour.repository.TourItemRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.tenten.tentenbe.domain.fixture.AuthFixture.newBasicMember;
-import static org.tenten.tentenbe.domain.fixture.MemberFixture.*;
+import static org.tenten.tentenbe.common.fixture.AuthFixture.newBasicMember;
+import static org.tenten.tentenbe.common.fixture.MemberFixture.likedSaveItem;
+import static org.tenten.tentenbe.common.fixture.MemberFixture.tourItem;
+import static org.tenten.tentenbe.common.fixture.ReviewFixture.saveReview;
 
 public class MemberRepositoryTest extends RepositoryTest {
 
@@ -55,8 +47,9 @@ public class MemberRepositoryTest extends RepositoryTest {
 
         Pageable pageable = PageRequest.of(0, 10);
         Member savedMember = memberRepository.save(newBasicMember());
+        TourItem savedTourItem = tourItemRepository.save(tourItem());
 
-        reviewRepository.save(saveReview(savedMember));
+        reviewRepository.save(saveReview(savedTourItem,savedMember));
 
         Page<Review> findReview = reviewRepository.findReviewByCreatorId(savedMember.getId(), pageable);
 

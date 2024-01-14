@@ -1,14 +1,12 @@
-package org.tenten.tentenbe.domain.fixture;
+package org.tenten.tentenbe.common.fixture;
 
 import org.tenten.tentenbe.domain.liked.model.LikedItem;
-import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.model.Survey;
 import org.tenten.tentenbe.domain.review.model.Review;
-import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.tour.model.TourItem;
 
-import static org.tenten.tentenbe.domain.fixture.AuthFixture.*;
+import static org.tenten.tentenbe.common.fixture.AuthFixture.*;
 
 public class MemberFixture {
 
@@ -79,23 +77,6 @@ public class MemberFixture {
                 .build();
     }
 
-    public static Review review(){
-        return Review.builder()
-                .id(1L)
-                .rating(20.5)
-                .content("hello world")
-                .creator(newBasicMember())
-                .build();
-    }
-
-    public static Review saveReview(Member member){
-        return Review.builder()
-                .id(1L)
-                .rating(20.5)
-                .content("hello world")
-                .creator(member)
-                .build();
-    }
 
     public static Survey survey(){
         return new Survey("계획성", "활동성", "숙소", "음식", "여행 스타일");
