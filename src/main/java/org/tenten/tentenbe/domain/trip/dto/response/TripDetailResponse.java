@@ -10,6 +10,8 @@ public record TripDetailResponse(
     @Schema(defaultValue = "2024-01-08")
     LocalDate startDate,
     @Schema(defaultValue = "2024-01-10")
-    LocalDate endDate
+    LocalDate endDate,
+    @Schema(defaultValue = "5")
+    Long numberOfPeople
 ) {
 }

@@ -14,7 +14,7 @@ public record TripSimpleResponse(
     @Schema(defaultValue = "2023-12-29")
     LocalDate endDate,
     @Schema(defaultValue = "2")
-    Long numberOfTripMembers,
+    Long numberOfPeople,
     @Schema(defaultValue = "여행 전")
     String tripStatus,
     @Schema(defaultValue = "https://~~~~.png")
