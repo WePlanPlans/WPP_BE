@@ -22,6 +22,8 @@ public record TripSurveyResponse(
     @Schema(defaultValue = "10")
     Long tripStyleTotalCount,
     @Schema(defaultValue = "6")
-    Long tripStyleCount
+    Long tripStyleCount,
+    @Schema(defaultValue = "5")
+    Long tripSurveyMemberCount
 ) {
 }
