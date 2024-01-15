@@ -5,10 +5,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.tenten.tentenbe.domain.trip.dto.response.TripLikedSimpleResponse;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.domain.trip.model.Trip;
-import org.tenten.tentenbe.global.common.enums.Category;
 
 public interface TripRepository extends JpaRepository<Trip, Long> {
     @Query("SELECT new org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse(" +
@@ -17,9 +15,11 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
         "t.startDate, " +
         "t.endDate, " +
         "CAST(COALESCE(COUNT(DISTINCT tmAll.id), 0) AS LONG), " +
-        "(CASE WHEN t.startDate > CURRENT_DATE THEN '여행 전' " +
-        "WHEN t.endDate < CURRENT_DATE THEN '여행 후' ELSE '여행 중' END), " +
-        "COALESCE(tri.smallThumbnailUrl, 'https://common.hanmi.co.kr/upfile/ces/product/p_2011_tenten_p_400.jpg')) " +
+        "(CASE WHEN t.startDate > CURRENT_DATE THEN '여행전' " +
+        "WHEN t.endDate < CURRENT_DATE THEN '여행완료' ELSE '여행중' END), " +
+        "COALESCE(tri.smallThumbnailUrl, 'https://common.hanmi.co.kr/upfile/ces/product/p_2011_tenten_p_400.jpg')," +
+        "t.area," +
+        "t.subarea) " +
         "FROM Trip t " +
         "LEFT OUTER JOIN TripItem ti ON t.id = ti.trip.id " +
         "LEFT OUTER JOIN TourItem tri ON ti.tourItem.id = tri.id " +

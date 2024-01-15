@@ -18,7 +18,11 @@ public record TripSimpleResponse(
     @Schema(defaultValue = "여행 전")
     String tripStatus,
     @Schema(defaultValue = "https://~~~~.png")
-    String tripThumbnailUrl
+    String tripThumbnailUrl,
+    @Schema(defaultValue = "서울시")
+    String area,
+    @Schema(defaultValue = "강남구")
+    String subArea
 ) {
 }
 
