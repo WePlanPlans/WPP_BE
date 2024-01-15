@@ -16,6 +16,8 @@ import org.tenten.tentenbe.domain.trip.service.TripService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.response.GlobalResponse;
 
+import java.util.List;
+
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
@@ -37,13 +39,8 @@ public class TripController {
 
     @Operation(summary = "나의 여정목록 조회 API", description = "나의 여정목록 조회 API 입니다.")
     @GetMapping()
-    public ResponseEntity<GlobalDataResponse<Page<TripSimpleResponse>>> getTrips(
-        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
-        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
-        @RequestParam(value = "size", required = false, defaultValue = "10") int size
-    ) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrips(getCurrentMemberId(), PageRequest.of(page, size))));
+    public ResponseEntity<GlobalDataResponse<List<TripSimpleResponse>>> getTrips() {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrips(getCurrentMemberId())));
     }
 
     @Operation(summary = "여정 상세조회 API", description = "여정 상세조회 API 입니다.")

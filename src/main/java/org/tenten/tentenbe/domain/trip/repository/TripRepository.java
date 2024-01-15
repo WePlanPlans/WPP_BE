@@ -1,12 +1,12 @@
 package org.tenten.tentenbe.domain.trip.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.domain.trip.model.Trip;
+
+import java.util.List;
 
 public interface TripRepository extends JpaRepository<Trip, Long> {
     @Query("SELECT new org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse(" +
@@ -26,5 +26,5 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
         "LEFT OUTER JOIN TripMember tm ON t.id = tm.trip.id " +
         "WHERE tm.member.id = :memberId AND t.isDeleted = FALSE " +
         "GROUP BY t.id ORDER BY t.createdTime")
-    Page<TripSimpleResponse> findTripsByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+    List<TripSimpleResponse> findTripsByMemberId(@Param("memberId") Long memberId);
 }

@@ -76,9 +76,9 @@ public class TripService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TripSimpleResponse> getTrips(Long memberId, Pageable pageable) {
+    public List<TripSimpleResponse> getTrips(Long memberId) {
         getMemberById(memberId);
-        return tripRepository.findTripsByMemberId(memberId, pageable);
+        return tripRepository.findTripsByMemberId(memberId);
     }
 
     @Transactional(readOnly = true)
