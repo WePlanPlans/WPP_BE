@@ -32,7 +32,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +60,8 @@ public class TripService {
             .area(request.area().orElse(null))
             .subarea(request.subarea().orElse(null))
             .budget(0L)
+            .transportationPriceSum(0L)
+            .tripItemPriceSum(0L)
             .build();
         TripMember tripMember = TripMember.builder()
             .member(member)
