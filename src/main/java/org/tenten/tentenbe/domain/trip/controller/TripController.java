@@ -122,12 +122,23 @@ public class TripController {
 
     @Operation(summary = "우리의 여행취향 조회 API", description = "우리의 여행취향 조회 API 입니다.")
     @GetMapping("/{tripId}/survey")
-    public ResponseEntity<GlobalDataResponse<TripSurveyResponse>> getTripLikedItems(
+    public ResponseEntity<GlobalDataResponse<TripSurveyResponse>> getTripSurveys(
         @Parameter(name = "tripId", description = "우리의 여행취향을 조회할 여정 아이디", in = PATH)
         @PathVariable(name = "tripId") Long tripId
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tripService.getTripSurveys(tripId))
+        );
+    }
+
+    @Operation(summary = "우리의 여행취향 참여/미참여 회원 조회 API", description = "우리의 여행취향 참여/미참여 회원 조회 API 입니다.")
+    @GetMapping("/{tripId}/survey/members")
+    public ResponseEntity<GlobalDataResponse<TripSurveyMemberResponse>> getTripSurveyMembers(
+        @Parameter(name = "tripId", description = "우리의 여행취향 참여/미참여 회원을 조회할 여정 아이디", in = PATH)
+        @PathVariable(name = "tripId") Long tripId
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, tripService.getTripSurveyMember(tripId))
         );
     }
 

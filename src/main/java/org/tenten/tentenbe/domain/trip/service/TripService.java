@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tenten.tentenbe.domain.member.dto.response.MemberSimpleInfo;
 import org.tenten.tentenbe.domain.member.exception.MemberException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.model.Survey;
@@ -29,6 +30,7 @@ import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.common.enums.TripAuthority;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,7 +88,8 @@ public class TripService {
         return new TripDetailResponse(
             trip.getTripName(),
             trip.getStartDate(),
-            trip.getEndDate()
+            trip.getEndDate(),
+            trip.getNumberOfPeople()
         );
     }
 
@@ -196,7 +199,8 @@ public class TripService {
             counter.activeHoursTotal, counter.activeHoursCount,
             counter.accommodationTotal, counter.accommodationCount,
             counter.foodTotal, counter.foodCount,
-            counter.tripStyleTotal, counter.tripStyleCount
+            counter.tripStyleTotal, counter.tripStyleCount,
+            counter.tripSurveyMemberCount
         );
     }
 
@@ -206,14 +210,16 @@ public class TripService {
         long accommodationTotal = 0, accommodationCount = 0;
         long foodTotal = 0, foodCount = 0;
         long tripStyleTotal = 0, tripStyleCount = 0;
+        long tripSurveyMemberCount = 0;
 
         void countSurvey(Survey survey) {
             if (survey != null) {
                 incrementIfNotNull(survey.getPlanning(), "철저하게", this::incrementPlanning);
                 incrementIfNotNull(survey.getActiveHours(), "아침형", this::incrementActiveHours);
-                incrementIfNotNull(survey.getAccommodation(), "가성비", this::incrementAccommodation);
-                incrementIfNotNull(survey.getFood(), "인테리어", this::incrementFood);
+                incrementIfNotNull(survey.getAccommodation(), "분위기", this::incrementAccommodation);
+                incrementIfNotNull(survey.getFood(), "노포", this::incrementFood);
                 incrementIfNotNull(survey.getTripStyle(), "액티비티", this::incrementTripStyle);
+                tripSurveyMemberCount++;
             }
         }
 
@@ -241,6 +247,29 @@ public class TripService {
         private void incrementTripStyle() {
             tripStyleTotal++;
         }
+    }
+
+    public TripSurveyMemberResponse getTripSurveyMember(Long tripId) {
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : " + tripId, NOT_FOUND));
+
+        List<TripMember> tripMembers = tripMemberRepository.findByTrip(trip);
+
+        List<MemberSimpleInfo> tripSurveySetMemberInfos = new ArrayList<>();
+        List<MemberSimpleInfo> nonTripSurveySetMemberInfos = new ArrayList<>();
+        long tripSurveyMemberCount = 0;
+
+        for (TripMember tripMember : tripMembers) {
+            Member member = tripMember.getMember();
+            if (member.getSurvey() != null) {
+                tripSurveySetMemberInfos.add(new MemberSimpleInfo(member.getId(), member.getNickname(), member.getProfileImageUrl()));
+                tripSurveyMemberCount++;
+            } else {
+                nonTripSurveySetMemberInfos.add(new MemberSimpleInfo(member.getId(), member.getNickname(), member.getProfileImageUrl()));
+            }
+        }
+
+        return new TripSurveyMemberResponse(tripSurveyMemberCount, tripSurveySetMemberInfos, nonTripSurveySetMemberInfos);
     }
 
     private Member getMemberById(Long memberId) { //TODO : 현재 코드는 로그인되어있는 회원만 여정조회 가능

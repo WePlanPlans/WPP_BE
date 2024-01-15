@@ -14,11 +14,15 @@ public record TripSimpleResponse(
     @Schema(defaultValue = "2023-12-29")
     LocalDate endDate,
     @Schema(defaultValue = "2")
-    Long numberOfTripMembers,
+    Long numberOfPeople,
     @Schema(defaultValue = "여행 전")
     String tripStatus,
     @Schema(defaultValue = "https://~~~~.png")
-    String tripThumbnailUrl
+    String tripThumbnailUrl,
+    @Schema(defaultValue = "서울시")
+    String area,
+    @Schema(defaultValue = "강남구")
+    String subArea
 ) {
 }
 
