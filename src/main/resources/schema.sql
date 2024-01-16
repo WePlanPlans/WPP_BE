@@ -184,7 +184,8 @@ create table Trip
     budget         bigint                          null,
     tripItemPriceSum       bigint default 0                null,
     transportationPriceSum bigint default 0                null,
-    tripPathPriceMap       json                            null
+    tripPathPriceMap       json                            null,
+    tripTransportationMap       json                            null
 );
 
 create table TripItem
