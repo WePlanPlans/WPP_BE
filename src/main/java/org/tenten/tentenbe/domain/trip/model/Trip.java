@@ -75,4 +75,7 @@ public class Trip extends BaseTimeEntity {
         );
     }
 
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }

@@ -129,7 +129,19 @@ public class TripService {
 
     @Transactional
     public void deleteTripMember(Long memberId, Long tripId) {
+        Member member = getMemberById(memberId);
+//        validateWriter(member);
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        TripMember tripMember = tripMemberRepository.findByMemberAndTrip(member, trip)
+            .orElseThrow(() -> new TripMemberException("해당 회원은 여정에 속해있지 않은 회원입니다. memberId : "+ memberId, NOT_FOUND));
+        tripMemberRepository.delete(tripMember);
+        trip.getTripMembers().remove(tripMember);
 
+        if(trip.getTripMembers().isEmpty()) {
+            trip.setIsDeleted(true);
+            tripRepository.save(trip);
+        }
     }
 
     @Transactional
