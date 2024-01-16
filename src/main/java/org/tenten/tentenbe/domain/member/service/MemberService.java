@@ -105,8 +105,6 @@ public class MemberService {
     public ImageUploadDto uploadImage(MultipartFile multipartFile, Long memberId) throws BadRequestException {
         try {
             String uploadedUrl = s3Uploader.uploadFiles(multipartFile, "static");
-            Member member = getMember(memberId);
-            member.updateProfileImageUrl(uploadedUrl);
             return ImageUploadDto.builder()
                 .imageUrl(uploadedUrl)
                 .message("이미지 업로드에 성공했습니다.")
