@@ -31,6 +31,7 @@ import org.tenten.tentenbe.global.common.enums.TripAuthority;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +65,8 @@ public class TripService {
             .budget(0L)
             .transportationPriceSum(0L)
             .tripItemPriceSum(0L)
+            .tripPathPriceMap(new HashMap<>())
+            .tripTransportationMap(new HashMap<>())
             .build();
         TripMember tripMember = TripMember.builder()
             .member(member)
