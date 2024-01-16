@@ -44,7 +44,7 @@ public class Trip extends BaseTimeEntity {
     private Long tripItemPriceSum;
     @ColumnDefault("0")
     private Long transportationPriceSum;
-    private String participationCode;
+    private String joinCode;
     @Convert(converter = MapConverter.class)
     @Column(columnDefinition = "JSON")
     private Map<String, Long> tripPathPriceMap;

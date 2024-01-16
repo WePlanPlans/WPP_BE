@@ -29,22 +29,17 @@ import org.tenten.tentenbe.domain.trip.repository.*;
 import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.common.enums.TripAuthority;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
-import static java.nio.charset.StandardCharsets.*;
-import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 @RequiredArgsConstructor
 public class TripService {
+    private static final String SECRET_KEY = "1234567890123456";
     private final TripRepository tripRepository;
     private final TripItemRepository tripItemRepository;
     private final TripMemberRepository tripMemberRepository;
@@ -58,8 +53,8 @@ public class TripService {
         Member member = getMemberById(memberId);
         Long numberOfTrip = tripMemberRepository.countTripMemberByMember(member) + 1L;
 
-        String participationCode = generateParticipationCode();
-        String encryptedCode = encryptParticipationCode(participationCode);
+        String joinCode = createJoinCode();
+        String encryptedJoinCode = encryptJoinCode(joinCode);
 
         Trip trip = Trip.builder()
             .tripName(request.tripName()
@@ -73,7 +68,7 @@ public class TripService {
             .budget(0L)
             .transportationPriceSum(0L)
             .tripItemPriceSum(0L)
-            .participationCode(encryptedCode)
+            .joinCode(encryptedJoinCode)
             .build();
         TripMember tripMember = TripMember.builder()
             .member(member)
@@ -85,25 +80,21 @@ public class TripService {
         return new TripCreateResponse(tripRepository.save(trip).getId());
     }
 
-    private String generateParticipationCode() {
+    private String createJoinCode() {
         Random random = new Random();
         int number = random.nextInt(90000) + 10000;
         return String.valueOf(number);
     }
 
-    private String encryptParticipationCode(String code) {
+    private String encryptJoinCode(String joinCode) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(code.getBytes(UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if(hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("암호화 알고리즘을 찾을 수 없습니다.", e);
+            SecretKeySpec skeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+            byte[] encrypted = cipher.doFinal(joinCode.getBytes());
+            return Base64.getEncoder().encodeToString(encrypted);
+        } catch (Exception e) {
+            throw new RuntimeException("참여 코드 암호화 중 오류가 발생했습니다.", e);
         }
     }
 
@@ -304,7 +295,51 @@ public class TripService {
         return new TripSurveyMemberResponse(tripSurveyMemberCount, tripSurveySetMemberInfos, nonTripSurveySetMemberInfos);
     }
 
-    private Member getMemberById(Long memberId) { //TODO : 현재 코드는 로그인되어있는 회원만 여정조회 가능
+    @Transactional
+    public void joinTrip(Long memberId, Long tripId, String joinCode) {
+        Member member = getMemberById(memberId);
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("해당 여정이 존재하지 않습니다.", NOT_FOUND));
+
+        String decryptedJoinCode = decryptedJoinCode(trip.getJoinCode());
+
+        if (!decryptedJoinCode.equals(joinCode)) {
+            throw new TripException("참여 코드가 일치하지 않습니다.", UNAUTHORIZED);
+        }
+
+        TripMember tripMember = TripMember.builder()
+            .member(member)
+            .trip(trip)
+            .tripAuthority(TripAuthority.WRITE)
+            .build();
+        tripMemberRepository.save(tripMember);
+    }
+
+    @Transactional(readOnly = true)
+    public String getJoinCode(Long memberId, Long tripId) {
+        Member member = getMemberById(memberId);
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("해당 여정이 존재하지 않습니다.", NOT_FOUND));
+
+        tripMemberRepository.findByMember(member)
+            .orElseThrow(() -> new TripMemberException("해당 회원은 참여코드를 조회할 권한이 없습니다.", NOT_ACCEPTABLE));
+
+        return decryptedJoinCode(trip.getJoinCode());
+    }
+
+    private String decryptedJoinCode(String encryptedJoinCode) {
+        try {
+            SecretKeySpec skeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+            byte[] original = cipher.doFinal(Base64.getDecoder().decode(encryptedJoinCode));
+            return new String(original);
+        } catch (Exception e) {
+            throw new RuntimeException("참여 코드 복호화 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    private Member getMemberById(Long memberId) {
         if(memberId != null) {
             return memberRepository.getReferenceById(memberId);
         }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.tenten.tentenbe.domain.trip.dto.request.JoinTripRequest;
 import org.tenten.tentenbe.domain.trip.dto.request.TripCreateRequest;
 import org.tenten.tentenbe.domain.trip.dto.request.TripInfoUpdateRequest;
 import org.tenten.tentenbe.domain.trip.dto.request.TripLikedItemRequest;
@@ -139,4 +140,24 @@ public class TripController {
         );
     }
 
+    @Operation(summary = "여정 참여 API", description = "참여코드를 이용한 여정 참여 API 입니다.")
+    @PostMapping("/{tripId}/join")
+    public ResponseEntity<GlobalDataResponse<Long>> joinTrip(
+        @Parameter(name = "tripId", description = "참여할 여정 아이디", in = PATH)
+        @PathVariable(name = "tripId") Long tripId,
+        @RequestBody JoinTripRequest joinTripRequest
+    ) {
+        tripService.joinTrip(getCurrentMemberId(), tripId, joinTripRequest.participantCode());
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripId));
+    }
+
+    @Operation(summary = "여정 참여코드 조회 API", description = "해당 여정의 참여 코드를 조회합니다.")
+    @GetMapping("/{tripId}/join")
+    public ResponseEntity<GlobalDataResponse<String>> joinTrip(
+        @Parameter(name = "tripId", description = "참여코드를 조회할 여정 아이디", in = PATH)
+        @PathVariable(name = "tripId") Long tripId
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, tripService.getJoinCode(getCurrentMemberId(), tripId)));
+    }
 }

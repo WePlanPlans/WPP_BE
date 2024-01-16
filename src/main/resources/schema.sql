@@ -182,9 +182,9 @@ create table Trip
     area           varchar(255)                    null,
     subarea        varchar(255)                    null,
     budget         bigint                          null,
+    joinCode       varchar(255)                    null,
     tripItemPriceSum       bigint default 0                null,
     transportationPriceSum bigint default 0                null,
-    participationCode      varchar(255)                    null,
     tripPathPriceMap       json                            null
 );
 
