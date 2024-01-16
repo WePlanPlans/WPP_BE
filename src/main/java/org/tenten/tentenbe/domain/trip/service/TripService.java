@@ -119,7 +119,7 @@ public class TripService {
     @Transactional
     public TripInfoUpdateResponse updateTrip(Long memberId, Long tripId, TripInfoUpdateRequest request) {
         Member member = getMemberById(memberId);
-//        validateWriter(member);
+        validateWriter(member);
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         TripInfoUpdateResponse tripInfoUpdateResponse = trip.updateTripInfo(request);
@@ -130,7 +130,7 @@ public class TripService {
     @Transactional
     public void deleteTripMember(Long memberId, Long tripId) {
         Member member = getMemberById(memberId);
-//        validateWriter(member);
+        validateWriter(member);
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         TripMember tripMember = tripMemberRepository.findByMemberAndTrip(member, trip)
@@ -147,7 +147,7 @@ public class TripService {
     @Transactional
     public void LikeTourInOurTrip(Long memberId, Long tripId, TripLikedItemRequest request) {
         Member member = getMemberById(memberId);
-//        validateWriter(member);
+        validateWriter(member);
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         request.tourItemIds().stream()
@@ -167,19 +167,17 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public Page<TripLikedSimpleResponse> getTripLikedItems(Long memberId, Long tripId, String categoryName, Pageable pageable) {
-        Member member = getMemberOrNullById(memberId);
-//        validateWriter(member);
-        Long categoryCode = findCategoryCode(categoryName);
-        Trip trip = tripRepository.findById(tripId)
+        getMemberOrNullById(memberId);
+        tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        Long categoryCode = findCategoryCode(categoryName);
         return tripLikedItemRepository.findTripLikedItemsById(memberId, tripId, categoryCode, pageable);
     }
 
-    private Member getMemberOrNullById(Long memberId) {
+    private void getMemberOrNullById(Long memberId) {
         if(memberId != null) {
-            return memberRepository.getReferenceById(memberId);
+            memberRepository.getReferenceById(memberId);
         }
-        return null;
     }
 
     private Long findCategoryCode(String categoryName) {
@@ -284,6 +282,7 @@ public class TripService {
         }
     }
 
+    @Transactional(readOnly = true)
     public TripSurveyMemberResponse getTripSurveyMember(Long tripId) {
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : " + tripId, NOT_FOUND));
@@ -334,7 +333,7 @@ public class TripService {
             .orElseThrow(() -> new TripException("해당 여정이 존재하지 않습니다.", NOT_FOUND));
 
         tripMemberRepository.findByMember(member)
-            .orElseThrow(() -> new TripMemberException("해당 회원은 참여코드를 조회할 권한이 없습니다.", NOT_ACCEPTABLE));
+            .orElseThrow(() -> new TripMemberException("해당 회원은 참여코드를 조회할 권한이 없습니다. memberId : " + member.getId(), NOT_ACCEPTABLE));
 
         return decryptedJoinCode(trip.getJoinCode());
     }
@@ -358,8 +357,8 @@ public class TripService {
         throw new MemberException("memberId가 유효하지 않습니다.", NOT_FOUND);
     }
 
-//    private void validateWriter(Member member) {
-//        tripMemberRepository.findByMember(member)
-//            .orElseThrow(() -> new TripException("해당 아이디의 회원은 편집권한이 없습니다. memberId : " + member.getId(), NOT_FOUND));
-//    }
+    private void validateWriter(Member member) {
+        tripMemberRepository.findByMember(member)
+            .orElseThrow(() -> new TripException("해당 아이디의 회원은 편집권한이 없습니다. memberId : " + member.getId(), NOT_FOUND));
+    }
 }
