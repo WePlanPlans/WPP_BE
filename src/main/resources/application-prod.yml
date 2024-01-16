@@ -43,9 +43,10 @@ spring:
             scope:
               - profile_nickname
               - profile_image
-              - gender
-              - age_range
               - account_email
+#              - gender
+#              - age_range
+
 logging:
   level:
     '[org.springframework.boot.web]': INFO
