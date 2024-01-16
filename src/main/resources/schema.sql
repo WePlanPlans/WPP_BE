@@ -184,6 +184,7 @@ create table Trip
     budget         bigint                          null,
     tripItemPriceSum       bigint default 0                null,
     transportationPriceSum bigint default 0                null,
+    participationCode      varchar(255)                    null,
     tripPathPriceMap       json                            null
 );
 

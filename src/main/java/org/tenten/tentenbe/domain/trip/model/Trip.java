@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import static jakarta.persistence.CascadeType.REMOVE;
-import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.InheritanceType.JOINED;
@@ -45,6 +44,7 @@ public class Trip extends BaseTimeEntity {
     private Long tripItemPriceSum;
     @ColumnDefault("0")
     private Long transportationPriceSum;
+    private String participationCode;
     @Convert(converter = MapConverter.class)
     @Column(columnDefinition = "JSON")
     private Map<String, Long> tripPathPriceMap;

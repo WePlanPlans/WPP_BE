@@ -29,11 +29,16 @@ import org.tenten.tentenbe.domain.trip.repository.*;
 import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.common.enums.TripAuthority;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -52,6 +57,10 @@ public class TripService {
     public TripCreateResponse createTrip(Long memberId, TripCreateRequest request) {
         Member member = getMemberById(memberId);
         Long numberOfTrip = tripMemberRepository.countTripMemberByMember(member) + 1L;
+
+        String participationCode = generateParticipationCode();
+        String encryptedCode = encryptParticipationCode(participationCode);
+
         Trip trip = Trip.builder()
             .tripName(request.tripName()
                 .orElse("나의 "+numberOfTrip+"번째 여정계획"))
@@ -64,6 +73,7 @@ public class TripService {
             .budget(0L)
             .transportationPriceSum(0L)
             .tripItemPriceSum(0L)
+            .participationCode(encryptedCode)
             .build();
         TripMember tripMember = TripMember.builder()
             .member(member)
@@ -73,6 +83,28 @@ public class TripService {
         tripMemberRepository.save(tripMember);
 
         return new TripCreateResponse(tripRepository.save(trip).getId());
+    }
+
+    private String generateParticipationCode() {
+        Random random = new Random();
+        int number = random.nextInt(90000) + 10000;
+        return String.valueOf(number);
+    }
+
+    private String encryptParticipationCode(String code) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(code.getBytes(UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("암호화 알고리즘을 찾을 수 없습니다.", e);
+        }
     }
 
     @Transactional(readOnly = true)
