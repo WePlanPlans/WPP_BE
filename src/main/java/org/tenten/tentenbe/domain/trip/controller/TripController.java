@@ -160,4 +160,14 @@ public class TripController {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tripService.getJoinCode(getCurrentMemberId(), tripId)));
     }
+
+    @Operation(summary = "여정을 공유하고 있는 회원 조회 API", description = "여정을 공유하고 있는 회원을 모두 조회합니다.")
+    @GetMapping("/{tripId}/members")
+    public ResponseEntity<GlobalDataResponse<TripMembersResponse>> getTripMembers(
+        @Parameter(name = "tripId", description = "여정을 공유하고 있는 회원을 조회할 여정 아이디", in = PATH)
+        @PathVariable(name = "tripId") Long tripId
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, tripService.getTripMembers(tripId)));
+    }
 }

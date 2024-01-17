@@ -33,8 +33,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
+import static org.tenten.tentenbe.domain.trip.dto.response.TripMembersResponse.*;
 
 @Service
 @RequiredArgsConstructor
@@ -235,6 +237,17 @@ public class TripService {
             counter.tripStyleTotal, counter.tripStyleCount,
             counter.tripSurveyMemberCount
         );
+    }
+
+    public TripMembersResponse getTripMembers(Long tripId) {
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+
+        List<TripMemberSimpleInfo> tripMemberSimpleInfos = trip.getTripMembers().stream()
+            .map(tripMember -> new TripMemberSimpleInfo(tripMember.getMember().getNickname(), tripMember.getMember().getProfileImageUrl()))
+            .toList();
+
+        return new TripMembersResponse(tripMemberSimpleInfos);
     }
 
     private static class SurveyCounter {
