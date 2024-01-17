@@ -67,6 +67,8 @@ public class TripService {
             .transportationPriceSum(0L)
             .tripItemPriceSum(0L)
             .joinCode(encryptedJoinCode)
+            .tripPathPriceMap(new HashMap<>())
+            .tripTransportationMap(new HashMap<>())
             .build();
         TripMember tripMember = TripMember.builder()
             .member(member)

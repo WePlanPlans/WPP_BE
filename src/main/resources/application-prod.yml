@@ -37,15 +37,16 @@ spring:
           kakao:
             client-id: ${oauth.client.id}
             client-authentication-method: client_secret_post
-            redirect-uri: https://dev-weplanplans.vercel.app/login/kakao
+            redirect-uri: https://api.weplanplans.site/login/oauth2/code/kakao #배포
             authorization-grant-type: authorization_code
             client-name: kakao
             scope:
               - profile_nickname
               - profile_image
-              - gender
-              - age_range
               - account_email
+#              - gender
+#              - age_range
+
 logging:
   level:
     '[org.springframework.boot.web]': INFO

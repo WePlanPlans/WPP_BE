@@ -62,15 +62,22 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         boolean isExist = (boolean) kakaoAccountValue.get("isExist");
 
+        String nickname = "";
+        if (member.getNickname()!=null) {
+            nickname = URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8);
+        }
+
         StringBuilder sb = new StringBuilder();
+//        sb.append("http://localhost:5173/login/kakao") // todo : 배포 주소 url 확인
         sb.append("https://dev-weplanplans.vercel.app/login/kakao") // todo : 배포 주소 url 확인
-            .append("?nickname=").append(URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8))
+            .append("?nickname=").append(nickname)
             .append("&email=").append(email)
-            .append("&gender=").append(member.getGenderType())
-            .append("&age_range=").append(member.getAgeType())
             .append("&token=").append(tokenInfoDTO.toTokenIssueDTO().getAccessToken())// access token
             .append("&profile_image=").append(member.getProfileImageUrl())
+//            .append("&gender=").append(member.getGenderType())
+//            .append("&age_range=").append(member.getAgeType())
             .append("&signup=").append(isExist);
+
 
         String redirectURI = sb.toString();
         response.sendRedirect(redirectURI);
