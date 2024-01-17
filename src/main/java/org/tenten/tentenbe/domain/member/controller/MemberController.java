@@ -40,14 +40,16 @@ public class MemberController {
     @Operation(summary = "나의 관심 여행지 조회 API", description = "나의 관심 여행지 조회 API 입니다.")
     @GetMapping("/tours")
     public ResponseEntity<GlobalDataResponse<Page<TourSimpleResponse>>> getTours(
-        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY)
         @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @Parameter(name = "category", description = "조회할 여행 상품 타입, 미지정 가능", in = QUERY)
+        @RequestParam(value = "category", required = false) String category,
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
 
         return ResponseEntity.ok(GlobalDataResponse.ok(
-            SUCCESS, memberService.getTours(getCurrentMemberId(), PageRequest.of(page, size))));
+            SUCCESS, memberService.getTours(getCurrentMemberId(), category, PageRequest.of(page, size))));
     }
 
     @Operation(summary = "나의 리뷰 조회 API", description = "나의 리뷰 조회 API 입니다.")

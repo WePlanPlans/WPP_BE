@@ -27,6 +27,7 @@ import org.tenten.tentenbe.domain.review.dto.response.MemberReviewResponse;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.review.repository.ReviewRepository;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
+import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.s3.ImageUploadDto;
 import org.tenten.tentenbe.global.s3.S3Uploader;
 import org.tenten.tentenbe.global.util.CookieUtil;
@@ -45,9 +46,15 @@ public class MemberService {
     private final LikedItemRepository likedItemRepository;
 
     @Transactional(readOnly = true)
-    public Page<TourSimpleResponse> getTours(Long memberId, Pageable pageable) {
+    public Page<TourSimpleResponse> getTours(Long memberId, String category, Pageable pageable) {
         Member member = getMember(memberId);
-        Page<LikedItem> likedItems = likedItemRepository.findByMember(member, pageable);
+        Long categoryCode = findCategoryCode(category);
+        Page<LikedItem> likedItems;
+        if (categoryCode == null) {
+            likedItems = likedItemRepository.findByMember(member, pageable);
+        } else {
+            likedItems = likedItemRepository.findByMemberAndTourItem_ContentTypeId(member, categoryCode, pageable);
+        }
 
         List<TourSimpleResponse> tourSimpleResponses = likedItems
             .stream()
@@ -117,6 +124,13 @@ public class MemberService {
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다.", HttpStatus.NOT_FOUND));
+    }
+
+    private Long findCategoryCode(String categoryName) {
+        if (categoryName != null) {
+            return Category.fromName(categoryName).getCode();
+        }
+        return null;
     }
 
 }
