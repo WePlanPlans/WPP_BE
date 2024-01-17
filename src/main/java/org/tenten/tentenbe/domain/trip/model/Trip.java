@@ -35,8 +35,6 @@ public class Trip extends BaseTimeEntity {
     private Long numberOfPeople; // 인원수
     private LocalDate startDate;
     private LocalDate endDate;
-    private String area;
-    private String subarea;
     private Boolean isDeleted;
     private String tripName;
     private Long budget;
@@ -63,15 +61,11 @@ public class Trip extends BaseTimeEntity {
         this.numberOfPeople = request.numberOfPeople();
         this.startDate = request.startDate();
         this.endDate = request.endDate();
-        this.area = request.area();
-        this.subarea = request.subarea();
         return new TripInfoUpdateResponse(
             request.tripName(),
             request.numberOfPeople(),
             request.startDate(),
-            request.endDate(),
-            request.area(),
-            request.subarea()
+            request.endDate()
         );
     }
 

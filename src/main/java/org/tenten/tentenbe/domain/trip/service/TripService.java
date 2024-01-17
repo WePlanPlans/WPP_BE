@@ -63,8 +63,6 @@ public class TripService {
             .startDate(request.startDate().orElse(LocalDate.now()))
             .endDate(request.endDate().orElse(LocalDate.now()))
             .isDeleted(false)
-            .area(request.area().orElse(null))
-            .subarea(request.subarea().orElse(null))
             .budget(0L)
             .transportationPriceSum(0L)
             .tripItemPriceSum(0L)

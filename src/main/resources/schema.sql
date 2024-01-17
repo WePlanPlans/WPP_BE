@@ -179,8 +179,6 @@ create table Trip
         primary key,
     tripName       varchar(255)                    null,
     isDeleted      boolean                         null,
-    area           varchar(255)                    null,
-    subarea        varchar(255)                    null,
     budget         bigint                          null,
     joinCode       varchar(255)                    null,
     tripItemPriceSum       bigint default 0                null,
