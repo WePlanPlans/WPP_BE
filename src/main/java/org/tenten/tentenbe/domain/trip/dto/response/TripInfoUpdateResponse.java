@@ -12,10 +12,6 @@ public record TripInfoUpdateResponse(
     @Schema(defaultValue = "2023-12-27")
     LocalDate startDate,
     @Schema(defaultValue = "2023-12-28")
-    LocalDate endDate,
-    @Schema(defaultValue = "서울시")
-    String area,
-    @Schema(defaultValue = "강남구")
-    String subarea
+    LocalDate endDate
 ) {
 }
