@@ -167,4 +167,15 @@ public class TripController {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tripService.getTripMembers(tripId)));
     }
+
+    @Operation(summary = "여행 상세페이지에서 여정에 여행지 등록 API", description = "여행 상세페이지에서 여정에 여행지를 등록합니다.")
+    @PostMapping("/{tripId}")
+    public ResponseEntity<GlobalDataResponse<TripItemResponse>> addTripItem(
+        @Parameter(name = "tripId", description = "여행 상세페이지에서 여정에 여행지 등록할 여정 아이디", in = PATH)
+        @PathVariable(name = "tripId") Long tripId,
+        @RequestBody TripItemRequest tripItemRequest
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse
+            .ok(SUCCESS, tripService.addTripItem(getCurrentMemberId(), tripId, tripItemRequest)));
+    }
 }
