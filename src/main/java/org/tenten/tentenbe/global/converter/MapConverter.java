@@ -27,7 +27,7 @@ public class MapConverter implements AttributeConverter<Map, String> {
         }    }
 
     @Override
-    public Map<String, Long> convertToEntityAttribute(String s) {
+    public Map convertToEntityAttribute(String s) {
 
         if (StringUtils.hasText(s)) {
             try {

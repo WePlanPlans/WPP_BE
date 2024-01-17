@@ -55,14 +55,14 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             (Map<String, Object>) kakaoAccountValue.getOrDefault("profile", new HashMap<String, Object>());
 
         String email = (String) kakaoAccountValue.get("email");
-        String genderType = (String) kakaoAccountValue.getOrDefault("gender", "");
-        String ageType = (String) kakaoAccountValue.getOrDefault("age_range", "");
+//        String genderType = (String) kakaoAccountValue.getOrDefault("gender", "");
+//        String ageType = (String) kakaoAccountValue.getOrDefault("age_range", "");
 
         String nickname = (String) profile.get("nickname");
         String profile_image = (String) profile.getOrDefault("thumbnail_image_url", "");
 
-        GenderType genderEnum = extractGenderType(genderType);
-        AgeType ageEnum = extractAgeType(ageType);
+//        GenderType genderEnum = extractGenderType(genderType);
+//        AgeType ageEnum = extractAgeType(ageType);
 
         boolean nicknameCheck = nicknameCheck(nickname);
 
@@ -78,11 +78,11 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 .email(email)
                 .password(bCryptPasswordEncoder.encode("dummy"))    //todo: OAuth 패스워드 환경 변수로 빼기
                 .nickname(nickname)
-                .genderType(genderEnum)
-                .ageType(ageEnum)
                 .profileImageUrl(profile_image)
                 .loginType(KAKAO)
                 .userAuthority(ROLE_USER)
+//                .genderType(genderEnum)
+//                .ageType(ageEnum)
                 .build();
             RefreshToken refreshToken = RefreshToken.builder()
                 .member(member)
