@@ -13,10 +13,6 @@ public record TripCreateRequest(
     @Schema(defaultValue = "2023-12-27")
     Optional<LocalDate> startDate,
     @Schema(defaultValue = "2023-12-28")
-    Optional<LocalDate> endDate,
-    @Schema(defaultValue = "서울시")
-    Optional<String> area,
-    @Schema(defaultValue = "강남구")
-    Optional<String> subarea
+    Optional<LocalDate> endDate
 ) {
 }

@@ -13,6 +13,10 @@ public record TripLikedSimpleResponse(
     Double ratingAverage,
     @Schema(defaultValue = "100")
     Long reviewCount,
+    @Schema(defaultValue = "http://~~~~~~image.jpg")
+    String smallThumbnailUrl,
+    @Schema(defaultValue = "서울특별시 강남구(여행지 주소)")
+    String tourAddress,
     @Schema(defaultValue = "false")
     Boolean prefer,
     @Schema(defaultValue = "true")

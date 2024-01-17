@@ -17,9 +17,7 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
         "t.numberOfPeople, " +
         "(CASE WHEN t.startDate > CURRENT_DATE THEN '여행전' " +
         "WHEN t.endDate < CURRENT_DATE THEN '여행완료' ELSE '여행중' END), " +
-        "COALESCE(tri.smallThumbnailUrl, 'https://common.hanmi.co.kr/upfile/ces/product/p_2011_tenten_p_400.jpg')," +
-        "t.area," +
-        "t.subarea) " +
+        "COALESCE(tri.smallThumbnailUrl, 'https://common.hanmi.co.kr/upfile/ces/product/p_2011_tenten_p_400.jpg')) " +
         "FROM Trip t " +
         "LEFT OUTER JOIN TripItem ti ON t.id = ti.trip.id " +
         "LEFT OUTER JOIN TourItem tri ON ti.tourItem.id = tri.id " +
