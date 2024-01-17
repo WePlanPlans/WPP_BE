@@ -33,10 +33,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
-import static org.tenten.tentenbe.domain.trip.dto.response.TripMembersResponse.*;
+import static org.tenten.tentenbe.domain.trip.dto.response.TripMembersResponse.TripMemberSimpleInfo;
+import static org.tenten.tentenbe.global.common.enums.Transportation.CAR;
 
 @Service
 @RequiredArgsConstructor
@@ -58,19 +58,25 @@ public class TripService {
         String joinCode = createJoinCode();
         String encryptedJoinCode = encryptJoinCode(joinCode);
 
+        HashMap<String, Integer> tripPathPriceMap = new HashMap<>();
+        LocalDate startDate = request.startDate().orElse(LocalDate.now());
+        LocalDate endDate = request.endDate().orElse(LocalDate.now());
+        HashMap<String, String> tripTransportationMap = new HashMap<>();
+        tripPathPriceMap.put(startDate.toString(), 0);
+        tripTransportationMap.put(endDate.toString(), CAR.getName());
         Trip trip = Trip.builder()
             .tripName(request.tripName()
                 .orElse("나의 "+numberOfTrip+"번째 여정계획"))
             .numberOfPeople(request.numberOfPeople().orElse(1L))
-            .startDate(request.startDate().orElse(LocalDate.now()))
-            .endDate(request.endDate().orElse(LocalDate.now()))
+            .startDate(startDate)
+            .endDate(endDate)
             .isDeleted(false)
             .budget(0L)
             .transportationPriceSum(0L)
             .tripItemPriceSum(0L)
             .joinCode(encryptedJoinCode)
-            .tripPathPriceMap(new HashMap<>())
-            .tripTransportationMap(new HashMap<>())
+            .tripPathPriceMap(tripPathPriceMap)
+            .tripTransportationMap(tripTransportationMap)
             .build();
         TripMember tripMember = TripMember.builder()
             .member(member)
