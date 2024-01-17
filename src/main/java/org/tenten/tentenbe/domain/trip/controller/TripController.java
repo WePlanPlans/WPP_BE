@@ -8,10 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.tenten.tentenbe.domain.trip.dto.request.JoinTripRequest;
-import org.tenten.tentenbe.domain.trip.dto.request.TripCreateRequest;
-import org.tenten.tentenbe.domain.trip.dto.request.TripInfoUpdateRequest;
-import org.tenten.tentenbe.domain.trip.dto.request.TripLikedItemRequest;
+import org.tenten.tentenbe.domain.trip.dto.request.*;
 import org.tenten.tentenbe.domain.trip.dto.response.*;
 import org.tenten.tentenbe.domain.trip.service.TripService;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
@@ -147,7 +144,7 @@ public class TripController {
         @PathVariable(name = "tripId") Long tripId,
         @RequestBody JoinTripRequest joinTripRequest
     ) {
-        tripService.joinTrip(getCurrentMemberId(), tripId, joinTripRequest.participantCode());
+        tripService.joinTrip(getCurrentMemberId(), tripId, joinTripRequest.joinCode());
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripId));
     }
 
