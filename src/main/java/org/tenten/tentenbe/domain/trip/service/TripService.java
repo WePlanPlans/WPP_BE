@@ -127,9 +127,9 @@ public class TripService {
     @Transactional
     public TripInfoUpdateResponse updateTrip(Long memberId, Long tripId, TripInfoUpdateRequest request) {
         Member member = getMemberById(memberId);
-        validateWriter(member);
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        validateWriter(member, trip);
         TripInfoUpdateResponse tripInfoUpdateResponse = trip.updateTripInfo(request);
         tripRepository.save(trip);
         return tripInfoUpdateResponse;
@@ -138,9 +138,9 @@ public class TripService {
     @Transactional
     public void deleteTripMember(Long memberId, Long tripId) {
         Member member = getMemberById(memberId);
-        validateWriter(member);
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        validateWriter(member, trip);
         TripMember tripMember = tripMemberRepository.findByMemberAndTrip(member, trip)
             .orElseThrow(() -> new TripMemberException("해당 회원은 여정에 속해있지 않은 회원입니다. memberId : "+ memberId, NOT_FOUND));
         tripMemberRepository.delete(tripMember);
@@ -155,9 +155,9 @@ public class TripService {
     @Transactional
     public void LikeTourInOurTrip(Long memberId, Long tripId, TripLikedItemRequest request) {
         Member member = getMemberById(memberId);
-        validateWriter(member);
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        validateWriter(member, trip);
         request.tourItemIds().stream()
             .map(tourItemId -> tourItemRepository.findById(tourItemId)
                 .orElseThrow(() -> new TourException("아이디에 해당하는 여행지가 없습니다. tourItemId : " + tourItemId, NOT_FOUND)))
@@ -245,17 +245,6 @@ public class TripService {
         );
     }
 
-    public TripMembersResponse getTripMembers(Long tripId) {
-        Trip trip = tripRepository.findById(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
-
-        List<TripMemberSimpleInfo> tripMemberSimpleInfos = trip.getTripMembers().stream()
-            .map(tripMember -> new TripMemberSimpleInfo(tripMember.getMember().getNickname(), tripMember.getMember().getProfileImageUrl()))
-            .toList();
-
-        return new TripMembersResponse(tripMemberSimpleInfos);
-    }
-
     private static class SurveyCounter {
         long planningTotal = 0, planningCount = 0;
         long activeHoursTotal = 0, activeHoursCount = 0;
@@ -299,6 +288,18 @@ public class TripService {
         private void incrementTripStyle() {
             tripStyleTotal++;
         }
+    }
+
+    @Transactional(readOnly = true)
+    public TripMembersResponse getTripMembers(Long tripId) {
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+
+        List<TripMemberSimpleInfo> tripMemberSimpleInfos = trip.getTripMembers().stream()
+            .map(tripMember -> new TripMemberSimpleInfo(tripMember.getMember().getNickname(), tripMember.getMember().getProfileImageUrl()))
+            .toList();
+
+        return new TripMembersResponse(tripMemberSimpleInfos);
     }
 
     @Transactional(readOnly = true)
@@ -351,7 +352,7 @@ public class TripService {
         Trip trip = tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("해당 여정이 존재하지 않습니다.", NOT_FOUND));
 
-        tripMemberRepository.findByMember(member)
+        tripMemberRepository.findByMemberAndTrip(member, trip)
             .orElseThrow(() -> new TripMemberException("해당 회원은 참여코드를 조회할 권한이 없습니다. memberId : " + member.getId(), NOT_ACCEPTABLE));
 
         return decryptedJoinCode(trip.getJoinCode());
@@ -376,8 +377,8 @@ public class TripService {
         throw new MemberException("memberId가 유효하지 않습니다.", NOT_FOUND);
     }
 
-    private void validateWriter(Member member) {
-        tripMemberRepository.findByMember(member)
+    private void validateWriter(Member member, Trip trip) {
+        tripMemberRepository.findByMemberAndTrip(member, trip)
             .orElseThrow(() -> new TripException("해당 아이디의 회원은 편집권한이 없습니다. memberId : " + member.getId(), NOT_FOUND));
     }
 }
