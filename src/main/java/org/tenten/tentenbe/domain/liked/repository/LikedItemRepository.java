@@ -14,5 +14,7 @@ public interface LikedItemRepository extends JpaRepository<LikedItem, Long> {
 
     Page<LikedItem> findByMember(Member member, Pageable pageable);
 
+    Page<LikedItem> findByMemberAndTourItem_ContentTypeId(Member member, Long categoryCode, Pageable pageable);
+
     boolean existsByMemberIdAndTourItemId(Long memberId, Long tourItemId);
 }
