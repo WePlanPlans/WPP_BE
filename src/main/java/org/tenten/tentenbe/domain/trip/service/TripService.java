@@ -1,10 +1,15 @@
 package org.tenten.tentenbe.domain.trip.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.tenten.tentenbe.domain.member.dto.response.MemberSimpleInfo;
 import org.tenten.tentenbe.domain.member.exception.MemberException;
 import org.tenten.tentenbe.domain.member.model.Member;
@@ -15,6 +20,7 @@ import org.tenten.tentenbe.domain.tour.model.TourItem;
 import org.tenten.tentenbe.domain.tour.repository.TourItemRepository;
 import org.tenten.tentenbe.domain.trip.dto.request.TripCreateRequest;
 import org.tenten.tentenbe.domain.trip.dto.request.TripInfoUpdateRequest;
+import org.tenten.tentenbe.domain.trip.dto.request.TripItemRequest;
 import org.tenten.tentenbe.domain.trip.dto.request.TripLikedItemRequest;
 import org.tenten.tentenbe.domain.trip.dto.response.*;
 import org.tenten.tentenbe.domain.trip.exception.TripException;
@@ -34,7 +40,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDate;
 import java.util.*;
 
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.MediaType.*;
 import static org.tenten.tentenbe.domain.trip.dto.response.TripMembersResponse.TripMemberSimpleInfo;
 import static org.tenten.tentenbe.global.common.enums.Transportation.CAR;
 
@@ -49,6 +57,8 @@ public class TripService {
     private final MemberRepository memberRepository;
     private final TripLikedItemRepository tripLikedItemRepository;
     private final TripLikedItemPreferenceRepository tripLikedItemPreferenceRepository;
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public TripCreateResponse createTrip(Long memberId, TripCreateRequest request) {
@@ -300,6 +310,36 @@ public class TripService {
             .toList();
 
         return new TripMembersResponse(tripMemberSimpleInfos);
+    }
+
+    @Transactional
+    public TripItemResponse addTripItem(Long memberId, Long tripId, TripItemRequest tripItemRequest) {
+        Member member = getMemberById(memberId);
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        validateWriter(member, trip);
+
+        String wsUrl = "https://ws.weplanplans.site/trips/" + tripId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        HttpEntity<TripItemRequest> request = new HttpEntity<>(tripItemRequest, headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(wsUrl, POST, request, String.class);
+
+        if (responseEntity.getStatusCode() == OK) {
+            try {
+                Map<String, Object> map = objectMapper.readValue(responseEntity.getBody(), new TypeReference<>() {});
+                return new TripItemResponse(
+                    tripId,
+                    Long.valueOf(map.get("tripItemId").toString()),
+                    Long.valueOf(map.get("tourItemId").toString()),
+                    LocalDate.parse(map.get("visitDate").toString())
+                );
+            } catch (JsonProcessingException e) {
+                throw new TripException("ws 서버로부터 받은 응답을 읽는데 실패하였습니다.", BAD_REQUEST);
+            }
+        } else {
+            throw new TripException("ws 서버로부터 에러 응답을 받았습니다.", BAD_REQUEST);
+        }
     }
 
     @Transactional(readOnly = true)
