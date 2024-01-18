@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
@@ -46,6 +47,7 @@ import static org.springframework.http.MediaType.*;
 import static org.tenten.tentenbe.domain.trip.dto.response.TripMembersResponse.TripMemberSimpleInfo;
 import static org.tenten.tentenbe.global.common.enums.Transportation.CAR;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TripService {
@@ -319,10 +321,13 @@ public class TripService {
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
         validateWriter(member, trip);
 
+        Map<String, String> tripItemRequestMap = new HashMap<>();
+        tripItemRequestMap.put("tourItemId", tripItemRequest.tourItemId().toString());
+        tripItemRequestMap.put("visitDate", tripItemRequest.visitDate().toString());
         String wsUrl = "https://ws.weplanplans.site/trips/" + tripId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
-        HttpEntity<TripItemRequest> request = new HttpEntity<>(tripItemRequest, headers);
+        HttpEntity<Map> request = new HttpEntity<>(tripItemRequestMap, headers);
         ResponseEntity<String> responseEntity = restTemplate.exchange(wsUrl, POST, request, String.class);
 
         if (responseEntity.getStatusCode() == OK) {
