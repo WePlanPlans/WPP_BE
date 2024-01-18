@@ -17,6 +17,7 @@ public interface TripLikedItemRepository extends JpaRepository<TripLikedItem, Lo
         "tli.id, " +
         "ti.id, " +
         "ti.contentTypeId, " +
+        "ti.title, " +
         "(SELECT COALESCE(AVG(r.rating), 0) FROM Review r WHERE r.tourItem.id = ti.id), " +
         "ti.reviewTotalCount, " +
         "ti.smallThumbnailUrl, " +
