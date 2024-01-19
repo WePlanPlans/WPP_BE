@@ -126,12 +126,15 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public TripAuthorityResponse getTripAuthority(Long memberId, Long tripId) {
+        if (memberId == null) {
+            return new TripAuthorityResponse(null, TripAuthority.READ_ONLY, tripId);
+        }
         Member member = getMemberById(memberId);
         TripAuthority tripAuthority = tripMemberRepository.findByMemberAndTrip(member, tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND)))
             .orElseThrow(() -> new TripException("해당 아이디의 회원은 편집권한이 없습니다. memberId : " + member.getId(), NOT_FOUND))
             .getTripAuthority();
-        return new TripAuthorityResponse(member.getId(), tripAuthority);
+        return new TripAuthorityResponse(member.getId(), tripAuthority, tripId);
     }
 
     @Transactional(readOnly = true)
