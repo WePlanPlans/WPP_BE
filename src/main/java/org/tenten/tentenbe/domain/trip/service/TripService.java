@@ -132,7 +132,9 @@ public class TripService {
         Member member = getMemberById(memberId);
         TripAuthority tripAuthority = tripMemberRepository.findByMemberAndTrip(member, tripRepository.findById(tripId)
             .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND)))
-            .orElseThrow(() -> new TripException("해당 아이디의 회원은 편집권한이 없습니다. memberId : " + member.getId(), NOT_FOUND))
+            .orElse(TripMember.builder()
+                .tripAuthority(TripAuthority.READ_ONLY)
+                .build())
             .getTripAuthority();
         return new TripAuthorityResponse(member.getId(), tripAuthority, tripId);
     }
