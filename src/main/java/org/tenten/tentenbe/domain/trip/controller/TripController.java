@@ -35,6 +35,12 @@ public class TripController {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.createTrip(getCurrentMemberId(), tripCreateRequest)));
     }
 
+    @Operation(summary = "편집 권한 조회 API", description = "편집 권한 API 입니다.")
+    @GetMapping("/{tripId}/authority")
+    public ResponseEntity<GlobalDataResponse<TripAuthorityResponse>> getTripAuthority(@PathVariable Long tripId) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTripAuthority(getCurrentMemberId(), tripId)));
+    }
+
     @Operation(summary = "나의 여정목록 조회 API", description = "나의 여정목록 조회 API 입니다.")
     @GetMapping()
     public ResponseEntity<GlobalDataResponse<List<TripSimpleResponse>>> getTrips() {
