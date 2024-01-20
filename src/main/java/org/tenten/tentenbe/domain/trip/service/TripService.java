@@ -37,6 +37,7 @@ import org.tenten.tentenbe.domain.trip.model.TripMember;
 import org.tenten.tentenbe.domain.trip.repository.*;
 import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.common.enums.TripAuthority;
+import org.tenten.tentenbe.global.util.EncryptUtil;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -63,7 +64,7 @@ public class TripService {
     private final TripLikedItemPreferenceRepository tripLikedItemPreferenceRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-
+    private final EncryptUtil encryptUtil;
     @Transactional
     public TripCreateResponse createTrip(Long memberId, TripCreateRequest request) {
         Member member = getMemberById(memberId);
@@ -100,7 +101,7 @@ public class TripService {
         tripMemberRepository.save(tripMember);
 
         Trip savedTrip = tripRepository.save(trip);
-        savedTrip.updatedEncryptedId(encryptJoinCode(Long.toString(savedTrip.getId())));
+        savedTrip.updatedEncryptedId(encryptUtil.encrypt(Long.toString(savedTrip.getId())));
         return new TripCreateResponse(savedTrip.getId());
     }
 
