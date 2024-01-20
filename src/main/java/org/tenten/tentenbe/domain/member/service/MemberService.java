@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.tenten.tentenbe.domain.liked.model.LikedItem;
 import org.tenten.tentenbe.domain.liked.repository.LikedItemRepository;
 import org.tenten.tentenbe.domain.member.dto.request.MemberUpdateRequest;
 import org.tenten.tentenbe.domain.member.dto.request.PasswordUpdateRequest;
@@ -32,8 +30,6 @@ import org.tenten.tentenbe.global.s3.ImageUploadDto;
 import org.tenten.tentenbe.global.s3.S3Uploader;
 import org.tenten.tentenbe.global.util.CookieUtil;
 
-import java.util.List;
-
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
 
 @Service
@@ -47,21 +43,9 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, String category, Pageable pageable) {
-        Member member = getMember(memberId);
+        getMember(memberId);
         Long categoryCode = findCategoryCode(category);
-        Page<LikedItem> likedItems;
-        if (categoryCode == null) {
-            likedItems = likedItemRepository.findByMember(member, pageable);
-        } else {
-            likedItems = likedItemRepository.findByMemberAndTourItem_ContentTypeId(member, categoryCode, pageable);
-        }
-
-        List<TourSimpleResponse> tourSimpleResponses = likedItems
-            .stream()
-            .map(likedItem -> TourSimpleResponse.fromEntity(likedItem.getTourItem()))
-            .toList();
-
-        return new PageImpl<>(tourSimpleResponses, pageable, likedItems.getTotalElements());
+        return likedItemRepository.findByMemberAndCategory(memberId, categoryCode, pageable);
     }
 
     @Transactional(readOnly = true)

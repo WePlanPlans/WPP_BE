@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -41,9 +43,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDate;
 import java.util.*;
 
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.tenten.tentenbe.domain.trip.dto.response.TripMembersResponse.TripMemberSimpleInfo;
 import static org.tenten.tentenbe.global.common.enums.Transportation.CAR;
 
@@ -97,7 +99,9 @@ public class TripService {
             .build();
         tripMemberRepository.save(tripMember);
 
-        return new TripCreateResponse(tripRepository.save(trip).getId());
+        Trip savedTrip = tripRepository.save(trip);
+        savedTrip.updatedEncryptedId(encryptJoinCode(Long.toString(savedTrip.getId())));
+        return new TripCreateResponse(savedTrip.getId());
     }
 
     private String createJoinCode() {
@@ -122,6 +126,21 @@ public class TripService {
     public List<TripSimpleResponse> getTrips(Long memberId) {
         getMemberById(memberId);
         return tripRepository.findTripsByMemberId(memberId);
+    }
+
+    @Transactional(readOnly = true)
+    public TripAuthorityResponse getTripAuthority(Long memberId, Long tripId) {
+        if (memberId == null) {
+            return new TripAuthorityResponse(null, TripAuthority.READ_ONLY, tripId);
+        }
+        Member member = getMemberById(memberId);
+        TripAuthority tripAuthority = tripMemberRepository.findByMemberAndTrip(member, tripRepository.findById(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND)))
+            .orElse(TripMember.builder()
+                .tripAuthority(TripAuthority.READ_ONLY)
+                .build())
+            .getTripAuthority();
+        return new TripAuthorityResponse(member.getId(), tripAuthority, tripId);
     }
 
     @Transactional(readOnly = true)
