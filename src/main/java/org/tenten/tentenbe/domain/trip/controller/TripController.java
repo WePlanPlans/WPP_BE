@@ -20,7 +20,7 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.DELETED;
 import static org.tenten.tentenbe.global.common.constant.ResponseConstant.SUCCESS;
-import static org.tenten.tentenbe.global.util.SecurityUtil.*;
+import static org.tenten.tentenbe.global.util.SecurityUtil.getCurrentMemberId;
 
 @Tag(name = "여정 관련 API", description = "여정 관련 API 모음입니다. 소켓 통신 문서화는 노션에 별도로 작성해놓겠습니다.")
 @RestController
@@ -37,7 +37,7 @@ public class TripController {
 
     @Operation(summary = "편집 권한 조회 API", description = "편집 권한 API 입니다.")
     @GetMapping("/{tripId}/authority")
-    public ResponseEntity<GlobalDataResponse<TripAuthorityResponse>> getTripAuthority(@PathVariable Long tripId) {
+    public ResponseEntity<GlobalDataResponse<TripAuthorityResponse>> getTripAuthority(@PathVariable String tripId) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTripAuthority(getCurrentMemberId(), tripId)));
     }
 
@@ -51,7 +51,7 @@ public class TripController {
     @GetMapping("/{tripId}")
     public ResponseEntity<GlobalDataResponse<TripDetailResponse>> getTrip(
         @Parameter(name = "tripId", description = "상세 조회할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId
+        @PathVariable(name = "tripId") String tripId
     ) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, tripService.getTrip(tripId)));
     }
@@ -60,7 +60,7 @@ public class TripController {
     @PutMapping("/{tripId}")
     public ResponseEntity<GlobalDataResponse<TripInfoUpdateResponse>> updateTrip(
         @Parameter(name = "tripId", description = "기본정보를 수정할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId,
+        @PathVariable(name = "tripId") String tripId,
         @RequestBody TripInfoUpdateRequest tripInfoUpdateRequest
     ) {
         return ResponseEntity.ok(GlobalDataResponse
@@ -71,7 +71,7 @@ public class TripController {
     @DeleteMapping("/{tripId}")
     public ResponseEntity<GlobalResponse> deleteTripMember(
         @Parameter(name = "tripId", description = "탈퇴할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId
+        @PathVariable(name = "tripId") String tripId
     ) {
         tripService.deleteTripMember(getCurrentMemberId(), tripId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
@@ -81,7 +81,7 @@ public class TripController {
     @PostMapping("/{tripId}/tripLikedTours")
     public ResponseEntity<GlobalResponse> LikeTourInOurTrip(
         @Parameter(name = "tripId", description = "우리의 관심 여행지를 등록할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId,
+        @PathVariable(name = "tripId") String tripId,
         @RequestBody TripLikedItemRequest request
     ) {
         tripService.LikeTourInOurTrip(getCurrentMemberId(), tripId, request);
@@ -92,7 +92,7 @@ public class TripController {
     @GetMapping("/{tripId}/tripLikedTours")
     public ResponseEntity<GlobalDataResponse<Page<TripLikedSimpleResponse>>> getTripLikedTours(
         @Parameter(name = "tripId", description = "우리의 관심목록을 조회할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId,
+        @PathVariable(name = "tripId") String tripId,
         @Parameter(name = "category", description = "우리의 관심목록을 조회할 카테고리", in = QUERY, required = false)
         @RequestParam(value = "category", required = false) String category,
         @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
@@ -109,7 +109,7 @@ public class TripController {
     @PostMapping("/{tripId}/tripLikedTours/{tourId}")
     public ResponseEntity<GlobalResponse> preferOrNotTourInOurTrip(
         @Parameter(name = "tripId", description = "우리의 관심 여행지 좋아요/싫어요할 여정 아이디", in = PATH)
-        @PathVariable("tripId") Long tripId,
+        @PathVariable("tripId") String tripId,
         @Parameter(name = "tourId", description = "우리의 관심 여행지 좋아요/싫어요할 여행지 아이디", in = PATH)
         @PathVariable("tourId") Long tourId,
         @Parameter(name = "prefer", description = "선호", in = QUERY)
@@ -125,7 +125,7 @@ public class TripController {
     @GetMapping("/{tripId}/survey")
     public ResponseEntity<GlobalDataResponse<TripSurveyResponse>> getTripSurveys(
         @Parameter(name = "tripId", description = "우리의 여행취향을 조회할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId
+        @PathVariable(name = "tripId") String tripId
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tripService.getTripSurveys(tripId))
@@ -136,7 +136,7 @@ public class TripController {
     @GetMapping("/{tripId}/survey/members")
     public ResponseEntity<GlobalDataResponse<TripSurveyMemberResponse>> getTripSurveyMembers(
         @Parameter(name = "tripId", description = "우리의 여행취향 참여/미참여 회원을 조회할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId
+        @PathVariable(name = "tripId") String tripId
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tripService.getTripSurveyMember(tripId))
@@ -145,9 +145,9 @@ public class TripController {
 
     @Operation(summary = "여정 참여 API", description = "참여코드를 이용한 여정 참여 API 입니다.")
     @PostMapping("/{tripId}/join")
-    public ResponseEntity<GlobalDataResponse<Long>> joinTrip(
+    public ResponseEntity<GlobalDataResponse<String>> joinTrip(
         @Parameter(name = "tripId", description = "참여할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId,
+        @PathVariable(name = "tripId") String tripId,
         @RequestBody JoinTripRequest joinTripRequest
     ) {
         tripService.joinTrip(getCurrentMemberId(), tripId, joinTripRequest.joinCode());
@@ -158,7 +158,7 @@ public class TripController {
     @GetMapping("/{tripId}/join")
     public ResponseEntity<GlobalDataResponse<String>> joinTrip(
         @Parameter(name = "tripId", description = "참여코드를 조회할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId
+        @PathVariable(name = "tripId") String tripId
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tripService.getJoinCode(getCurrentMemberId(), tripId)));
@@ -168,7 +168,7 @@ public class TripController {
     @GetMapping("/{tripId}/members")
     public ResponseEntity<GlobalDataResponse<TripMembersResponse>> getTripMembers(
         @Parameter(name = "tripId", description = "여정을 공유하고 있는 회원을 조회할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId
+        @PathVariable(name = "tripId") String tripId
     ) {
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, tripService.getTripMembers(tripId)));
@@ -178,7 +178,7 @@ public class TripController {
     @PostMapping("/{tripId}")
     public ResponseEntity<GlobalDataResponse<TripItemResponse>> addTripItem(
         @Parameter(name = "tripId", description = "여행 상세페이지에서 여정에 여행지 등록할 여정 아이디", in = PATH)
-        @PathVariable(name = "tripId") Long tripId,
+        @PathVariable(name = "tripId") String tripId,
         @RequestBody TripItemRequest tripItemRequest
     ) {
         return ResponseEntity.ok(GlobalDataResponse
