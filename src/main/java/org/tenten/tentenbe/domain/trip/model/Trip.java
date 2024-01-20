@@ -43,6 +43,7 @@ public class Trip extends BaseTimeEntity {
     @ColumnDefault("0")
     private Long transportationPriceSum;
     private String joinCode;
+    private String encryptedId;
     @Convert(converter = MapConverter.class)
     @Column(columnDefinition = "JSON")
     private Map<String, Integer> tripPathPriceMap;
@@ -74,5 +75,9 @@ public class Trip extends BaseTimeEntity {
 
     public void setIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public void updatedEncryptedId(String encryptedId) {
+        this.encryptedId = encryptedId;
     }
 }
