@@ -29,11 +29,11 @@ public interface TripLikedItemRepository extends JpaRepository<TripLikedItem, Lo
         "FROM TripLikedItem tli " +
         "LEFT OUTER JOIN TourItem ti ON ti.id = tli.tourItem.id " +
         "LEFT OUTER JOIN Trip t ON t.id = tli.trip.id " +
-        "WHERE tli.trip.id = :tripId AND (ti.contentTypeId = :category OR :category IS NULL) " +
+        "WHERE tli.trip.encryptedId = :tripId AND (ti.contentTypeId = :category OR :category IS NULL) " +
         "GROUP BY tli.id ")
     Page<TripLikedSimpleResponse> findTripLikedItemsById(
         @Param("memberId") Long memberId,
-        @Param("tripId") Long tripId,
+        @Param("tripId") String tripId,
         @Param("category") Long category,
         Pageable pageable
     );

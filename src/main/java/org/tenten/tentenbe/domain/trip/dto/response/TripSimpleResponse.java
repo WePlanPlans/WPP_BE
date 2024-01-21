@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public record TripSimpleResponse(
     @Schema(defaultValue = "1")
-    Long tripId,
+    String tripId,
     @Schema(defaultValue = "나의 ~번째 여정")
     String tripName,
     @Schema(defaultValue = "2023-12-27")

@@ -7,10 +7,11 @@ import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.domain.trip.model.Trip;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TripRepository extends JpaRepository<Trip, Long> {
     @Query("SELECT new org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse(" +
-        "t.id, " +
+        "t.encryptedId, " +
         "t.tripName, " +
         "t.startDate, " +
         "t.endDate, " +
@@ -25,4 +26,6 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
         "WHERE tm.member.id = :memberId AND t.isDeleted = FALSE " +
         "GROUP BY t.id ORDER BY t.createdTime")
     List<TripSimpleResponse> findTripsByMemberId(@Param("memberId") Long memberId);
+
+    Optional<Trip> findByEncryptedId(String encryptedId);
 }
