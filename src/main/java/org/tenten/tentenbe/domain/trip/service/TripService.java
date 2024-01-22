@@ -401,7 +401,7 @@ public class TripService {
         String decryptedJoinCode = decryptedJoinCode(trip.getJoinCode());
 
         if (!decryptedJoinCode.equals(joinCode)) {
-            throw new TripException("참여 코드가 일치하지 않습니다.", UNAUTHORIZED);
+            throw new TripException("참여 코드가 일치하지 않습니다.", CONFLICT);
         }
 
         TripMember tripMember = TripMember.builder()
