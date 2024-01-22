@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -404,12 +405,22 @@ public class TripService {
             throw new TripException("참여 코드가 일치하지 않습니다.", CONFLICT);
         }
 
-        TripMember tripMember = TripMember.builder()
-            .member(member)
-            .trip(trip)
-            .tripAuthority(TripAuthority.WRITE)
-            .build();
-        tripMemberRepository.save(tripMember);
+        saveTripMember(member, trip);
+    }
+
+    private void saveTripMember(Member member, Trip trip) {
+        TripMember tripMember = tripMemberRepository.findByMemberAndTrip(member, trip).orElse(null);
+
+        if(tripMember == null) {
+            tripMember = TripMember.builder()
+                .member(member)
+                .trip(trip)
+                .tripAuthority(TripAuthority.WRITE)
+                .build();
+            tripMemberRepository.save(tripMember);
+        } else {
+            throw new TripException("이미 참여하고 있는 여정입니다.", CONFLICT);
+        }
     }
 
     @Transactional(readOnly = true)
