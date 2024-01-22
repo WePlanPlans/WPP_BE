@@ -15,6 +15,8 @@ public record TripSimpleResponse(
     LocalDate endDate,
     @Schema(defaultValue = "2")
     Long numberOfPeople,
+    @Schema(defaultValue = "2")
+    Long numberOfTripMember,
     @Schema(defaultValue = "여행 전")
     String tripStatus,
     @Schema(defaultValue = "https://~~~~.png")
