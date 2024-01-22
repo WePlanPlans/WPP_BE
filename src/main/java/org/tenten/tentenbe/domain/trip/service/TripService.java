@@ -287,37 +287,31 @@ public class TripService {
 
         void countSurvey(Survey survey) {
             if (survey != null) {
-                incrementIfNotNull(survey.getPlanning(), "철저하게", this::incrementPlanning);
-                incrementIfNotNull(survey.getActiveHours(), "아침형", this::incrementActiveHours);
-                incrementIfNotNull(survey.getAccommodation(), "분위기", this::incrementAccommodation);
-                incrementIfNotNull(survey.getFood(), "노포", this::incrementFood);
-                incrementIfNotNull(survey.getTripStyle(), "액티비티", this::incrementTripStyle);
+                surveyTotalCount();
+                if(survey.getPlanning().equals("철저하게")) {
+                    planningCount++;
+                }
+                if(survey.getActiveHours().equals("아침형")) {
+                    activeHoursCount++;
+                }
+                if(survey.getAccommodation().equals("분위기")) {
+                    accommodationCount++;
+                }
+                if(survey.getFood().equals("노포 맛집")) {
+                    foodCount++;
+                }
+                if(survey.getTripStyle().equals("액티비티")) {
+                    tripStyleCount++;
+                }
                 tripSurveyMemberCount++;
             }
         }
 
-        private void incrementIfNotNull(String value, String expectedValue, Runnable incrementMethod) {
-            if (value != null) {
-                incrementMethod.run();
-                if (expectedValue.equals(value)) {
-                    incrementMethod.run();
-                }
-            }
-        }
-
-        private void incrementPlanning() {
+        private void surveyTotalCount() {
             planningTotal++;
-        }
-        private void incrementActiveHours() {
             activeHoursTotal++;
-        }
-        private void incrementAccommodation() {
             accommodationTotal++;
-        }
-        private void incrementFood() {
             foodTotal++;
-        }
-        private void incrementTripStyle() {
             tripStyleTotal++;
         }
     }
