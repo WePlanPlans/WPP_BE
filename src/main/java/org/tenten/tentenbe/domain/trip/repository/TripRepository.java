@@ -16,6 +16,7 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
         "t.startDate, " +
         "t.endDate, " +
         "t.numberOfPeople, " +
+        "CAST((SELECT COUNT(tm) FROM TripMember tm WHERE tm.trip.id = t.id) AS LONG), " +
         "(CASE WHEN t.startDate > CURRENT_DATE THEN '여행전' " +
         "WHEN t.endDate < CURRENT_DATE THEN '여행완료' ELSE '여행중' END), " +
         "COALESCE(tri.smallThumbnailUrl, 'https://common.hanmi.co.kr/upfile/ces/product/p_2011_tenten_p_400.jpg')) " +
