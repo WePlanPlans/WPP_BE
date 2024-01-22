@@ -14,7 +14,7 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
         "kw.id," +
         "kw.content, " +
         "kw.type, " +
-        "CAST(COALESCE(COUNT(DISTINCT rk.id),0 ) AS LONG) " +
+        "COUNT(DISTINCT rk.id)" +
         ") FROM Keyword kw " +
         "LEFT OUTER JOIN ReviewKeyword rk ON kw.id = rk.keyword.id " +
         "LEFT OUTER JOIN Review r ON rk.review.id = r.id " +
