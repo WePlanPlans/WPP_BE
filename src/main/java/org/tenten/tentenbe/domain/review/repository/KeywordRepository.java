@@ -14,12 +14,12 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
         "kw.id," +
         "kw.content, " +
         "kw.type, " +
-        "CAST(COALESCE(COUNT(DISTINCT rk.id),0 ) AS LONG) " +
+        "COUNT(DISTINCT rk.id)" +
         ") FROM Keyword kw " +
         "LEFT OUTER JOIN ReviewKeyword rk ON kw.id = rk.keyword.id " +
         "LEFT OUTER JOIN Review r ON rk.review.id = r.id " +
         "LEFT OUTER JOIN TourItem ti ON r.tourItem.id = ti.id " +
-        "WHERE ti.id IS NULL OR ti.id = :tourItemId GROUP BY kw.id")
+        "WHERE ti.id = :tourItemId GROUP BY kw.id HAVING COUNT(DISTINCT rk.id) > 0")
     List<TourKeywordInfo> findKeywordInfoByTourItemIdAndKeywordType(@Param("tourItemId") Long tourItemId);
 
     List<Keyword> findByType(KeywordType keywordType);
