@@ -44,6 +44,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDate;
 import java.util.*;
 
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -177,6 +178,12 @@ public class TripService {
             .orElseThrow(() -> new TripMemberException("해당 회원은 여정에 속해있지 않은 회원입니다. memberId : "+ memberId, NOT_FOUND));
         tripMemberRepository.delete(tripMember);
         trip.getTripMembers().remove(tripMember);
+
+        String wsUrl = "https://ws.weplanplans.site/trips/" + tripId+"/"+memberId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(wsUrl,DELETE, request, String.class);
 
         if(trip.getTripMembers().isEmpty()) {
             trip.setIsDeleted(true);
