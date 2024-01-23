@@ -64,7 +64,7 @@ public class TripController {
         @RequestBody TripInfoUpdateRequest tripInfoUpdateRequest
     ) {
         TripInfoUpdateResponse updatedTrip = tripService.updateTrip(getCurrentMemberId(), tripId, tripInfoUpdateRequest);
-
+        tripService.updateToWebSocket(tripId, tripInfoUpdateRequest);
         return ResponseEntity.ok(GlobalDataResponse
             .ok(SUCCESS, updatedTrip));
     }
