@@ -19,7 +19,7 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
         "CAST((SELECT COUNT(tm) FROM TripMember tm WHERE tm.trip.id = t.id) AS LONG), " +
         "(CASE WHEN t.startDate > CURRENT_DATE THEN '여행전' " +
         "WHEN t.endDate < CURRENT_DATE THEN '여행완료' ELSE '여행중' END), " +
-        "COALESCE(tri.smallThumbnailUrl, 'https://common.hanmi.co.kr/upfile/ces/product/p_2011_tenten_p_400.jpg')) " +
+        "COALESCE(tri.smallThumbnailUrl, 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fc6dCNg%2FbtsDLLRwChk%2FSvDh1opt7ysaaVPTJ8rtkK%2Fimg.jpg')) " +
         "FROM Trip t " +
         "LEFT OUTER JOIN TripItem ti ON t.id = ti.trip.id " +
         "LEFT OUTER JOIN TourItem tri ON ti.tourItem.id = tri.id " +
