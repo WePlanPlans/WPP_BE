@@ -90,10 +90,12 @@ public class AuthService {
         String memberId = authenticate.getName();
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
 
-        // todo : 리프레쉬토큰- 레디스
-        String refreshToken = tokenInfoDTO.getRefreshToken();
-        member.getRefreshToken().updateToken(refreshToken);
 
+        String refreshToken = tokenInfoDTO.getRefreshToken();
+        // todo : 리프레쉬토큰- 레디스
+//        member.getRefreshToken().updateToken(refreshToken);
+        redisCache.save(REFRESHTOKEN, memberId, refreshToken);
+//        "\"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwNjYwNzU1OX0.x4aNnf4fP1uWkQB6-OM73y61fJLBV3huDlNtV5o7nI3ENWDH3ofouOVYCCFw640CRDLgqMcUQ9LDAyXGubSqeA\""
         return LoginResponse.builder()
             .memberDto(MemberDto.fromEntity(member))
             .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
