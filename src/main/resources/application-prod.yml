@@ -14,6 +14,11 @@ spring:
     multipart:
       max-file-size: 20MB
 
+  data:
+    redis:
+      host: tentenbe-ec.rhlo3s.ng.0001.apn2.cache.amazonaws.com:6379
+      port: 6379
+
   jpa:
     open-in-view: true
     hibernate:
