@@ -32,6 +32,19 @@ public class SecurityConfig {
     private final OAuth2UserService oAuth2UserService;
     private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
 
+    private static final String[] PERMIT_PATHS = {
+        "/api/auth/**", "/swagger-ui/**", "/api/region/**", "/api/category", "/api/tours/**", "/",
+        "/api-docs/**", "/api/trips/**", "/api/reviews/**", "/api/comments/**", "/login/kakao/**"
+    };
+
+    private static final String[] ALLOW_ORIGINS = {
+        "http://localhost:8080",
+        "http://localhost:5173",
+        "https://api.weplanplans.site",
+        "https://weplanplans.vercel.app",
+        "https://dev-weplanplans.vercel.app"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -43,10 +56,7 @@ public class SecurityConfig {
             .authorizeHttpRequests((request) -> request
                 .requestMatchers("/api/auth/logout").authenticated()
                 .requestMatchers(OPTIONS, "**").permitAll()
-                .requestMatchers(GET, "/").permitAll()
-                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/v1/api-docs/**"
-                    , "/api/region/**", "/api/category", "/api/tours/**", "/api-docs/**"
-                    , "/api/trips/**", "/api/reviews/**", "/api/comments/**", "/login/kakao/**", "/redisTest/**").permitAll()
+                .requestMatchers(PERMIT_PATHS).permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -67,7 +77,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://api.weplanplans.site", "https://weplanplans.vercel.app", "https://dev-weplanplans.vercel.app", "http://localhost:8080"));
+        configuration.setAllowedOrigins(List.of(ALLOW_ORIGINS));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.addExposedHeader("Authorization");
