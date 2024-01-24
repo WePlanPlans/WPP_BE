@@ -21,7 +21,6 @@ import org.tenten.tentenbe.global.security.oauth.OAuthLoginSuccessHandler;
 
 import java.util.List;
 
-import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.OPTIONS;
 
 @Configuration
