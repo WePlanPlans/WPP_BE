@@ -5,9 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
-import org.springframework.util.SerializationUtils;
 
-import java.util.Base64;
 import java.util.Optional;
 
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
@@ -32,26 +30,14 @@ public class CookieUtil {
     // 리프레시 토큰을 http only 쿠키에 저장 및 secure 설정
     public static void storeRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
 //            .domain("weplanplans.site") // 테스트 시 주석처리
-                .sameSite("None")
-                .maxAge(REFRESH_TOKEN_EXPIRE_TIME)
-                .build();
+            .sameSite("None")
+            .maxAge(REFRESH_TOKEN_EXPIRE_TIME)
+            .build();
         response.addHeader("Set-Cookie", cookie.toString());
-    }
-
-    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        log.info(name);
-        // log.info(value);
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setMaxAge(maxAge);
-
-        response.addCookie(cookie);
     }
 
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
@@ -61,33 +47,16 @@ public class CookieUtil {
             for (Cookie cookie : cookies) {
                 if (name.equals(cookie.getName())) {
                     ResponseCookie responseCookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME)
-                            .httpOnly(true)
-                            .secure(true)
-                            .path("/")
-//            .domain("weplanplans.site") // 테스트 시 주석처리
-                            .sameSite("None")
-                            .maxAge(0)
-                            .build();
+                        .httpOnly(true)
+                        .secure(true)
+                        .path("/")
+                        .sameSite("None")
+                        .maxAge(0)
+                        .build();
                     response.addHeader("Set-Cookie", responseCookie.toString());
-//                    cookie.setValue("");
-//                    cookie.setSecure(true);
-//                    cookie.setPath("/");
-//                    cookie.setMaxAge(0);
-//                    response.addCookie(cookie);
                 }
             }
         }
-    }
-
-    public static String serialize(Object obj) {
-        return Base64.getUrlEncoder()
-                .encodeToString(SerializationUtils.serialize(obj));
-    }
-
-    public static <T> T deserialize(Cookie cookie, Class<T> cls) {
-        return cls.cast(
-                SerializationUtils.deserialize(
-                        Base64.getUrlDecoder().decode(cookie.getValue())));
     }
 
 }

@@ -23,14 +23,12 @@ import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
 import org.tenten.tentenbe.domain.token.exception.LogoutMemberException;
+import org.tenten.tentenbe.global.cache.RedisCache;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
-import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
-import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
 import org.tenten.tentenbe.global.util.CookieUtil;
 
-import java.util.Optional;
-
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
+import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESH_TOKEN;
 import static org.tenten.tentenbe.global.common.enums.LoginType.EMAIL;
 import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
 
@@ -42,15 +40,14 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisCache redisCache;
 
     @Transactional
     public SignUpResponse signUp(SignUpRequest signUpRequest, HttpServletResponse response) {
         if (memberRepository.existsByEmail(signUpRequest.email())) {
             throw new DuplicateNicknameException("이미 존재하는 이메일입니다.");
         }
-        // TODO : 이메일 인증
-        // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
+        // TODO: 이메일 인증
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
         Member newMember = signUpRequest.toEntity(encodedPassword, EMAIL, ROLE_USER);
 
@@ -63,19 +60,15 @@ public class AuthService {
 
         Authentication authenticate = getAuthenticate(signUpRequest.email(), signUpRequest.password());
         TokenInfoDTO tokenInfoDTO = getTokenInfoDTO(response, authenticate);
+        Long memberId = newMember.getId();
 
+        redisCache.save(REFRESH_TOKEN, String.valueOf(memberId), tokenInfoDTO.getRefreshToken());
 
-        RefreshToken refreshToken = RefreshToken.builder()
-            .member(newMember)
-            .token(tokenInfoDTO.getRefreshToken())
-            .build();
-        refreshTokenRepository.save(refreshToken);
-
-        String nickname = "위플러" + (newMember.getId() + 321);
+        String nickname = "위플러" + (memberId + 321);
         newMember.updateNickname(nickname);
 
         return SignUpResponse.builder()
-            .memberId(newMember.getId())
+            .memberId(memberId)
             .email(newMember.getEmail())
             .nickName(nickname)
             .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
@@ -92,7 +85,7 @@ public class AuthService {
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
 
         String refreshToken = tokenInfoDTO.getRefreshToken();
-        member.getRefreshToken().updateToken(refreshToken);
+        redisCache.save(REFRESH_TOKEN, memberId, refreshToken);
 
         return LoginResponse.builder()
             .memberDto(MemberDto.fromEntity(member))
@@ -102,24 +95,19 @@ public class AuthService {
 
     @Transactional
     public void logout(HttpServletRequest request, HttpServletResponse response, Long memberId) {
-        Member member = memberRepository.findById(memberId)
+        memberRepository.findById(memberId)
             .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다.", HttpStatus.NOT_FOUND));
 
-        Optional<RefreshToken> refreshTokenEntityOptional = refreshTokenRepository.findByMember_Id(memberId);
-        if (refreshTokenEntityOptional.isPresent()) {
-            member.getRefreshToken().updateToken(null);
+        Object refreshToken = redisCache.get(REFRESH_TOKEN, String.valueOf(memberId));
+
+        if (refreshToken != null) {
+            redisCache.delete(REFRESH_TOKEN, String.valueOf(memberId));
         } else {
             throw new LogoutMemberException("리프레시 토큰이 데이터베이스에 없습니다.");
         }
 
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
     }
-
-    @Transactional
-    public LoginResponse loginKakao(Long memberId, LoginRequest loginRequest) {
-        return null;
-    }
-
 
     @Transactional(readOnly = true)
     public CheckResponse nicknameCheck(String nickname) {

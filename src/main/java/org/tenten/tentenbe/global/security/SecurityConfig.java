@@ -9,8 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -48,14 +46,13 @@ public class SecurityConfig {
                 .requestMatchers(GET, "/").permitAll()
                 .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/v1/api-docs/**"
                     , "/api/region/**", "/api/category", "/api/tours/**", "/api-docs/**"
-                    , "/api/trips/**", "/api/reviews/**", "/api/comments/**", "/login/kakao/**").permitAll()
+                    , "/api/trips/**", "/api/reviews/**", "/api/comments/**", "/login/kakao/**", "/redisTest/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.exceptionHandling(exceptionHandling -> {
-            exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-        });
+        http.exceptionHandling(exceptionHandling ->
+            exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
         // OAuth2 로그인
         http.oauth2Login(oauth2 -> oauth2
@@ -68,18 +65,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://api.weplanplans.site", "https://weplanplans.vercel.app", "https://dev-weplanplans.vercel.app", "http://localhost:8080")); // TODO: 5173 open
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://api.weplanplans.site", "https://weplanplans.vercel.app", "https://dev-weplanplans.vercel.app", "http://localhost:8080"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.addExposedHeader("Authorization");
-        configuration.setAllowCredentials(true); // 쿠키를 포함한 크로스 도메인 요청을 허용? 체크필요
+        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -89,7 +81,7 @@ public class SecurityConfig {
 
     @Bean
     @ConditionalOnProperty(name = "spring.h2.console.enabled", havingValue = "true")
-    public WebSecurityCustomizer configureH2ConsoleEnable() { // h2-console 화면설정
+    public WebSecurityCustomizer configureH2ConsoleEnable() {
         return web -> web.ignoring()
             .requestMatchers(PathRequest.toH2Console());
     }

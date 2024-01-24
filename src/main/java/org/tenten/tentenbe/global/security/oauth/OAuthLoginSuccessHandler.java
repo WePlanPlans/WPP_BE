@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO;
+import org.tenten.tentenbe.global.cache.RedisCache;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.util.CookieUtil;
 
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
+import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESH_TOKEN;
 
 @Slf4j
 @Component
@@ -32,6 +35,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final RedisCache redisCache;
 
     @Override
     @Transactional
@@ -56,14 +60,16 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
 
         String refreshToken = tokenInfoDTO.getRefreshToken();
-        member.getRefreshToken().updateToken(refreshToken);
+        // todo : 리프레쉬토큰-레디스
+//        member.getRefreshToken().updateToken(refreshToken);
+        redisCache.save(REFRESH_TOKEN, Long.toString(member.getId()), refreshToken);
 
         CookieUtil.storeRefreshTokenInCookie(response, refreshToken);
 
         boolean isExist = (boolean) kakaoAccountValue.get("isExist");
 
         String nickname = "";
-        if (member.getNickname()!=null) {
+        if (member.getNickname() != null) {
             nickname = URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8);
         }
 

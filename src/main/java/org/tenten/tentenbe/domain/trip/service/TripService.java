@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +44,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDate;
 import java.util.*;
 
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.tenten.tentenbe.domain.trip.dto.response.TripMembersResponse.TripMemberSimpleInfo;
@@ -167,6 +165,15 @@ public class TripService {
         TripInfoUpdateResponse tripInfoUpdateResponse = trip.updateTripInfo(request);
         tripRepository.save(trip);
         return tripInfoUpdateResponse;
+    }
+
+    @Transactional
+    public void updateToWebSocket(String tripId, TripInfoUpdateRequest request) {
+        String wsUrl = "https://ws.weplanplans.site/trips/" +tripId +"/"+request.startDate().toString()+"/"+request.endDate().toString();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        HttpEntity<?> httpRequest = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(wsUrl,GET, httpRequest, String.class);
     }
 
     @Transactional

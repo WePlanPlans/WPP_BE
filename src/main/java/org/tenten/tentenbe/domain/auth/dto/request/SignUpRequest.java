@@ -24,8 +24,8 @@ public record SignUpRequest(
         return Member.builder()
             .email(email)
             .password(encodedPassword)
-            .userAuthority(userAuthority) //TODO : 권한 처리 논의
-            .loginType(loginTypeEmail) // TODO : 로그인 타입 처리 논의
+            .userAuthority(userAuthority)
+            .loginType(loginTypeEmail)
             .build();
     }
 }

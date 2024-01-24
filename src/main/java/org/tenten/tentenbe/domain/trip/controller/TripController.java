@@ -63,8 +63,10 @@ public class TripController {
         @PathVariable(name = "tripId") String tripId,
         @RequestBody TripInfoUpdateRequest tripInfoUpdateRequest
     ) {
+        TripInfoUpdateResponse updatedTrip = tripService.updateTrip(getCurrentMemberId(), tripId, tripInfoUpdateRequest);
+        tripService.updateToWebSocket(tripId, tripInfoUpdateRequest);
         return ResponseEntity.ok(GlobalDataResponse
-            .ok(SUCCESS, tripService.updateTrip(getCurrentMemberId(), tripId, tripInfoUpdateRequest)));
+            .ok(SUCCESS, updatedTrip));
     }
 
     @Operation(summary = "여정 탈퇴 API", description = "본인이 속한 여정에서 나가는 API 입니다.")
