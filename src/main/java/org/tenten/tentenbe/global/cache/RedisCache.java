@@ -6,14 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
-import org.tenten.tentenbe.global.common.constant.RedisConstant;
-
-import java.util.concurrent.TimeUnit;
-
 import static org.tenten.tentenbe.global.common.constant.RedisConstant.CACHE_EXPIRE_TIME_MS;
 
 @Component
