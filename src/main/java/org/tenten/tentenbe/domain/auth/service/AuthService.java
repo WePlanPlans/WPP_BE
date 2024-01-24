@@ -28,7 +28,7 @@ import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.util.CookieUtil;
 
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
-import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESHTOKEN;
+import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESH_TOKEN;
 import static org.tenten.tentenbe.global.common.enums.LoginType.EMAIL;
 import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
 
@@ -47,8 +47,7 @@ public class AuthService {
         if (memberRepository.existsByEmail(signUpRequest.email())) {
             throw new DuplicateNicknameException("이미 존재하는 이메일입니다.");
         }
-        // TODO : 이메일 인증
-        // 비밀번호 암호화 후 새로운 member 객체를 생성하여 데이터베이스에 저장(리턴값x)
+        // TODO: 이메일 인증
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
         Member newMember = signUpRequest.toEntity(encodedPassword, EMAIL, ROLE_USER);
 
@@ -63,7 +62,7 @@ public class AuthService {
         TokenInfoDTO tokenInfoDTO = getTokenInfoDTO(response, authenticate);
         Long memberId = newMember.getId();
 
-        redisCache.save(REFRESHTOKEN, String.valueOf(memberId), tokenInfoDTO.getRefreshToken());
+        redisCache.save(REFRESH_TOKEN, String.valueOf(memberId), tokenInfoDTO.getRefreshToken());
 
         String nickname = "위플러" + (memberId + 321);
         newMember.updateNickname(nickname);
@@ -86,7 +85,7 @@ public class AuthService {
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
 
         String refreshToken = tokenInfoDTO.getRefreshToken();
-        redisCache.save(REFRESHTOKEN, memberId, refreshToken);
+        redisCache.save(REFRESH_TOKEN, memberId, refreshToken);
 
         return LoginResponse.builder()
             .memberDto(MemberDto.fromEntity(member))
@@ -99,10 +98,10 @@ public class AuthService {
         memberRepository.findById(memberId)
             .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다.", HttpStatus.NOT_FOUND));
 
-        Object refreshToken = redisCache.get(REFRESHTOKEN, String.valueOf(memberId));
+        Object refreshToken = redisCache.get(REFRESH_TOKEN, String.valueOf(memberId));
 
         if (refreshToken != null) {
-            redisCache.delete(REFRESHTOKEN, String.valueOf(memberId));
+            redisCache.delete(REFRESH_TOKEN, String.valueOf(memberId));
         } else {
             throw new LogoutMemberException("리프레시 토큰이 데이터베이스에 없습니다.");
         }

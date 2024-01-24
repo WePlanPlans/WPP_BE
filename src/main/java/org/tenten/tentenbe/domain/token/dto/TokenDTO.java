@@ -42,12 +42,4 @@ public class TokenDTO {
 
     }
 
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    public static class ReissueRequest {
-        private String token;
-    }
-
 }

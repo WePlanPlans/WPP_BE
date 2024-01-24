@@ -17,10 +17,6 @@ public class RedisCache {
         redisTemplate.opsForValue().set(topic+":"+key, data, CACHE_EXPIRE_TIME_MS, TimeUnit.MILLISECONDS);
     }
 
-    public void save(String topic, String key, String visitDate, Object data) {
-        redisTemplate.opsForValue().set(topic + ":" + key + ":" + visitDate, data, CACHE_EXPIRE_TIME_MS, TimeUnit.MILLISECONDS);
-    }
-
     public Object get(String topic, String key) {
         return redisTemplate.opsForValue().get(topic+":"+key);
     }
@@ -33,7 +29,4 @@ public class RedisCache {
         redisTemplate.delete(topic +":"+key);
     }
 
-    public void delete(String topic, String key, String visitDate) {
-        redisTemplate.delete(topic + ":" + key + ":" + visitDate);
-    }
 }

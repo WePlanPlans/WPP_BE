@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.*;
-import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESHTOKEN;
+import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESH_TOKEN;
 
 @Component
 @Slf4j
@@ -39,9 +39,7 @@ public class JwtTokenProvider {
     }
 
     public boolean validateRefreshTokenInDatabase(String memberId) {
-        //todo : 리프레시토큰-레디스
-
-        if (redisCache.get(REFRESHTOKEN, memberId) != null) {
+        if (redisCache.get(REFRESH_TOKEN, memberId) != null) {
             return true;
         } else {
             throw new InvalidRefreshTokenException("리프레시 토큰이 정상적이지 않습니다.", HttpStatus.UNAUTHORIZED);
@@ -61,7 +59,7 @@ public class JwtTokenProvider {
         // Access Token 생성
         String accessToken = getToken(authentication, authorities, accessTokenExpiresIn);
 
-        // Refresh Token 생성 //todo:리프레쉬토큰-레디스
+        // Refresh Token 생성
         String refreshToken = getToken(authentication, authorities, refreshTokenExpiresIn);
 
 

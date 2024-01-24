@@ -53,9 +53,8 @@ public class SecurityConfig {
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.exceptionHandling(exceptionHandling -> {
-            exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-        });
+        http.exceptionHandling(exceptionHandling ->
+            exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
         // OAuth2 로그인
         http.oauth2Login(oauth2 -> oauth2
@@ -75,11 +74,11 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://api.weplanplans.site", "https://weplanplans.vercel.app", "https://dev-weplanplans.vercel.app", "http://localhost:8080")); // TODO: 5173 open
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://api.weplanplans.site", "https://weplanplans.vercel.app", "https://dev-weplanplans.vercel.app", "http://localhost:8080"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.addExposedHeader("Authorization");
-        configuration.setAllowCredentials(true); // 쿠키를 포함한 크로스 도메인 요청을 허용? 체크필요
+        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -89,7 +88,7 @@ public class SecurityConfig {
 
     @Bean
     @ConditionalOnProperty(name = "spring.h2.console.enabled", havingValue = "true")
-    public WebSecurityCustomizer configureH2ConsoleEnable() { // h2-console 화면설정
+    public WebSecurityCustomizer configureH2ConsoleEnable() {
         return web -> web.ignoring()
             .requestMatchers(PathRequest.toH2Console());
     }

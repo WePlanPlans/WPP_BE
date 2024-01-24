@@ -25,7 +25,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESHTOKEN;
+import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESH_TOKEN;
 
 @Slf4j
 @Component
@@ -62,14 +62,14 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         String refreshToken = tokenInfoDTO.getRefreshToken();
         // todo : 리프레쉬토큰-레디스
 //        member.getRefreshToken().updateToken(refreshToken);
-        redisCache.save(REFRESHTOKEN, Long.toString(member.getId()), refreshToken);
+        redisCache.save(REFRESH_TOKEN, Long.toString(member.getId()), refreshToken);
 
         CookieUtil.storeRefreshTokenInCookie(response, refreshToken);
 
         boolean isExist = (boolean) kakaoAccountValue.get("isExist");
 
         String nickname = "";
-        if (member.getNickname()!=null) {
+        if (member.getNickname() != null) {
             nickname = URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8);
         }
 
