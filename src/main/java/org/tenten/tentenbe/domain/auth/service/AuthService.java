@@ -23,6 +23,7 @@ import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
 import org.tenten.tentenbe.domain.token.exception.LogoutMemberException;
+import org.tenten.tentenbe.global.cache.RedisCache;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
 import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
@@ -31,6 +32,7 @@ import org.tenten.tentenbe.global.util.CookieUtil;
 import java.util.Optional;
 
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
+import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESHTOKEN;
 import static org.tenten.tentenbe.global.common.enums.LoginType.EMAIL;
 import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
 
@@ -43,6 +45,7 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisCache redisCache;
 
     @Transactional
     public SignUpResponse signUp(SignUpRequest signUpRequest, HttpServletResponse response) {
@@ -63,19 +66,15 @@ public class AuthService {
 
         Authentication authenticate = getAuthenticate(signUpRequest.email(), signUpRequest.password());
         TokenInfoDTO tokenInfoDTO = getTokenInfoDTO(response, authenticate);
+        Long memberId = newMember.getId();
 
+        redisCache.save(REFRESHTOKEN, String.valueOf(memberId), tokenInfoDTO.getRefreshToken());
 
-        RefreshToken refreshToken = RefreshToken.builder()
-            .member(newMember)
-            .token(tokenInfoDTO.getRefreshToken())
-            .build();
-        refreshTokenRepository.save(refreshToken);
-
-        String nickname = "위플러" + (newMember.getId() + 321);
+        String nickname = "위플러" + (memberId + 321);
         newMember.updateNickname(nickname);
 
         return SignUpResponse.builder()
-            .memberId(newMember.getId())
+            .memberId(memberId)
             .email(newMember.getEmail())
             .nickName(nickname)
             .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
@@ -91,9 +90,12 @@ public class AuthService {
         String memberId = authenticate.getName();
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
 
-        String refreshToken = tokenInfoDTO.getRefreshToken();
-        member.getRefreshToken().updateToken(refreshToken);
 
+        String refreshToken = tokenInfoDTO.getRefreshToken();
+        // todo : 리프레쉬토큰- 레디스
+//        member.getRefreshToken().updateToken(refreshToken);
+        redisCache.save(REFRESHTOKEN, memberId, refreshToken);
+//        "\"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwNjYwNzU1OX0.x4aNnf4fP1uWkQB6-OM73y61fJLBV3huDlNtV5o7nI3ENWDH3ofouOVYCCFw640CRDLgqMcUQ9LDAyXGubSqeA\""
         return LoginResponse.builder()
             .memberDto(MemberDto.fromEntity(member))
             .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
