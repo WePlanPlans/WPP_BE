@@ -76,10 +76,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             } else {
                 String refreshToken = cookie.get().getValue(); // 쿠키에서 리프레쉬 토큰 가져오기
+                String memberId = jwtTokenProvider.getMemberId(refreshToken);
 
                 // 리프레쉬 토큰이 db에 있는 리프레쉬 토큰과 일치하는지 확인
                 try {
-                    if (jwtTokenProvider.validateRefreshTokenInDatabase(refreshToken)) {
+                    if (jwtTokenProvider.validateRefreshTokenInDatabase(memberId)) {
                         // 액세스 토큰 재발급
                         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
                         String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
