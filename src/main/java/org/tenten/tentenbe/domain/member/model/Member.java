@@ -16,7 +16,6 @@ import org.tenten.tentenbe.global.common.enums.AgeType;
 import org.tenten.tentenbe.global.common.enums.GenderType;
 import org.tenten.tentenbe.global.common.enums.LoginType;
 import org.tenten.tentenbe.global.common.enums.UserAuthority;
-import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,9 +64,6 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member", fetch = LAZY, cascade = REMOVE)
     private final List<LikedItem> likedItems = new ArrayList<>();
-
-    @OneToOne(mappedBy = "member", cascade = REMOVE)
-    private RefreshToken refreshToken;
 
     public void updateMember(MemberUpdateRequest updateRequest) {
         this.nickname = updateRequest.nickname();

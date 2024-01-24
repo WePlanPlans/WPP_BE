@@ -14,10 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
+import org.tenten.tentenbe.global.cache.RedisCache;
 import org.tenten.tentenbe.global.common.enums.AgeType;
 import org.tenten.tentenbe.global.common.enums.GenderType;
-import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
-import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +31,7 @@ import static org.tenten.tentenbe.global.common.enums.UserAuthority.ROLE_USER;
 public class OAuth2UserService extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisCache redisCache;
 
     @Override
     @Transactional
@@ -84,12 +83,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 //                .genderType(genderEnum)
 //                .ageType(ageEnum)
                 .build();
-            RefreshToken refreshToken = RefreshToken.builder()
-                .member(member)
-                .build();
 
             memberRepository.save(member);
-            refreshTokenRepository.save(refreshToken);
 
             if (nicknameCheck) {
                 nickname = "위플러" + (member.getId() + 321);

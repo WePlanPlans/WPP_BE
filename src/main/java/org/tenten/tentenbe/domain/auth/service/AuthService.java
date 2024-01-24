@@ -25,11 +25,7 @@ import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
 import org.tenten.tentenbe.domain.token.exception.LogoutMemberException;
 import org.tenten.tentenbe.global.cache.RedisCache;
 import org.tenten.tentenbe.global.security.jwt.JwtTokenProvider;
-import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
-import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
 import org.tenten.tentenbe.global.util.CookieUtil;
-
-import java.util.Optional;
 
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.REFRESH_TOKEN_COOKIE_NAME;
 import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESHTOKEN;
@@ -44,7 +40,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final RedisCache redisCache;
 
     @Transactional
@@ -90,12 +85,9 @@ public class AuthService {
         String memberId = authenticate.getName();
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
 
-
         String refreshToken = tokenInfoDTO.getRefreshToken();
-        // todo : 리프레쉬토큰- 레디스
-//        member.getRefreshToken().updateToken(refreshToken);
         redisCache.save(REFRESHTOKEN, memberId, refreshToken);
-//        "\"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwNjYwNzU1OX0.x4aNnf4fP1uWkQB6-OM73y61fJLBV3huDlNtV5o7nI3ENWDH3ofouOVYCCFw640CRDLgqMcUQ9LDAyXGubSqeA\""
+
         return LoginResponse.builder()
             .memberDto(MemberDto.fromEntity(member))
             .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
@@ -104,24 +96,19 @@ public class AuthService {
 
     @Transactional
     public void logout(HttpServletRequest request, HttpServletResponse response, Long memberId) {
-        Member member = memberRepository.findById(memberId)
+        memberRepository.findById(memberId)
             .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다.", HttpStatus.NOT_FOUND));
 
-        Optional<RefreshToken> refreshTokenEntityOptional = refreshTokenRepository.findByMember_Id(memberId);
-        if (refreshTokenEntityOptional.isPresent()) {
-            member.getRefreshToken().updateToken(null);
+        Object refreshToken = redisCache.get(REFRESHTOKEN, String.valueOf(memberId));
+
+        if (refreshToken != null) {
+            redisCache.delete(REFRESHTOKEN, String.valueOf(memberId));
         } else {
             throw new LogoutMemberException("리프레시 토큰이 데이터베이스에 없습니다.");
         }
 
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
     }
-
-    @Transactional
-    public LoginResponse loginKakao(Long memberId, LoginRequest loginRequest) {
-        return null;
-    }
-
 
     @Transactional(readOnly = true)
     public CheckResponse nicknameCheck(String nickname) {

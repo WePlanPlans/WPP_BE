@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,33 +15,33 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenInfoDTO;
 import org.tenten.tentenbe.domain.token.exception.InvalidRefreshTokenException;
-import org.tenten.tentenbe.global.security.jwt.model.RefreshToken;
-import org.tenten.tentenbe.global.security.jwt.repository.RefreshTokenRepository;
+import org.tenten.tentenbe.global.cache.RedisCache;
 
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.tenten.tentenbe.global.common.constant.JwtConstants.*;
+import static org.tenten.tentenbe.global.common.constant.TopicConstant.REFRESHTOKEN;
 
 @Component
 @Slf4j
 public class JwtTokenProvider {
     private final Key key;
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private final RedisCache redisCache;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret, RedisCache redisCache) {
+        this.redisCache = redisCache;
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret); // Base64로 인코딩된 jwtSecret 값을 디코딩하여 byte 배열로 변환
         this.key = Keys.hmacShaKeyFor(keyBytes); // 디코딩된 바이트 배열을 사용하여 HmacSHA 알고리즘에 기반한 SecretKey를 생성
     }
 
-    public boolean validateRefreshTokenInDatabase(String refreshToken) {
-        Optional<RefreshToken> token = refreshTokenRepository.findByToken(refreshToken);
-        if (token.isPresent()) {
+    public boolean validateRefreshTokenInDatabase(String memberId) {
+        //todo : 리프레시토큰-레디스
+
+        if (redisCache.get(REFRESHTOKEN, memberId) != null) {
             return true;
         } else {
             throw new InvalidRefreshTokenException("리프레시 토큰이 정상적이지 않습니다.", HttpStatus.UNAUTHORIZED);
@@ -62,8 +61,9 @@ public class JwtTokenProvider {
         // Access Token 생성
         String accessToken = getToken(authentication, authorities, accessTokenExpiresIn);
 
-        // Refresh Token 생성
+        // Refresh Token 생성 //todo:리프레쉬토큰-레디스
         String refreshToken = getToken(authentication, authorities, refreshTokenExpiresIn);
+
 
         return TokenInfoDTO.builder()
             .grantType(BEARER_TYPE)
@@ -137,5 +137,13 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    public String getMemberId(String token) {
+        Claims claims = parseClaims(token);
+        if (claims.get(AUTHORITIES_KEY) == null) {
+            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+        }
+        return claims.getSubject();
     }
 }

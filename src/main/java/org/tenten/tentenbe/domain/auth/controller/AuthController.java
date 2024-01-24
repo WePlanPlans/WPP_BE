@@ -43,8 +43,8 @@ public class AuthController {
 
     @Operation(summary = "로그인-카카오 API", description = "로그인-카카오 API 입니다.")
     @PostMapping("/login/kakao")
-    public ResponseEntity<GlobalDataResponse<LoginResponse>> loginKakao(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.loginKakao(null, loginRequest)));
+    public ResponseEntity<String> loginKakao(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok("SUCCESS");
     }
 
     @Operation(summary = "로그아웃 API", description = "로그아웃 API 입니다.")
