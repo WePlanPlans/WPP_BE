@@ -45,7 +45,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
-        response.setHeader("Access-Control-Allow-Origin","http://localhost:5173");
+        response.setHeader("Access-Control-Allow-Origin","https://weplanplans.vercel.app");
         response.getWriter().write(result);
     }
 }
