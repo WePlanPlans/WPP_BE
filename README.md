@@ -3,6 +3,8 @@
 > **애플리케이션 메인 페이지** : [https://dev-weplanplans.vercel.app](https://dev-weplanplans.vercel.app)
 > <br/>
 > **Swagger API 문서 배포 링크** : [https://api.weplanplans.site/swagger-ui/index.html](https://api.weplanplans.site/swagger-ui/index.html)
+> <br/>
+> **웹 소켓 Repo link** : [https://github.com/FinalDoubleTen/TenTenSTOMP](https://github.com/FinalDoubleTen/TenTenSTOMP)
 
 
 # 📚 Stack
@@ -49,3 +51,57 @@
 |                                                                    `TourItem API` <br/> `Trip API`                                                                     |                                                       `Review API` <br/> `Keyword API`                                                      |
 
 </div>
+
+# 패키지 구조
+```
+├── main
+│   ├── generated
+│   ├── java
+│   │   └── org
+│   │       └── tenten
+│   │           └── tentenbe
+│   │               ├── TenTenBeApplication.java
+│   │               ├── config
+│   │               │   ├── OpenApiConfig.java
+│   │               │   ├── PasswordEncoderConfig.java
+│   │               │   ├── RedisConfig.java
+│   │               │   ├── S3Config.java
+│   │               │   ├── SwaggerConfig.java
+│   │               │   └── WebConfig.java
+│   │               ├── domain
+│   │               │   ├── auth
+│   │               │   ├── category
+│   │               │   ├── comment
+│   │               │   ├── liked
+│   │               │   ├── member
+│   │               │   ├── region
+│   │               │   ├── review
+│   │               │   ├── token
+│   │               │   ├── tour
+│   │               │   └── trip
+│   │               └── global
+│   │                   ├── cache
+│   │                   ├── common
+│   │                   ├── component
+│   │                   ├── converter
+│   │                   ├── exception
+│   │                   ├── handler
+│   │                   ├── response
+│   │                   ├── s3
+│   │                   ├── security
+│   │                   └── util
+│   └── resources
+│       ├── application-ci.yml
+│       ├── application-prod.yml
+│       ├── application.yml
+│       ├── data
+│       │   ├── Keyword.sql
+│       │   ├── Member.sql
+│       │   ├── TourItem.sql
+│       │   └── TourItemReviewKeyword.sql
+│       ├── schema.sql
+│       ├── static
+│       │   └── favicon.ico
+│       └── templates
+└── test
+```
