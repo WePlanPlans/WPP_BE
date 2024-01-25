@@ -34,42 +34,41 @@ public class Comment extends BaseTimeEntity {
     private Review review;
 
 
-    public Comment(String content , Review review ){
+    public Comment(String content , Review review, Member member ){
         this.content = content;
         this.review = review;
-        // this.creator = creator;
+         this.creator = member;
     }
 
     public void UpdateComment(String content){
         this.content = content;
     }
 
-    // 리뷰와 댓글 양방향 설정 만약 리뷰에서 설정되어있으면 제거해도됨
-    public void addReview(Review review){
-        this.review = review;
-
-        if(!review.getComments().contains(this)){
-            review.getComments().add(this);
-        }
-    }
-    public void removeReview(){
-        if(this.review != null){
-            review.getComments().remove(this);
-            this.review = null;
-        }
-    }
-
-    public void addCreator(Member creator){
-        this.creator = creator;
-
-        if(!creator.getComments().contains(this)){
-            creator.getComments().add(this);
-        }
-    }
-    public void removeCreator(){
-        if(this.creator != null){
-            creator.getComments().remove(this);
-            this.creator = null;
-        }
-    }
+//    public void addReview(Review review){
+//        this.review = review;
+//
+//        if(!review.getComments().contains(this)){
+//            review.getComments().add(this);
+//        }
+//    }
+//    public void removeReview(){
+//        if(this.review != null){
+//            review.getComments().remove(this);
+//            this.review = null;
+//        }
+//    }
+//
+//    public void addCreator(Member creator){
+//        this.creator = creator;
+//
+//        if(!creator.getComments().contains(this)){
+//            creator.getComments().add(this);
+//        }
+//    }
+//    public void removeCreator(){
+//        if(this.creator != null){
+//            creator.getComments().remove(this);
+//            this.creator = null;
+//        }
+//    }
 }
