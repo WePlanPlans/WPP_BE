@@ -1,3 +1,5 @@
+<img width="900" alt="Screenshot 2024-01-25 at 15 07 35" src="https://github.com/FinalDoubleTen/TenTenSTOMP/assets/95599193/25ecdd9c-c19f-4f34-b278-66d72de5baa8">
+
 
 ## 배포 링크
 > **애플리케이션 메인 페이지** : [https://dev-weplanplans.vercel.app](https://dev-weplanplans.vercel.app)
