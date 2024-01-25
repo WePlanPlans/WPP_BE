@@ -34,38 +34,40 @@ public class ReviewController {
 
     @Operation(summary = "리뷰 작성 API", description = "리뷰 작성 API 입니다.")
     @PostMapping()
-    public ResponseEntity<GlobalDataResponse<ReviewInfo>> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
-        Long currentMemberId = getCurrentMemberId();
-        if (currentMemberId == null) {
+    public ResponseEntity<GlobalDataResponse<ReviewInfo>> createReview(
+        @RequestBody ReviewCreateRequest reviewCreateRequest
+    ) {
+        if (getCurrentMemberId() == null) {
             throw new ReviewException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.createReview(currentMemberId, reviewCreateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, reviewService.createReview(getCurrentMemberId(), reviewCreateRequest)));
     }
 
     @Operation(summary = "리뷰 수정 API", description = "리뷰 수정 API 입니다.")
     @PutMapping("/{reviewId}")
     public ResponseEntity<GlobalDataResponse<ReviewInfo>> updateReview(
         @Parameter(name = "reviewId", description = "리뷰 아이디", in = PATH)
-        @PathVariable("reviewId")
-        Long reviewId,
-        @RequestBody ReviewUpdateRequest reviewUpdateRequest) {
-        Long currentMemberId = getCurrentMemberId();
-        if (currentMemberId == null) {
+        @PathVariable("reviewId") Long reviewId,
+        @RequestBody ReviewUpdateRequest reviewUpdateRequest
+    ) {
+        if (getCurrentMemberId() == null) {
             throw new ReviewException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.updateReview(currentMemberId, reviewId, reviewUpdateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, reviewService.updateReview(getCurrentMemberId(), reviewId, reviewUpdateRequest)));
     }
 
     @Operation(summary = "리뷰 삭제 API", description = "리뷰 삭제 API 입니다.")
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<GlobalResponse> deleteReview(
         @Parameter(name = "reviewId", description = "삭제할 리뷰 아이디", in = PATH)
-        @PathVariable("reviewId") Long reviewId) {
-        Long currentMemberId = getCurrentMemberId();
-        if (currentMemberId == null) {
+        @PathVariable("reviewId") Long reviewId
+    ) {
+        if (getCurrentMemberId() == null) {
             throw new ReviewException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
-        reviewService.deleteReview(currentMemberId, reviewId);
+        reviewService.deleteReview(getCurrentMemberId(), reviewId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
 
@@ -74,20 +76,20 @@ public class ReviewController {
     public ResponseEntity<GlobalDataResponse<CommentResponse>> getReviewDetail(
         @Parameter(name = "reviewId", description = "조회할 리뷰 아이디", in = PATH)
         @PathVariable("reviewId") Long reviewId,
-        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY)
         @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
-        @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
-
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getReviewComments(reviewId, PageRequest.of(page, size), getCurrentMemberId())));
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY)
+        @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, reviewService.getReviewComments(reviewId, PageRequest.of(page, size), getCurrentMemberId())));
     }
 
     @Operation(summary = "리뷰 작성시 키워드 조회 API", description = "리뷰 작성시, 전체 키워드 혹은 조회 하고 싶은 키워드 타입별 키워드 목록 조회 API 입니다.")
     @GetMapping("/keywords")
     public ResponseEntity<GlobalDataResponse<KeywordResponse>> getKeywords(
         @Parameter(name = "keywordType", description = "조회하고 싶은 키워드 타입, ex) ACCOMMODATION - 숙박, DINING - 식당, ATTRACTION - 관광지", in = QUERY)
-        @RequestParam(name = "keywordType", required = false)
-        String keywordType
+        @RequestParam(name = "keywordType", required = false) String keywordType
     ) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, reviewService.getKeywords(keywordType)));
     }

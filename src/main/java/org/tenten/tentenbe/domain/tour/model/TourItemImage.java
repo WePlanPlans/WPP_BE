@@ -49,7 +49,6 @@ public class TourItemImage {
             return Objects.hash(images);
         }
 
-        public static class ItemImageConverter extends JsonConverter<ItemImage> {
-        }
+        public static class ItemImageConverter extends JsonConverter<ItemImage> {}
     }
 }

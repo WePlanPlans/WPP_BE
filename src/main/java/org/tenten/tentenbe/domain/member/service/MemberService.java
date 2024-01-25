@@ -93,7 +93,7 @@ public class MemberService {
     }
 
     @Transactional
-    public ImageUploadDto uploadImage(MultipartFile multipartFile, Long memberId) throws BadRequestException {
+    public ImageUploadDto uploadImage(MultipartFile multipartFile) throws BadRequestException {
         try {
             String uploadedUrl = s3Uploader.uploadFiles(multipartFile, "static");
             return ImageUploadDto.builder()

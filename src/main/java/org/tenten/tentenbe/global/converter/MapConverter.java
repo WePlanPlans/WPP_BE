@@ -1,4 +1,5 @@
 package org.tenten.tentenbe.global.converter;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -24,7 +25,8 @@ public class MapConverter implements AttributeConverter<Map, String> {
             return objectMapper.writeValueAsString(map); // 3
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }    }
+        }
+    }
 
     @Override
     public Map convertToEntityAttribute(String s) {

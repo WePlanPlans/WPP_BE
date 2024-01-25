@@ -15,9 +15,9 @@ public class TokenDTO {
 
         public TokenIssueDTO toTokenIssueDTO() {
             return TokenIssueDTO.builder()
-                    .accessToken(accessToken)
-                    .accessTokenExpiresIn(accessTokenExpiresIn)
-                    .grantType(grantType).build();
+                .accessToken(accessToken)
+                .accessTokenExpiresIn(accessTokenExpiresIn)
+                .grantType(grantType).build();
         }
 
     }

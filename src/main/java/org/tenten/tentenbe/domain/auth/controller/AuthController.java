@@ -37,7 +37,8 @@ public class AuthController {
     @Operation(summary = "로그인-이메일 API", description = "로그인-이메일 API 입니다.")
     @PostMapping("/login")
     public ResponseEntity<GlobalDataResponse<LoginResponse>> login(
-        @Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        @Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response
+    ) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, authService.login(loginRequest, response)));
     }
 

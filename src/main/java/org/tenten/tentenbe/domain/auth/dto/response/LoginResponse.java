@@ -5,7 +5,7 @@ import lombok.Builder;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO.TokenIssueDTO;
 
 @Builder
-public record LoginResponse (
+public record LoginResponse(
     @Schema(name = "멤버 정보")
     MemberDto memberDto,
 

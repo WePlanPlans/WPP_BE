@@ -32,40 +32,37 @@ public class CommentController {
     public ResponseEntity<GlobalDataResponse<CommentInfo>> createComment(
         @RequestBody CommentCreateRequest commentCreateRequest
     ) {
-        Long currentMemberId = getCurrentMemberId();
-        if (currentMemberId == null) {
+        if (getCurrentMemberId() == null) {
             throw new CommentException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.createComment(currentMemberId, commentCreateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, commentService.createComment(getCurrentMemberId(), commentCreateRequest)));
     }
 
     @Operation(summary = "댓글 수정 API", description = "댓글 수정 API 입니다.")
     @PutMapping("/{commentId}")
     public ResponseEntity<GlobalDataResponse<CommentInfo>> updateComment(
         @Parameter(name = "commentId", description = "댓글 아이디", in = PATH)
-        @PathVariable("commentId")
-        Long commentId,
+        @PathVariable("commentId") Long commentId,
         @RequestBody CommentUpdateRequest commentUpdateRequest
     ) {
-        Long currentMemberId = getCurrentMemberId();
-        if (currentMemberId == null) {
+        if (getCurrentMemberId() == null) {
             throw new CommentException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, commentService.updateComment(currentMemberId, commentId, commentUpdateRequest)));
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, commentService.updateComment(getCurrentMemberId(), commentId, commentUpdateRequest)));
     }
 
     @Operation(summary = "댓글 삭제 API", description = "댓글 삭제 API 입니다.")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<GlobalResponse> deleteComment(
         @Parameter(name = "commentId", description = "댓글 아이디", in = PATH)
-        @PathVariable("commentId")
-        Long commentId
+        @PathVariable("commentId") Long commentId
     ) {
-        Long currentMemberId = getCurrentMemberId();
-        if (currentMemberId == null) {
+        if (getCurrentMemberId() == null) {
             throw new CommentException("헤더에 엑세스 토큰이 없어서 멤버 정보를 불러오지 못했습니다.", NOT_FOUND);
         }
-        commentService.deleteComment(currentMemberId, commentId);
+        commentService.deleteComment(getCurrentMemberId(), commentId);
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }
 }

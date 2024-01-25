@@ -47,7 +47,7 @@ public class AuthService {
         if (memberRepository.existsByEmail(signUpRequest.email())) {
             throw new DuplicateNicknameException("이미 존재하는 이메일입니다.");
         }
-        // TODO: 이메일 인증
+
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
         Member newMember = signUpRequest.toEntity(encodedPassword, EMAIL, ROLE_USER);
 
@@ -103,7 +103,7 @@ public class AuthService {
         if (refreshToken != null) {
             redisCache.delete(REFRESH_TOKEN, String.valueOf(memberId));
         } else {
-            throw new LogoutMemberException("리프레시 토큰이 데이터베이스에 없습니다.");
+            throw new LogoutMemberException("리프레시 토큰이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
 
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
@@ -127,7 +127,7 @@ public class AuthService {
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
         log.info("로그인 API 중 토큰 생성 로직 실행");
 
-        CookieUtil.storeRefreshTokenInCookie(response, tokenInfoDTO.getRefreshToken()); // 쿠키 심는 로직
+        CookieUtil.storeRefreshTokenInCookie(response, tokenInfoDTO.getRefreshToken());
         return tokenInfoDTO;
     }
 

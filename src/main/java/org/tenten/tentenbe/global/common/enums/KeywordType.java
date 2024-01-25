@@ -19,15 +19,6 @@ public enum KeywordType {
         this.code = code;
     }
 
-    public static KeywordType fromCode(Long code) {
-        for (KeywordType keywordType : KeywordType.values()) {
-            if (keywordType.getCode().equals(code)) {
-                return keywordType;
-            }
-        }
-        throw new KeywordException("주어진 코드로 존재하는 키워드가 없습니다." + code, NOT_FOUND);
-    }
-
     public static KeywordType fromName(String name) {
         for (KeywordType keywordType : KeywordType.values()) {
             if (keywordType.getName().equals(name)) {

@@ -26,7 +26,7 @@ public record MemberDetailResponse(
             member.getProfileImageUrl(),
             member.getAgeType(),
             member.getGenderType(),
-            member.getSurvey() // TODO: Survey가 null로 조회됨.
+            member.getSurvey()
         );
     }
 }

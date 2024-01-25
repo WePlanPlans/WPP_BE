@@ -2,7 +2,6 @@ package org.tenten.tentenbe.domain.comment.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.tenten.tentenbe.domain.member.model.Member;
@@ -34,40 +33,34 @@ public class Comment extends BaseTimeEntity {
     private Review review;
 
 
-    public Comment(String content , Review review ){
+    public Comment(String content, Review review) {
         this.content = content;
         this.review = review;
-        // this.creator = creator;
     }
 
-    public void UpdateComment(String content){
+    public void UpdateComment(String content) {
         this.content = content;
     }
 
-    // 리뷰와 댓글 양방향 설정 만약 리뷰에서 설정되어있으면 제거해도됨
-    public void addReview(Review review){
+    public void addReview(Review review) {
         this.review = review;
-
-        if(!review.getComments().contains(this)){
-            review.getComments().add(this);
-        }
+        if (!review.getComments().contains(this)) review.getComments().add(this);
     }
-    public void removeReview(){
-        if(this.review != null){
+
+    public void removeReview() {
+        if (this.review != null) {
             review.getComments().remove(this);
             this.review = null;
         }
     }
 
-    public void addCreator(Member creator){
+    public void addCreator(Member creator) {
         this.creator = creator;
-
-        if(!creator.getComments().contains(this)){
-            creator.getComments().add(this);
-        }
+        if (!creator.getComments().contains(this)) creator.getComments().add(this);
     }
-    public void removeCreator(){
-        if(this.creator != null){
+
+    public void removeCreator() {
+        if (this.creator != null) {
             creator.getComments().remove(this);
             this.creator = null;
         }

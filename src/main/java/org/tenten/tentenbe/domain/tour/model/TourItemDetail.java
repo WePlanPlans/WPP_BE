@@ -30,7 +30,6 @@ public class TourItemDetail {
     @Column(columnDefinition = "JSON")
     private ItemDetail itemDetail;
 
-
     @OneToOne
     @JoinColumn(name = "tourItemId")
     private TourItem tourItem;
@@ -55,9 +54,7 @@ public class TourItemDetail {
             return Objects.hash(roomOptions);
         }
 
-        public static class RoomOptionConverter extends JsonConverter<RoomOption> {
-
-        }
+        public static class RoomOptionConverter extends JsonConverter<RoomOption> {}
     }
 
     @Getter
@@ -80,9 +77,7 @@ public class TourItemDetail {
             return Objects.hash(itemDetails);
         }
 
-        public static class ItemDetailConverter extends JsonConverter<ItemDetail> {
-
-        }
+        public static class ItemDetailConverter extends JsonConverter<ItemDetail> {}
     }
 
 }

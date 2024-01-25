@@ -10,8 +10,7 @@ import java.util.List;
 @Service
 public class CategoryService {
     public List<CategoryResponse> getCategory() {
-        return Arrays.stream(Category.values()).map(category -> {
-            return new CategoryResponse(category.getCode(), category.getName());
-        }).toList();
+        return Arrays.stream(Category.values())
+            .map(category -> new CategoryResponse(category.getCode(), category.getName())).toList();
     }
 }

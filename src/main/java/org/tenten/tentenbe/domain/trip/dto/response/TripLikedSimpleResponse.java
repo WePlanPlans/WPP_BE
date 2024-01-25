@@ -28,5 +28,4 @@ public record TripLikedSimpleResponse(
     @Schema(defaultValue = "2")
     Long notPreferTotalCount
 ) {
-
 }

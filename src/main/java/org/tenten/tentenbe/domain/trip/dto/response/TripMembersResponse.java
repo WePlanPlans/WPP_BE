@@ -8,5 +8,6 @@ public record TripMembersResponse(
     public record TripMemberSimpleInfo(
         String nickname,
         String profileImageUrl
-    ){}
+    ) {
+    }
 }

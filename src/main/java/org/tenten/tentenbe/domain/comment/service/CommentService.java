@@ -27,19 +27,17 @@ public class CommentService {
 
     @Transactional
     public CommentInfo createComment(Long currentMemberId, CommentCreateRequest commentCreateRequest) {
-
-        Review review = reviewRepository.findById(commentCreateRequest.reviewId()).orElseThrow(
-            ()-> new RuntimeException("해당 리뷰가 없습니다.")
-        );
+        Review review = reviewRepository.findById(commentCreateRequest.reviewId())
+            .orElseThrow(() -> new RuntimeException("해당 리뷰가 없습니다."));
 
         Comment newComment = new Comment(commentCreateRequest.content(), review);
-        Member member = memberRepository.findById(currentMemberId).orElseThrow(() -> new MemberException("주어진 아이디로 존재하는 멤버가 없습니다.", NOT_FOUND));
+        Member member = getMember(currentMemberId);
 
         newComment.addReview(review);
         newComment.addCreator(member);
         Comment savedComment = commentRepository.save(newComment);
 
-		return new CommentInfo(
+        return new CommentInfo(
             savedComment.getId(),
             member.getNickname(),
             member.getProfileImageUrl(),
@@ -51,33 +49,38 @@ public class CommentService {
 
     @Transactional
     public CommentInfo updateComment(Long memberId, Long commentId, CommentUpdateRequest commentUpdateRequest) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException("주어진 아이디로 존재하는 멤버가 없습니다.", NOT_FOUND));
+        Member member = getMember(memberId);
+        Comment comment = getComment(commentId);
 
-        Comment findCommentById = commentRepository.findById(commentId).orElseThrow(
-            () -> new CommentException("해당 댓글이 없습니다.", HttpStatus.BAD_REQUEST)
-        );
-
-        findCommentById.UpdateComment(commentUpdateRequest.content());
+        comment.UpdateComment(commentUpdateRequest.content());
         return new CommentInfo(
-            findCommentById.getId(),
+            comment.getId(),
             member.getNickname(),
             member.getProfileImageUrl(),
             commentUpdateRequest.content(),
-            findCommentById.getModifiedTime(),
+            comment.getModifiedTime(),
             true
         );
     }
 
     @Transactional
     public void deleteComment(Long memberId, Long commentId) {
+        getMember(memberId);
+        Comment comment = getComment(commentId);
 
-        Comment findCommentById = commentRepository.findById(commentId).orElseThrow(
-            () -> new CommentException("해당 댓글이 없습니다.", HttpStatus.BAD_REQUEST)
-        );
+        comment.removeReview();
+        comment.removeCreator();
 
-        findCommentById.removeReview();
-        findCommentById.removeCreator();
+        commentRepository.delete(comment);
+    }
 
-        commentRepository.delete(findCommentById);
+    private Comment getComment(Long commentId) {
+        return commentRepository.findById(commentId)
+            .orElseThrow(() -> new CommentException("해당 댓글이 없습니다.", HttpStatus.BAD_REQUEST));
+    }
+
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new MemberException("주어진 아이디로 존재하는 멤버가 없습니다.", NOT_FOUND));
     }
 }

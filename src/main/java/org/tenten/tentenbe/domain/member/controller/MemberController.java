@@ -21,7 +21,6 @@ import org.tenten.tentenbe.domain.member.dto.response.MemberUpdateResponse;
 import org.tenten.tentenbe.domain.member.service.MemberService;
 import org.tenten.tentenbe.domain.review.dto.response.MemberReviewResponse;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
-import org.tenten.tentenbe.domain.trip.dto.response.TripSimpleResponse;
 import org.tenten.tentenbe.global.response.GlobalDataResponse;
 import org.tenten.tentenbe.global.response.GlobalResponse;
 import org.tenten.tentenbe.global.s3.ImageUploadDto;
@@ -47,7 +46,6 @@ public class MemberController {
         @Parameter(name = "size", description = "페이지 크기", in = QUERY)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-
         return ResponseEntity.ok(GlobalDataResponse.ok(
             SUCCESS, memberService.getTours(getCurrentMemberId(), category, PageRequest.of(page, size))));
     }
@@ -55,9 +53,9 @@ public class MemberController {
     @Operation(summary = "나의 리뷰 조회 API", description = "나의 리뷰 조회 API 입니다.")
     @GetMapping("/reviews")
     public ResponseEntity<GlobalDataResponse<Page<MemberReviewResponse>>> getReviews(
-        @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
+        @Parameter(name = "page", description = "페이지 번호", in = QUERY)
         @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-        @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
+        @Parameter(name = "size", description = "페이지 크기", in = QUERY)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(GlobalDataResponse.ok(
@@ -114,7 +112,8 @@ public class MemberController {
     )
     public ResponseEntity<GlobalDataResponse<ImageUploadDto>> uploadImage(
         @RequestParam("images") MultipartFile multipartFile) throws BadRequestException {
-        return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, memberService.uploadImage(multipartFile, getCurrentMemberId())));
+        return ResponseEntity.ok(GlobalDataResponse.ok(
+            SUCCESS, memberService.uploadImage(multipartFile)));
     }
 
 }

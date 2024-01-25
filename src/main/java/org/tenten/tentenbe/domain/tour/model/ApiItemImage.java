@@ -20,7 +20,10 @@ public class ApiItemImage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ApiItemImage that = (ApiItemImage) o;
-        return Objects.equals(imageName, that.imageName) && Objects.equals(originalImageUrl, that.originalImageUrl) && Objects.equals(smallImageUrl, that.smallImageUrl) && Objects.equals(serialNumber, that.serialNumber);
+        return Objects.equals(imageName, that.imageName)
+            && Objects.equals(originalImageUrl, that.originalImageUrl)
+            && Objects.equals(smallImageUrl, that.smallImageUrl)
+            && Objects.equals(serialNumber, that.serialNumber);
     }
 
     @Override

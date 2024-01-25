@@ -31,7 +31,10 @@ public enum Region {
     private final Long areaCode;
     private final Long subAreaCode;
     private final String name;
-    public static final List<Region> entireRegions = List.of(SEOUL, INCHEON, DAEJEON, DAEGU, GWANGJU, BUSAN, ULSAN, SEJONG, GYEONGGI, GANGWON, CHUNGBUK, CHUNGNAM, JEONBUK, JEONNAM, JEJU);
+    public static final List<Region> entireRegions = List.of(
+        SEOUL, INCHEON, DAEJEON, DAEGU, GWANGJU, BUSAN, ULSAN, SEJONG,
+        GYEONGGI, GANGWON, CHUNGBUK, CHUNGNAM, JEONBUK, JEONNAM, JEJU
+    );
     public static final List<Region> popularPlaces = List.of(SEOUL, BUSAN, JEJU, GYEONGJU, GANREUNG);
 
     Region(Long areaCode, Long subAreaCode, String name) {
@@ -49,13 +52,4 @@ public enum Region {
         throw new GlobalException("주어진 이름으로 존재하는 지역이 없습니다.", NOT_FOUND);
     }
 
-    public static Region fromAreaCode(Long areaCode) {
-        for (Region region : Region.values()) {
-            if (region.getAreaCode().equals(areaCode)) {
-
-                return region;
-            }
-        }
-        throw new GlobalException("주어진 지역 코드로 존재하는 지역이 없습니다.", NOT_FOUND);
-    }
 }
