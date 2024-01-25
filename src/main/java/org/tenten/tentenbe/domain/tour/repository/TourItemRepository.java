@@ -9,10 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.tour.model.TourItem;
 
-import java.util.List;
-
 public interface TourItemRepository extends JpaRepository<TourItem, Long>, JpaSpecificationExecutor<TourItem> {
-    List<TourItem> findByAreaCode(Long areaCode);
 
     @Query("SELECT NEW org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse(" +
         "ti.id, " +

@@ -1,8 +1,11 @@
 package org.tenten.tentenbe.domain.token.exception;
 
-public class LogoutMemberException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import org.tenten.tentenbe.global.exception.GlobalException;
 
-    public LogoutMemberException(String message) {
-        super(message);
+public class LogoutMemberException extends GlobalException {
+
+    public LogoutMemberException(String message, HttpStatus errorCode) {
+        super(message, errorCode);
     }
 }

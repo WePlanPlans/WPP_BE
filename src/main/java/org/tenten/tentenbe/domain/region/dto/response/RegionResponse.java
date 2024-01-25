@@ -13,6 +13,5 @@ public record RegionResponse(List<RegionInfo> regions) {
         @Schema(defaultValue = "서울시")
         String name
     ) {
-
     }
 }

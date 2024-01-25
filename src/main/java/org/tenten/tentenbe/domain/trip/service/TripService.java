@@ -34,7 +34,10 @@ import org.tenten.tentenbe.domain.trip.model.Trip;
 import org.tenten.tentenbe.domain.trip.model.TripLikedItem;
 import org.tenten.tentenbe.domain.trip.model.TripLikedItemPreference;
 import org.tenten.tentenbe.domain.trip.model.TripMember;
-import org.tenten.tentenbe.domain.trip.repository.*;
+import org.tenten.tentenbe.domain.trip.repository.TripLikedItemPreferenceRepository;
+import org.tenten.tentenbe.domain.trip.repository.TripLikedItemRepository;
+import org.tenten.tentenbe.domain.trip.repository.TripMemberRepository;
+import org.tenten.tentenbe.domain.trip.repository.TripRepository;
 import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.common.enums.TripAuthority;
 import org.tenten.tentenbe.global.util.EncryptUtil;
@@ -56,7 +59,6 @@ import static org.tenten.tentenbe.global.common.enums.Transportation.CAR;
 public class TripService {
     private static final String SECRET_KEY = "1234567890123456";
     private final TripRepository tripRepository;
-    private final TripItemRepository tripItemRepository;
     private final TripMemberRepository tripMemberRepository;
     private final TourItemRepository tourItemRepository;
     private final MemberRepository memberRepository;
@@ -65,6 +67,7 @@ public class TripService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final EncryptUtil encryptUtil;
+
     @Transactional
     public TripCreateResponse createTrip(Long memberId, TripCreateRequest request) {
         Member member = getMemberById(memberId);
@@ -79,9 +82,10 @@ public class TripService {
         HashMap<String, String> tripTransportationMap = new HashMap<>();
         tripPathPriceMap.put(startDate.toString(), 0);
         tripTransportationMap.put(endDate.toString(), CAR.getName());
+
         Trip trip = Trip.builder()
             .tripName(request.tripName()
-                .orElse("나의 "+numberOfTrip+"번째 여정계획"))
+                .orElse("나의 " + numberOfTrip + "번째 여정계획"))
             .numberOfPeople(request.numberOfPeople().orElse(1L))
             .startDate(startDate)
             .endDate(endDate)
@@ -93,34 +97,18 @@ public class TripService {
             .tripPathPriceMap(tripPathPriceMap)
             .tripTransportationMap(tripTransportationMap)
             .build();
+
         TripMember tripMember = TripMember.builder()
             .member(member)
             .trip(trip)
             .tripAuthority(TripAuthority.WRITE)
             .build();
+
         tripMemberRepository.save(tripMember);
 
         Trip savedTrip = tripRepository.save(trip);
         savedTrip.updatedEncryptedId(encryptUtil.encrypt(Long.toString(savedTrip.getId())));
         return new TripCreateResponse(savedTrip.getEncryptedId());
-    }
-
-    private String createJoinCode() {
-        Random random = new Random();
-        int number = random.nextInt(90000) + 10000;
-        return String.valueOf(number);
-    }
-
-    private String encryptJoinCode(String joinCode) {
-        try {
-            SecretKeySpec skeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
-            cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-            byte[] encrypted = cipher.doFinal(joinCode.getBytes());
-            return Base64.getEncoder().encodeToString(encrypted);
-        } catch (Exception e) {
-            throw new RuntimeException("참여 코드 암호화 중 오류가 발생했습니다.", e);
-        }
     }
 
     @Transactional(readOnly = true)
@@ -135,8 +123,7 @@ public class TripService {
             return new TripAuthorityResponse(null, TripAuthority.READ_ONLY, tripId);
         }
         Member member = getMemberById(memberId);
-        TripAuthority tripAuthority = tripMemberRepository.findByMemberAndTrip(member, tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND)))
+        TripAuthority tripAuthority = tripMemberRepository.findByMemberAndTrip(member, getTripById(tripId))
             .orElse(TripMember.builder()
                 .tripAuthority(TripAuthority.READ_ONLY)
                 .build())
@@ -146,8 +133,7 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public TripDetailResponse getTrip(String tripId) {
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        Trip trip = getTripById(tripId);
         return new TripDetailResponse(
             trip.getTripName(),
             trip.getStartDate(),
@@ -159,41 +145,43 @@ public class TripService {
     @Transactional
     public TripInfoUpdateResponse updateTrip(Long memberId, String tripId, TripInfoUpdateRequest request) {
         Member member = getMemberById(memberId);
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        Trip trip = getTripById(tripId);
         validateWriter(member, trip);
+
         TripInfoUpdateResponse tripInfoUpdateResponse = trip.updateTripInfo(request);
         tripRepository.save(trip);
+
         return tripInfoUpdateResponse;
     }
 
     @Transactional
     public void updateToWebSocket(String tripId, TripInfoUpdateRequest request) {
-        String wsUrl = "https://ws.weplanplans.site/trips/" +tripId +"/"+request.startDate().toString()+"/"+request.endDate().toString();
+        String wsUrl = "https://ws.weplanplans.site/trips/" + tripId + "/" +
+            request.startDate().toString() + "/" + request.endDate().toString();
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
         HttpEntity<?> httpRequest = new HttpEntity<>(headers);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(wsUrl,GET, httpRequest, String.class);
+        restTemplate.exchange(wsUrl, GET, httpRequest, String.class);
     }
 
     @Transactional
     public void deleteTripMember(Long memberId, String tripId) {
         Member member = getMemberById(memberId);
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        Trip trip = getTripById(tripId);
         validateWriter(member, trip);
-        TripMember tripMember = tripMemberRepository.findByMemberAndTrip(member, trip)
-            .orElseThrow(() -> new TripMemberException("해당 회원은 여정에 속해있지 않은 회원입니다. memberId : "+ memberId, NOT_FOUND));
+
+        TripMember tripMember = getTripMember(memberId, member, trip);
         tripMemberRepository.delete(tripMember);
         trip.getTripMembers().remove(tripMember);
 
-        String wsUrl = "https://ws.weplanplans.site/trips/" + tripId+"/"+memberId;
+        String wsUrl = "https://ws.weplanplans.site/trips/" + tripId + "/" + memberId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
         HttpEntity<?> request = new HttpEntity<>(headers);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(wsUrl,DELETE, request, String.class);
+        restTemplate.exchange(wsUrl, DELETE, request, String.class);
 
-        if(trip.getTripMembers().isEmpty()) {
+        if (trip.getTripMembers().isEmpty()) {
             trip.setIsDeleted(true);
             tripRepository.save(trip);
         }
@@ -202,12 +190,10 @@ public class TripService {
     @Transactional
     public void LikeTourInOurTrip(Long memberId, String tripId, TripLikedItemRequest request) {
         Member member = getMemberById(memberId);
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        Trip trip = getTripById(tripId);
         validateWriter(member, trip);
         request.tourItemIds().stream()
-            .map(tourItemId -> tourItemRepository.findById(tourItemId)
-                .orElseThrow(() -> new TourException("아이디에 해당하는 여행지가 없습니다. tourItemId : " + tourItemId, NOT_FOUND)))
+            .map(this::getTourItem)
             .forEach(tourItem -> {
                 Optional<TripLikedItem> existingTripLikedItem = tripLikedItemRepository.findByTripAndTourItem(trip, tourItem);
                 if (existingTripLikedItem.isEmpty()) {
@@ -221,38 +207,25 @@ public class TripService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TripLikedSimpleResponse> getTripLikedItems(Long memberId, String tripId, String categoryName, Pageable pageable) {
+    public Page<TripLikedSimpleResponse> getTripLikedItems(
+        Long memberId, String tripId, String categoryName, Pageable pageable
+    ) {
         getMemberOrNullById(memberId);
-        tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        getTripById(tripId);
         Long categoryCode = findCategoryCode(categoryName);
         return tripLikedItemRepository.findTripLikedItemsById(memberId, tripId, categoryCode, pageable);
     }
 
-    private void getMemberOrNullById(Long memberId) {
-        if(memberId != null) {
-            memberRepository.getReferenceById(memberId);
-        }
-    }
-
-    private Long findCategoryCode(String categoryName) {
-        if (categoryName != null) {
-            return Category.fromName(categoryName).getCode();
-        }
-        return null;
-    }
-
     @Transactional
-    public void preferOrNotTourInOurTrip(Long memberId, String tripId, Long tourItemId, Boolean prefer, Boolean notPrefer) {
+    public void preferOrNotTourInOurTrip(
+        Long memberId, String tripId, Long tourItemId, Boolean prefer, Boolean notPrefer
+    ) {
         Member member = getMemberById(memberId);
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
-        TourItem tourItem = tourItemRepository.findById(tourItemId)
-            .orElseThrow(() -> new TourException("아이디에 해당하는 여행지가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
-        TripMember tripMember = tripMemberRepository.findByMemberAndTrip(member, trip)
-            .orElseThrow(() -> new TripMemberException("해당 회원은 여정에 속해있지 않은 회원입니다. memberId : "+ memberId, NOT_FOUND));
-        TripLikedItem tripLikedItem = tripLikedItemRepository.findByTripAndTourItem(trip, tourItem)
-            .orElseThrow(() -> new TripLikedItemException("해당 여행지는 우리의 관심목록에 속해있지 않은 여행지입니다. tourItemId : " + tourItemId, NOT_FOUND));
+        Trip trip = getTripById(tripId);
+        TourItem tourItem = getTourItem(tourItemId);
+        TripMember tripMember = getTripMember(memberId, member, trip);
+        TripLikedItem tripLikedItem = tripLikedItemRepository.findByTripAndTourItem(trip, tourItem).orElseThrow(
+            () -> new TripLikedItemException("해당 여행지는 우리의 관심목록에 속해있지 않은 여행지입니다. tourItemId : " + tourItemId, NOT_FOUND));
 
         if (Boolean.TRUE.equals(prefer) && Boolean.TRUE.equals(notPrefer)) {
             throw new TripLikeItemPreferenceException("좋아요와 싫어요를 동시에 누를 수 없습니다.", NOT_ACCEPTABLE);
@@ -271,9 +244,7 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public TripSurveyResponse getTripSurveys(String tripId) {
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : " + tripId, NOT_FOUND));
-
+        Trip trip = getTripById(tripId);
         List<TripMember> tripMembers = tripMemberRepository.findByTrip(trip);
 
         SurveyCounter counter = new SurveyCounter();
@@ -303,19 +274,19 @@ public class TripService {
         void countSurvey(Survey survey) {
             if (survey != null) {
                 surveyTotalCount();
-                if(survey.getPlanning().equals("철저하게")) {
+                if (survey.getPlanning().equals("철저하게")) {
                     planningCount++;
                 }
-                if(survey.getActiveHours().equals("아침형")) {
+                if (survey.getActiveHours().equals("아침형")) {
                     activeHoursCount++;
                 }
-                if(survey.getAccommodation().equals("분위기")) {
+                if (survey.getAccommodation().equals("분위기")) {
                     accommodationCount++;
                 }
-                if(survey.getFood().equals("노포 맛집")) {
+                if (survey.getFood().equals("노포 맛집")) {
                     foodCount++;
                 }
-                if(survey.getTripStyle().equals("액티비티")) {
+                if (survey.getTripStyle().equals("액티비티")) {
                     tripStyleCount++;
                 }
                 tripSurveyMemberCount++;
@@ -333,11 +304,12 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public TripMembersResponse getTripMembers(String tripId) {
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        Trip trip = getTripById(tripId);
 
         List<TripMemberSimpleInfo> tripMemberSimpleInfos = trip.getTripMembers().stream()
-            .map(tripMember -> new TripMemberSimpleInfo(tripMember.getMember().getNickname(), tripMember.getMember().getProfileImageUrl()))
+            .map(tripMember -> new TripMemberSimpleInfo(
+                tripMember.getMember().getNickname(), tripMember.getMember().getProfileImageUrl())
+            )
             .toList();
 
         return new TripMembersResponse(tripMemberSimpleInfos);
@@ -346,8 +318,7 @@ public class TripService {
     @Transactional
     public TripItemResponse addTripItem(Long memberId, String tripId, TripItemRequest tripItemRequest) {
         Member member = getMemberById(memberId);
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : "+ tripId, NOT_FOUND));
+        Trip trip = getTripById(tripId);
         validateWriter(member, trip);
 
         Map<String, String> tripItemRequestMap = new HashMap<>();
@@ -361,7 +332,8 @@ public class TripService {
 
         if (responseEntity.getStatusCode() == OK) {
             try {
-                Map<String, Object> map = objectMapper.readValue(responseEntity.getBody(), new TypeReference<>() {});
+                Map<String, Object> map = objectMapper.readValue(responseEntity.getBody(), new TypeReference<>() {
+                });
                 return new TripItemResponse(
                     tripId,
                     Long.valueOf(map.get("tripItemId").toString()),
@@ -378,9 +350,7 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public TripSurveyMemberResponse getTripSurveyMember(String tripId) {
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : " + tripId, NOT_FOUND));
-
+        Trip trip = getTripById(tripId);
         List<TripMember> tripMembers = tripMemberRepository.findByTrip(trip);
 
         List<MemberSimpleInfo> tripSurveySetMemberInfos = new ArrayList<>();
@@ -390,10 +360,12 @@ public class TripService {
         for (TripMember tripMember : tripMembers) {
             Member member = tripMember.getMember();
             if (member.getSurvey() != null) {
-                tripSurveySetMemberInfos.add(new MemberSimpleInfo(member.getId(), member.getNickname(), member.getProfileImageUrl()));
+                tripSurveySetMemberInfos.add(
+                    new MemberSimpleInfo(member.getId(), member.getNickname(), member.getProfileImageUrl()));
                 tripSurveyMemberCount++;
             } else {
-                nonTripSurveySetMemberInfos.add(new MemberSimpleInfo(member.getId(), member.getNickname(), member.getProfileImageUrl()));
+                nonTripSurveySetMemberInfos.add(
+                    new MemberSimpleInfo(member.getId(), member.getNickname(), member.getProfileImageUrl()));
             }
         }
 
@@ -403,9 +375,7 @@ public class TripService {
     @Transactional
     public void joinTrip(Long memberId, String tripId, String joinCode) {
         Member member = getMemberById(memberId);
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("해당 여정이 존재하지 않습니다.", NOT_FOUND));
-
+        Trip trip = getTripById(tripId);
         String decryptedJoinCode = decryptedJoinCode(trip.getJoinCode());
 
         if (!decryptedJoinCode.equals(joinCode)) {
@@ -415,10 +385,21 @@ public class TripService {
         saveTripMember(member, trip);
     }
 
+    @Transactional(readOnly = true)
+    public String getJoinCode(Long memberId, String tripId) {
+        Member member = getMemberById(memberId);
+        Trip trip = getTripById(tripId);
+
+        tripMemberRepository.findByMemberAndTrip(member, trip).orElseThrow(
+            () -> new TripMemberException("해당 회원은 참여코드를 조회할 권한이 없습니다. memberId : " + member.getId(), NOT_ACCEPTABLE));
+
+        return decryptedJoinCode(trip.getJoinCode());
+    }
+
     private void saveTripMember(Member member, Trip trip) {
         TripMember tripMember = tripMemberRepository.findByMemberAndTrip(member, trip).orElse(null);
 
-        if(tripMember == null) {
+        if (tripMember == null) {
             tripMember = TripMember.builder()
                 .member(member)
                 .trip(trip)
@@ -428,18 +409,6 @@ public class TripService {
         } else {
             throw new TripException("이미 참여하고 있는 여정입니다.", CONFLICT);
         }
-    }
-
-    @Transactional(readOnly = true)
-    public String getJoinCode(Long memberId, String tripId) {
-        Member member = getMemberById(memberId);
-        Trip trip = tripRepository.findByEncryptedId(tripId)
-            .orElseThrow(() -> new TripException("해당 여정이 존재하지 않습니다.", NOT_FOUND));
-
-        tripMemberRepository.findByMemberAndTrip(member, trip)
-            .orElseThrow(() -> new TripMemberException("해당 회원은 참여코드를 조회할 권한이 없습니다. memberId : " + member.getId(), NOT_ACCEPTABLE));
-
-        return decryptedJoinCode(trip.getJoinCode());
     }
 
     private String decryptedJoinCode(String encryptedJoinCode) {
@@ -455,7 +424,7 @@ public class TripService {
     }
 
     private Member getMemberById(Long memberId) {
-        if(memberId != null) {
+        if (memberId != null) {
             return memberRepository.getReferenceById(memberId);
         }
         throw new MemberException("memberId가 유효하지 않습니다.", NOT_FOUND);
@@ -464,5 +433,50 @@ public class TripService {
     private void validateWriter(Member member, Trip trip) {
         tripMemberRepository.findByMemberAndTrip(member, trip)
             .orElseThrow(() -> new TripException("해당 아이디의 회원은 편집권한이 없습니다. memberId : " + member.getId(), NOT_FOUND));
+    }
+
+    private String createJoinCode() {
+        int number = new Random().nextInt(90000) + 10000;
+        return String.valueOf(number);
+    }
+
+    private String encryptJoinCode(String joinCode) {
+        try {
+            SecretKeySpec skeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+            byte[] encrypted = cipher.doFinal(joinCode.getBytes());
+            return Base64.getEncoder().encodeToString(encrypted);
+        } catch (Exception e) {
+            throw new RuntimeException("참여 코드 암호화 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    private Trip getTripById(String tripId) {
+        return tripRepository.findByEncryptedId(tripId)
+            .orElseThrow(() -> new TripException("아이디에 해당하는 여정이 없습니다. tripId : " + tripId, NOT_FOUND));
+    }
+
+    private TripMember getTripMember(Long memberId, Member member, Trip trip) {
+        return tripMemberRepository.findByMemberAndTrip(member, trip).orElseThrow(
+            () -> new TripMemberException("해당 회원은 여정에 속해있지 않은 회원입니다. memberId : " + memberId, NOT_FOUND));
+    }
+
+    private TourItem getTourItem(Long tourItemId) {
+        return tourItemRepository.findById(tourItemId).orElseThrow(
+            () -> new TourException("아이디에 해당하는 여행지가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
+    }
+
+    private void getMemberOrNullById(Long memberId) {
+        if (memberId != null) {
+            memberRepository.getReferenceById(memberId);
+        }
+    }
+
+    private Long findCategoryCode(String categoryName) {
+        if (categoryName != null) {
+            return Category.fromName(categoryName).getCode();
+        }
+        return null;
     }
 }

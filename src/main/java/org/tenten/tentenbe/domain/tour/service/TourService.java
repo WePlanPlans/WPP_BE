@@ -23,7 +23,7 @@ import org.tenten.tentenbe.global.common.enums.Region;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
 @Service
@@ -35,10 +35,6 @@ public class TourService {
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, String regionName, Pageable pageable) {
-        if(memberId != null) {
-            Member member = memberRepository.getReferenceById(memberId);
-        }
-
         return getTourSimpleResponsePage(memberId, regionName, pageable);
     }
 
@@ -50,12 +46,15 @@ public class TourService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TourSimpleResponse> searchTours(Long memberId, String regionName, String categoryName, String searchWord, Pageable pageable) {
+    public Page<TourSimpleResponse> searchTours(
+        Long memberId, String regionName, String categoryName, String searchWord, Pageable pageable
+    ) {
         Optional<Member> member = Optional.ofNullable(memberId).map(memberRepository::getReferenceById);
         Long regionCode = findRegionCode(regionName);
         Long categoryCode = findCategoryCode(categoryName);
 
-        Page<TourItem> tourItems = tourItemRepository.searchByRegionAndCategoryAndSearchWord(regionCode, categoryCode, searchWord, pageable);
+        Page<TourItem> tourItems =
+            tourItemRepository.searchByRegionAndCategoryAndSearchWord(regionCode, categoryCode, searchWord, pageable);
         List<TourSimpleResponse> tourSimpleResponses = getTourSimpleResponses(member, tourItems);
 
         return new PageImpl<>(tourSimpleResponses, pageable, tourItems.getTotalElements());
@@ -112,17 +111,12 @@ public class TourService {
     }
 
     private boolean isLiked(Long memberId, Long tourItemId) {
-        if (memberId != null) {
-            Member member = memberRepository.getReferenceById(memberId);
-            return likedItemRepository.existsByMemberIdAndTourItemId(memberId, tourItemId);
-        }
+        if (memberId != null) return likedItemRepository.existsByMemberIdAndTourItemId(memberId, tourItemId);
         return false;
     }
 
     private String getFullAddress(String address, String detailedAddress) {
-        if (detailedAddress == null) {
-            return address;
-        }
+        if (detailedAddress == null) return address;
         return address + " " + detailedAddress;
     }
 
