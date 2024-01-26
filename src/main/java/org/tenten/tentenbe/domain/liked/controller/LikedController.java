@@ -25,7 +25,8 @@ public class LikedController {
     @PostMapping("/{tour_id}")
     public ResponseEntity<GlobalResponse> likeTour(
         @Parameter(description = "관심 여행지 등록할 여행지 ID", required = true, example = "1")
-        @PathVariable("tour_id") Long tourId) {
+        @PathVariable("tour_id") Long tourId
+    ) {
         likedService.likeTour(tourId, getCurrentMemberId());
         return ResponseEntity.ok(GlobalResponse.ok(SUCCESS));
     }
@@ -34,7 +35,8 @@ public class LikedController {
     @DeleteMapping("/{tour_id}")
     public ResponseEntity<GlobalResponse> cancelLikeTour(
         @Parameter(description = "관심 여행지 삭제할 여행지 ID", required = true, example = "1")
-        @PathVariable("tour_id") Long tourId) {
+        @PathVariable("tour_id") Long tourId
+    ) {
         likedService.cancelLikeTour(tourId, getCurrentMemberId());
         return ResponseEntity.ok(GlobalResponse.ok(DELETED));
     }

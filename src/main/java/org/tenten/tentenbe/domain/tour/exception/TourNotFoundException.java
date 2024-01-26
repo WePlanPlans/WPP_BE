@@ -1,7 +1,10 @@
 package org.tenten.tentenbe.domain.tour.exception;
 
-public class TourNotFoundException extends RuntimeException {
-    public TourNotFoundException(String message) {
-        super(message);
+import org.springframework.http.HttpStatus;
+import org.tenten.tentenbe.global.exception.GlobalException;
+
+public class TourNotFoundException extends GlobalException {
+    public TourNotFoundException(String message, HttpStatus errorCode) {
+        super(message, errorCode);
     }
 }

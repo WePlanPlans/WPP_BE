@@ -40,7 +40,5 @@ public class Survey {
         return Objects.hash(planning, activeHours, accommodation, food, tripStyle);
     }
 
-    public static class SurveyConverter extends JsonConverter<Survey> {
-
-    }
+    public static class SurveyConverter extends JsonConverter<Survey> {}
 }

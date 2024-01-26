@@ -2,9 +2,6 @@ package org.tenten.tentenbe.domain.region.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +26,9 @@ public class RegionController {
     @Operation(summary = "전체 지역 조회 API", description = "전체 지역 조회 API 입니다.")
     @GetMapping("")
     public ResponseEntity<GlobalDataResponse<RegionResponse>> getRegions(
-        @Parameter(name = "areaCode", required = false, in = QUERY, description = "세부 지역 조회할 광역 지자체 areaCode")
-        @RequestParam(value = "areaCode", required = false) String areaCode) {
+        @Parameter(name = "areaCode", in = QUERY, description = "세부 지역 조회할 광역 지자체 areaCode")
+        @RequestParam(value = "areaCode", required = false) String areaCode
+    ) {
         return ResponseEntity.ok(GlobalDataResponse.ok(SUCCESS, regionService.getRegions(areaCode)));
     }
 

@@ -19,7 +19,9 @@ public class ApiItemDetail {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ApiItemDetail that = (ApiItemDetail) o;
-        return Objects.equals(serialNumber, that.serialNumber) && Objects.equals(infoName, that.infoName) && Objects.equals(infoText, that.infoText);
+        return Objects.equals(serialNumber, that.serialNumber)
+            && Objects.equals(infoName, that.infoName)
+            && Objects.equals(infoText, that.infoText);
     }
 
     @Override

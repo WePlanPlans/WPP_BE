@@ -37,11 +37,34 @@ public class ApiRoomOption {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ApiRoomOption that = (ApiRoomOption) o;
-        return Objects.equals(roomCode, that.roomCode) && Objects.equals(roomTitle, that.roomTitle) && Objects.equals(roomSize, that.roomSize) && Objects.equals(roomCount, that.roomCount) && Objects.equals(basePeople, that.basePeople) && Objects.equals(maxPeople, that.maxPeople) && Objects.equals(offSeasonWeekMin, that.offSeasonWeekMin) && Objects.equals(offSeasonWeekendMin, that.offSeasonWeekendMin) && Objects.equals(peakSeasonWeekMin, that.peakSeasonWeekMin) && Objects.equals(peakSeasonWeekendMin, that.peakSeasonWeekendMin) && Objects.equals(roomIntro, that.roomIntro) && Objects.equals(img1, that.img1) && Objects.equals(img1Description, that.img1Description) && Objects.equals(img2, that.img2) && Objects.equals(img2Description, that.img2Description) && Objects.equals(img3, that.img3) && Objects.equals(img3Description, that.img3Description) && Objects.equals(img4, that.img4) && Objects.equals(img4Description, that.img4Description) && Objects.equals(img5, that.img5) && Objects.equals(img5Description, that.img5Description);
+        return Objects.equals(roomCode, that.roomCode)
+            && Objects.equals(roomTitle, that.roomTitle)
+            && Objects.equals(roomSize, that.roomSize)
+            && Objects.equals(roomCount, that.roomCount)
+            && Objects.equals(basePeople, that.basePeople)
+            && Objects.equals(maxPeople, that.maxPeople)
+            && Objects.equals(offSeasonWeekMin, that.offSeasonWeekMin)
+            && Objects.equals(offSeasonWeekendMin, that.offSeasonWeekendMin)
+            && Objects.equals(peakSeasonWeekMin, that.peakSeasonWeekMin)
+            && Objects.equals(peakSeasonWeekendMin, that.peakSeasonWeekendMin)
+            && Objects.equals(roomIntro, that.roomIntro)
+            && Objects.equals(img1, that.img1)
+            && Objects.equals(img1Description, that.img1Description)
+            && Objects.equals(img2, that.img2)
+            && Objects.equals(img2Description, that.img2Description)
+            && Objects.equals(img3, that.img3)
+            && Objects.equals(img3Description, that.img3Description)
+            && Objects.equals(img4, that.img4)
+            && Objects.equals(img4Description, that.img4Description)
+            && Objects.equals(img5, that.img5)
+            && Objects.equals(img5Description, that.img5Description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(roomCode, roomTitle, roomSize, roomCount, basePeople, maxPeople, offSeasonWeekMin, offSeasonWeekendMin, peakSeasonWeekMin, peakSeasonWeekendMin, roomIntro, img1, img1Description, img2, img2Description, img3, img3Description, img4, img4Description, img5, img5Description);
+        return Objects.hash(roomCode, roomTitle, roomSize, roomCount, basePeople,
+            maxPeople, offSeasonWeekMin, offSeasonWeekendMin, peakSeasonWeekMin,
+            peakSeasonWeekendMin, roomIntro, img1, img1Description, img2, img2Description,
+            img3, img3Description, img4, img4Description, img5, img5Description);
     }
 }

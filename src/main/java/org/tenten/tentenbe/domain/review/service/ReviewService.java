@@ -44,15 +44,21 @@ public class ReviewService {
     private final KeywordRepository keywordRepository;
     private final ReviewKeywordRepository reviewKeywordRepository;
     private final CommentRepository commentRepository;
-    @Transactional(readOnly = true) // TODO: tourItem.getReviews fetchJoin으로 한번에 가져오게 리팩터링
+
+    @Transactional(readOnly = true)
     public ReviewResponse getTourReviews(Long tourItemId, Pageable pageable, Long memberId) {
-        TourItem tourItem = tourItemRepository.findById(tourItemId)
-            .orElseThrow(() -> new TourException("해당 아이디로 존재하는 리뷰가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
+        TourItem tourItem = getTourItem(tourItemId);
         Page<Review> reviewPage = reviewRepository.findReviewByTourItemId(tourItem.getId(), pageable);
         List<ReviewInfo> reviewInfos = reviewPage.stream().map(r -> ReviewInfo.fromEntity(r, memberId)).toList();
 
-        Long keywordTotalCount = calculateKeywordTotalCount(tourItem.getId());
-        Double ratingAverage = calculateRatingAverage(tourItem.getReviews());
+        Long keywordTotalCount = keywordRepository.findKeywordInfoByTourItemIdAndKeywordType(tourItem.getId()).stream()
+            .mapToLong(TourKeywordInfo::keywordCount)
+            .sum();
+        Double ratingAverage = tourItem.getReviews().stream()
+            .mapToDouble(Review::getRating)
+            .average()
+            .orElse(0.0);
+
         return new ReviewResponse(
             ratingAverage,
             tourItem.getReviewTotalCount(),
@@ -62,48 +68,41 @@ public class ReviewService {
         );
     }
 
-    private Double calculateRatingAverage(List<Review> reviews) {
-        return reviews.stream()
-            .mapToDouble(Review::getRating)
-            .average()
-            .orElse(0.0);
-    }
-
-    private Long calculateKeywordTotalCount(Long tourItemId) {
-        return keywordRepository.findKeywordInfoByTourItemIdAndKeywordType(tourItemId).stream()
-            .mapToLong(TourKeywordInfo::keywordCount)
-            .sum();
-    }
-
     @Transactional
     public ReviewInfo createReview(Long memberId, ReviewCreateRequest reviewCreateRequest) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException("해당 아이디로 존재하는 멤버가 없습니다. memberId : " + memberId, NOT_FOUND));
-        TourItem tourItem = tourItemRepository.findById(reviewCreateRequest.tourItemId()).orElseThrow(() -> new TourException("해당 아이디로 존재하는 여행 상품이 없습니다. tourItemId : " + reviewCreateRequest.tourItemId(), NOT_FOUND));
+        Member member = getMember(memberId);
+        TourItem tourItem = getTourItem(reviewCreateRequest.tourItemId());
         Review review = reviewCreateRequest.toEntity(member);
+
         tourItem.increaseReviewCount();
         reviewRepository.save(review);
+
         List<ReviewKeyword> reviewKeywords = addKeywordToReview(review, reviewCreateRequest.keywords());
+
         return ReviewInfo.fromEntity(review, reviewKeywords, memberId);
     }
 
-
     @Transactional
     public ReviewInfo updateReview(Long memberId, Long reviewId, ReviewUpdateRequest reviewUpdateRequest) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException("해당 아이디로 존재하는 멤버가 없습니다. memberId : "+memberId, NOT_FOUND));
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewException("해당 아이디로 존재하는 리뷰가 없습니다. reviewId : " + reviewId, NOT_FOUND));
-
+        Member member = getMember(memberId);
+        Review review = getReview(reviewId);
         validateCreator(member, review);
 
         review.updateContent(reviewUpdateRequest.content());
         review.updateRating(reviewUpdateRequest.rating());
+
         reviewKeywordRepository.deleteByReviewId(reviewId);
         List<ReviewKeyword> reviewKeywords = addKeywordToReview(review, reviewUpdateRequest.keywords());
+
         return ReviewInfo.fromEntity(review, reviewKeywords, memberId);
     }
 
     private List<ReviewKeyword> addKeywordToReview(Review review, List<ReviewKeywordCreateRequest> keywords) {
         List<ReviewKeyword> reviewKeywords = keywords.stream().map(keyWordRequest -> {
-            Keyword keyword = keywordRepository.findById(keyWordRequest.keywordId()).orElseThrow(() -> new KeywordException("해당 아이디로 존재하는 키워드가 없습니다. keywordId : " + keyWordRequest.keywordId(), NOT_FOUND));
+            Keyword keyword = keywordRepository.findById(keyWordRequest.keywordId())
+                .orElseThrow(() -> new KeywordException(
+                    "해당 아이디로 존재하는 키워드가 없습니다. keywordId : " + keyWordRequest.keywordId(), NOT_FOUND));
+
             return ReviewKeyword.builder()
                 .review(review)
                 .keyword(keyword)
@@ -114,16 +113,10 @@ public class ReviewService {
         return reviewKeywords;
     }
 
-    private void validateCreator(Member member, Review review) {
-        if (!member.getId().equals(review.getCreator().getId())) {
-            throw new ReviewException("작성하지 않은 리뷰로 편집 권한이 없습니다.", CONFLICT);
-        }
-    }
-
     @Transactional
     public void deleteReview(Long memberId, Long reviewId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException("해당 아이디로 존재하는 멤버가 없습니다. memberId : "+memberId, NOT_FOUND));
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewException("해당 아이디로 존재하는 리뷰가 없습니다. reviewId : " + reviewId, NOT_FOUND));
+        Member member = getMember(memberId);
+        Review review = getReview(reviewId);
 
         validateCreator(member, review);
         TourItem tourItem = review.getTourItem();
@@ -134,7 +127,14 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public CommentResponse getReviewComments(Long reviewId, Pageable pageable, Long memberId) {
         Page<Comment> comments = commentRepository.findCommentsByReviewId(reviewId, pageable);
-        List<CommentInfo> commentInfos = comments.stream().map(comment -> new CommentInfo(comment.getId(), comment.getCreator().getNickname(), comment.getCreator().getProfileImageUrl(), comment.getContent(), comment.getCreatedTime(), comment.getCreator().getId().equals(memberId))).toList();
+        List<CommentInfo> commentInfos = comments.stream()
+            .map(comment -> new CommentInfo(
+                comment.getId(),
+                comment.getCreator().getNickname(),
+                comment.getCreator().getProfileImageUrl(),
+                comment.getContent(), comment.getCreatedTime(),
+                comment.getCreator().getId().equals(memberId))
+            ).toList();
 
         return new CommentResponse(new PageImpl<>(commentInfos, pageable, comments.getTotalElements()));
     }
@@ -145,8 +145,29 @@ public class ReviewService {
             return new KeywordResponse(keywordRepository.findAll().stream().map(KeywordInfo::fromEntity).toList());
         } else {
             KeywordType keywordType = KeywordType.fromName(keywordTypeName);
-            return new KeywordResponse(keywordRepository.findByType(keywordType).stream().map(KeywordInfo::fromEntity).toList());
+            return new KeywordResponse(
+                keywordRepository.findByType(keywordType).stream().map(KeywordInfo::fromEntity).toList());
+        }
+    }
 
+    private TourItem getTourItem(Long tourItemId) {
+        return tourItemRepository.findById(tourItemId).orElseThrow(
+            () -> new TourException("해당 아이디로 존재하는 리뷰가 없습니다. tourItemId : " + tourItemId, NOT_FOUND));
+    }
+
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(
+            () -> new MemberException("해당 아이디로 존재하는 멤버가 없습니다. memberId : " + memberId, NOT_FOUND));
+    }
+
+    private Review getReview(Long reviewId) {
+        return reviewRepository.findById(reviewId).orElseThrow(
+            () -> new ReviewException("해당 아이디로 존재하는 리뷰가 없습니다. reviewId : " + reviewId, NOT_FOUND));
+    }
+
+    private void validateCreator(Member member, Review review) {
+        if (!member.getId().equals(review.getCreator().getId())) {
+            throw new ReviewException("작성하지 않은 리뷰로 편집 권한이 없습니다.", CONFLICT);
         }
     }
 }

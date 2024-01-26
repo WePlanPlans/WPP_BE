@@ -19,10 +19,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(GlobalException.class)
-    protected final ResponseEntity<ErrorResponse> handleGlobalException(GlobalException ex,
-                                                                        WebRequest request
-    ) {
-
+    protected final ResponseEntity<ErrorResponse> handleGlobalException(GlobalException ex, WebRequest request) {
         log.error(ex.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
@@ -34,9 +31,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    protected final ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request
-    ) {
-
+    protected final ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
         log.error(ex.getMessage());
         Arrays.stream(ex.getStackTrace()).forEach(
             stackTraceElement -> log.error(stackTraceElement.toString())
@@ -47,7 +42,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected final ResponseEntity<ErrorResponse> methodValidException(MethodArgumentNotValidException ex, WebRequest request) {
+    protected final ResponseEntity<ErrorResponse> methodValidException(
+        MethodArgumentNotValidException ex, WebRequest request
+    ) {
         log.error("handling {}, message : {}", ex.getClass().toString(), ex.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
