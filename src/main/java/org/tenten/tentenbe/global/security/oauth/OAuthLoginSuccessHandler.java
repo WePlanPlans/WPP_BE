@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.tenten.tentenbe.domain.member.exception.UserNotFoundException;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO;
@@ -60,32 +62,39 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         TokenDTO.TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
 
-        String memberId = authenticate.getName();
-        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
+        Member member = getMemberFromAuthentication(authenticate);
+        saveRefreshTokenInCacheAndCookie(member, tokenInfoDTO, response, redisCache);
 
-        String refreshToken = tokenInfoDTO.getRefreshToken();
-        redisCache.save(REFRESH_TOKEN, Long.toString(member.getId()), refreshToken);
-
-        CookieUtil.storeRefreshTokenInCookie(response, refreshToken);
-
-        boolean isExist = (boolean) kakaoAccountValue.get("isExist");
+        boolean isMemberExist = (boolean) kakaoAccountValue.get("isMemberExist");
 
         String nickname = "";
         if (member.getNickname() != null) {
             nickname = URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8);
         }
 
-        String redirectURI = buildRedirectURI(email, nickname, tokenInfoDTO, member.getProfileImageUrl(), isExist);
+        String redirectURI = buildRedirectURI(email, nickname, tokenInfoDTO, member.getProfileImageUrl(), isMemberExist);
         response.sendRedirect(redirectURI);
     }
 
-    private String buildRedirectURI(String email, String nickname, TokenDTO.TokenInfoDTO tokenInfoDTO, String profileImageUrl, boolean isExist) {
+    private Member getMemberFromAuthentication(Authentication authentication) {
+        String memberId = authentication.getName();
+        return memberRepository.findById(Long.parseLong(memberId))
+            .orElseThrow(() -> new UserNotFoundException("해당 아이디로 존재하는 유저가 없습니다." + memberId, HttpStatus.NOT_FOUND));
+    }
+
+    private String buildRedirectURI(String email, String nickname, TokenDTO.TokenInfoDTO tokenInfoDTO, String profileImageUrl, boolean isMemberExist) {
         return UriComponentsBuilder.fromUriString(redirectUrl)
             .queryParam("nickname", nickname)
             .queryParam("email", email)
             .queryParam("token", tokenInfoDTO.toTokenIssueDTO().getAccessToken())
             .queryParam("profile_image", profileImageUrl)
-            .queryParam("signup", isExist)
+            .queryParam("signup", isMemberExist)
             .build().toUriString();
+    }
+
+    private void saveRefreshTokenInCacheAndCookie(Member member, TokenDTO.TokenInfoDTO tokenInfoDTO, HttpServletResponse response, RedisCache redisCache) {
+        String refreshToken = tokenInfoDTO.getRefreshToken();
+        redisCache.save(REFRESH_TOKEN, Long.toString(member.getId()), refreshToken);
+        CookieUtil.storeRefreshTokenInCookie(response, refreshToken);
     }
 }
