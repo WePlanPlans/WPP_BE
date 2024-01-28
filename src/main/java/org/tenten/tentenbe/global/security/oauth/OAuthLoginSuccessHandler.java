@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.tenten.tentenbe.domain.member.model.Member;
 import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.token.dto.TokenDTO;
@@ -36,12 +38,14 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final RedisCache redisCache;
+    @Value("${oauth.redirectUrl}")
+    private String redirectUrl;
 
     @Override
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        ObjectMapper mapper = new ObjectMapper();   //todo : Config에 Bean으로 따로 빼서 사용하던지,,,고려해서 리팩토링 할 예정
+        ObjectMapper mapper = new ObjectMapper();   //todo : ObjectMapper 공통 유틸로 분리하면 리팩토링 진행예정
 
         DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = defaultOAuth2User.getAttributes();
@@ -50,7 +54,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         String email = (String) kakaoAccountValue.get("email");
 
         UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(email, "dummy");    //todo: 패스워드 환경변수 분리
+            new UsernamePasswordAuthenticationToken(email, email); // 패스워드 : 해당 이메일 암호화
         Authentication authenticate =
             authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
@@ -71,17 +75,17 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             nickname = URLEncoder.encode(member.getNickname(), StandardCharsets.UTF_8);
         }
 
-        StringBuilder sb = new StringBuilder();
-//        sb.append("http://localhost:5173/login/kakao") // todo : 배포 주소 url 확인
-        sb.append("https://dev-weplanplans.vercel.app/login/kakao") // todo : 배포 주소 url 확인
-            .append("?nickname=").append(nickname)
-            .append("&email=").append(email)
-            .append("&token=").append(tokenInfoDTO.toTokenIssueDTO().getAccessToken())// access token
-            .append("&profile_image=").append(member.getProfileImageUrl())
-            .append("&signup=").append(isExist);
-
-
-        String redirectURI = sb.toString();
+        String redirectURI = buildRedirectURI(email, nickname, tokenInfoDTO, member.getProfileImageUrl(), isExist);
         response.sendRedirect(redirectURI);
+    }
+
+    private String buildRedirectURI(String email, String nickname, TokenDTO.TokenInfoDTO tokenInfoDTO, String profileImageUrl, boolean isExist) {
+        return UriComponentsBuilder.fromUriString(redirectUrl)
+            .queryParam("nickname", nickname)
+            .queryParam("email", email)
+            .queryParam("token", tokenInfoDTO.toTokenIssueDTO().getAccessToken())
+            .queryParam("profile_image", profileImageUrl)
+            .queryParam("signup", isExist)
+            .build().toUriString();
     }
 }

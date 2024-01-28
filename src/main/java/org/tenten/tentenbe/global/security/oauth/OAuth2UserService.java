@@ -64,8 +64,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
             Member member = Member.builder()
                 .email(email)
-//                .password(bCryptPasswordEncoder.encode("dummy"))    //todo: OAuth 패스워드 환경 변수로 빼기
-                .password(passwordEncoderConfig.passwordEncoder().encode("dummy"))
+                .password(passwordEncoderConfig.passwordEncoder().encode(email))
                 .nickname(nickname)
                 .profileImageUrl(profile_image)
                 .loginType(KAKAO)
@@ -78,9 +77,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 nickname = "위플러" + (member.getId() + 321);
                 member.updateNickname(nickname);
             }
-
         }
-
         return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), userNameAttributeName);
     }
 }
