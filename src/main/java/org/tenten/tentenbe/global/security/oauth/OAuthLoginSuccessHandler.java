@@ -60,8 +60,6 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(RuntimeException::new);
 
         String refreshToken = tokenInfoDTO.getRefreshToken();
-        // todo : 리프레쉬토큰-레디스
-//        member.getRefreshToken().updateToken(refreshToken);
         redisCache.save(REFRESH_TOKEN, Long.toString(member.getId()), refreshToken);
 
         CookieUtil.storeRefreshTokenInCookie(response, refreshToken);
@@ -80,8 +78,6 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             .append("&email=").append(email)
             .append("&token=").append(tokenInfoDTO.toTokenIssueDTO().getAccessToken())// access token
             .append("&profile_image=").append(member.getProfileImageUrl())
-//            .append("&gender=").append(member.getGenderType())
-//            .append("&age_range=").append(member.getAgeType())
             .append("&signup=").append(isExist);
 
 
