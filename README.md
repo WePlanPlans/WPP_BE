@@ -58,6 +58,11 @@
 
 <img width="1435" alt="Screenshot 2024-01-25 at 13 23 15" src="https://github.com/WePlanPlans/WPP_BE/assets/95599193/2f182737-1fbc-468a-9587-91a178a04580">
 
+# 프로젝트 아키택쳐
+
+![image](https://github.com/WePlanPlans/WPP_BE/assets/95599193/4b223737-6baa-4904-bc87-b37c06999443)
+
+
 
 # 패키지 구조
 ```
