@@ -54,6 +54,11 @@
 
 </div>
 
+# ERD
+
+<img width="1435" alt="Screenshot 2024-01-25 at 13 23 15" src="https://github.com/WePlanPlans/WPP_BE/assets/95599193/2f182737-1fbc-468a-9587-91a178a04580">
+
+
 # 패키지 구조
 ```
 ├── main
