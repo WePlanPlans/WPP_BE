@@ -1,5 +1,6 @@
 package org.tenten.tentenbe.domain.tour.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.tour.dto.response.TourDetailResponse;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
+import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponsePage;
 import org.tenten.tentenbe.domain.tour.exception.TourException;
 import org.tenten.tentenbe.domain.tour.model.TourItem;
 import org.tenten.tentenbe.domain.tour.repository.TourItemRepository;
@@ -35,25 +37,27 @@ public class TourService {
     private final MemberRepository memberRepository;
     private final LikedItemRepository likedItemRepository;
     private final RedisCache redisCache;
+    private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, String regionName, Pageable pageable) {
+        TourSimpleResponsePage tourSimpleResponsePage;
         Page<TourSimpleResponse> tourSimpleResponses;
         String topic;
 
         if (regionName == null) {
-            topic = TOUR_ITEM;
+            topic = TOUR_ITEM + " - " + pageable.toString();
         } else {
-            topic = TOUR_ITEM + " - " + regionName;
+            topic = TOUR_ITEM + " - " + regionName + " - " + pageable.toString();
         }
 
         // Redis에서 데이터 가져오기
         Object cachedData = redisCache.get(topic, String.valueOf(memberId));
 
-        if (cachedData != null && cachedData instanceof Page<?>) {
-            // 데이터가 Page 형식인지 확인 후 변환
-            tourSimpleResponses = (Page<TourSimpleResponse>) cachedData;
-            return tourSimpleResponses;
+        if (cachedData != null) {
+            tourSimpleResponsePage = objectMapper.convertValue(cachedData, TourSimpleResponsePage.class);
+            return new PageImpl<>(
+                tourSimpleResponsePage.tourSimpleResponseList(), pageable, tourSimpleResponsePage.totalElements());
         }
 
         // 캐시에 데이터가 없으면 DB에서 조회
@@ -64,8 +68,10 @@ public class TourService {
                 Region.fromName(regionName).getAreaCode(), memberId, pageable);
         }
 
+        tourSimpleResponsePage = new TourSimpleResponsePage(tourSimpleResponses.toList(), tourSimpleResponses.getTotalElements());
+
         // 조회한 데이터를 Redis에 저장
-        redisCache.save(topic, String.valueOf(memberId), tourSimpleResponses);
+        redisCache.save(topic, String.valueOf(memberId), tourSimpleResponsePage);
         return tourSimpleResponses;
     }
 
