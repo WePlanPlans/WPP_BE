@@ -17,6 +17,7 @@ import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
 import org.tenten.tentenbe.domain.tour.exception.TourException;
 import org.tenten.tentenbe.domain.tour.model.TourItem;
 import org.tenten.tentenbe.domain.tour.repository.TourItemRepository;
+import org.tenten.tentenbe.global.cache.RedisCache;
 import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.common.enums.Region;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.tenten.tentenbe.global.common.constant.TopicConstant.TOUR_ITEM;
 
 @Slf4j
 @Service
@@ -32,17 +34,39 @@ public class TourService {
     private final TourItemRepository tourItemRepository;
     private final MemberRepository memberRepository;
     private final LikedItemRepository likedItemRepository;
+    private final RedisCache redisCache;
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, String regionName, Pageable pageable) {
-        return getTourSimpleResponsePage(memberId, regionName, pageable);
-    }
+        Page<TourSimpleResponse> tourSimpleResponses;
+        String topic;
 
-    private Page<TourSimpleResponse> getTourSimpleResponsePage(Long memberId, String regionName, Pageable pageable) {
         if (regionName == null) {
-            return tourItemRepository.findPopularTourItems(memberId, pageable);
+            topic = TOUR_ITEM;
+        } else {
+            topic = TOUR_ITEM + " - " + regionName;
         }
-        return tourItemRepository.findPopularTourItems(Region.fromName(regionName).getAreaCode(), memberId, pageable);
+
+        // Redis에서 데이터 가져오기
+        Object cachedData = redisCache.get(topic, String.valueOf(memberId));
+
+        if (cachedData != null && cachedData instanceof Page<?>) {
+            // 데이터가 Page 형식인지 확인 후 변환
+            tourSimpleResponses = (Page<TourSimpleResponse>) cachedData;
+            return tourSimpleResponses;
+        }
+
+        // 캐시에 데이터가 없으면 DB에서 조회
+        if (regionName == null) {
+            tourSimpleResponses = tourItemRepository.findPopularTourItems(memberId, pageable);
+        } else {
+            tourSimpleResponses = tourItemRepository.findPopularTourItems(
+                Region.fromName(regionName).getAreaCode(), memberId, pageable);
+        }
+
+        // 조회한 데이터를 Redis에 저장
+        redisCache.save(topic, String.valueOf(memberId), tourSimpleResponses);
+        return tourSimpleResponses;
     }
 
     @Transactional(readOnly = true)
