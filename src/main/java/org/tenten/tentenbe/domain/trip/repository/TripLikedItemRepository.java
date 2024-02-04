@@ -21,7 +21,7 @@ public interface TripLikedItemRepository extends JpaRepository<TripLikedItem, Lo
         "(SELECT COALESCE(AVG(r.rating), 0) FROM Review r WHERE r.tourItem.id = ti.id), " +
         "ti.reviewTotalCount, " +
         "ti.smallThumbnailUrl, " +
-        "CONCAT(ti.address, ' ', ti.detailedAddress), " +
+        "ti.address, " +
         "(SELECT COUNT(tp) > 0 FROM TripLikedItemPreference tp WHERE tp.tripLikedItem.id = tli.id AND tp.tripMember.member.id = :memberId AND tp.prefer = TRUE), " +
         "(SELECT COUNT(tp) > 0 FROM TripLikedItemPreference tp WHERE tp.tripLikedItem.id = tli.id AND tp.tripMember.member.id = :memberId AND tp.notPrefer = TRUE), " +
         "(SELECT COUNT(tp) FROM TripLikedItemPreference tp WHERE tp.tripLikedItem.id = tli.id AND tp.prefer = TRUE), " +

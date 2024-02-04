@@ -75,7 +75,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         StringBuilder sb = new StringBuilder();
 //        sb.append("http://localhost:5173/login/kakao") // todo : 배포 주소 url 확인
-        sb.append("https://dev-weplanplans.vercel.app/login/kakao") // todo : 배포 주소 url 확인
+        sb.append("https://weplanplans.vercel.app/login/kakao") // todo : 배포 주소 url 확인
             .append("?nickname=").append(nickname)
             .append("&email=").append(email)
             .append("&token=").append(tokenInfoDTO.toTokenIssueDTO().getAccessToken())// access token
