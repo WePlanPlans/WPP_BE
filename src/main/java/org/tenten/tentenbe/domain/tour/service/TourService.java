@@ -41,36 +41,25 @@ public class TourService {
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, String regionName, Pageable pageable) {
-        TourSimpleResponsePage tourSimpleResponsePage;
-        Page<TourSimpleResponse> tourSimpleResponses;
-        String topic;
-
-        if (regionName == null) {
-            topic = TOUR_ITEM + " - " + pageable.toString();
-        } else {
-            topic = TOUR_ITEM + " - " + regionName + " - " + pageable.toString();
-        }
+        String topic = buildTopic(regionName, pageable);
 
         // Redis에서 데이터 가져오기
         Object cachedData = redisCache.get(topic, String.valueOf(memberId));
-
         if (cachedData != null) {
-            tourSimpleResponsePage = objectMapper.convertValue(cachedData, TourSimpleResponsePage.class);
+            TourSimpleResponsePage tourSimpleResponsePage =
+                objectMapper.convertValue(cachedData, TourSimpleResponsePage.class);
             return new PageImpl<>(
                 tourSimpleResponsePage.tourSimpleResponseList(), pageable, tourSimpleResponsePage.totalElements());
         }
 
         // 캐시에 데이터가 없으면 DB에서 조회
-        if (regionName == null) {
-            tourSimpleResponses = tourItemRepository.findPopularTourItems(memberId, pageable);
-        } else {
-            tourSimpleResponses = tourItemRepository.findPopularTourItems(
-                Region.fromName(regionName).getAreaCode(), memberId, pageable);
-        }
-
-        tourSimpleResponsePage = new TourSimpleResponsePage(tourSimpleResponses.toList(), tourSimpleResponses.getTotalElements());
+        Page<TourSimpleResponse> tourSimpleResponses = (regionName == null) ?
+            tourItemRepository.findPopularTourItems(memberId, pageable) :
+            tourItemRepository.findPopularTourItems(Region.fromName(regionName).getAreaCode(), memberId, pageable);
 
         // 조회한 데이터를 Redis에 저장
+        TourSimpleResponsePage tourSimpleResponsePage =
+            new TourSimpleResponsePage(tourSimpleResponses.toList(), tourSimpleResponses.getTotalElements());
         redisCache.save(topic, String.valueOf(memberId), tourSimpleResponsePage);
         return tourSimpleResponses;
     }
@@ -148,6 +137,15 @@ public class TourService {
     private String getFullAddress(String address, String detailedAddress) {
         if (detailedAddress == null) return address;
         return address + " " + detailedAddress;
+    }
+
+    private String buildTopic(String regionName, Pageable pageable) {
+        String baseTopic = TOUR_ITEM + " - ";
+        if (regionName == null) {
+            return baseTopic + pageable.toString();
+        } else {
+            return baseTopic + regionName + " - " + pageable.toString();
+        }
     }
 
 }
