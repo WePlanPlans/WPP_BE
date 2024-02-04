@@ -1,5 +1,6 @@
 package org.tenten.tentenbe.domain.tour.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,9 +15,11 @@ import org.tenten.tentenbe.domain.member.repository.MemberRepository;
 import org.tenten.tentenbe.domain.review.model.Review;
 import org.tenten.tentenbe.domain.tour.dto.response.TourDetailResponse;
 import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponse;
+import org.tenten.tentenbe.domain.tour.dto.response.TourSimpleResponsePage;
 import org.tenten.tentenbe.domain.tour.exception.TourException;
 import org.tenten.tentenbe.domain.tour.model.TourItem;
 import org.tenten.tentenbe.domain.tour.repository.TourItemRepository;
+import org.tenten.tentenbe.global.cache.RedisCache;
 import org.tenten.tentenbe.global.common.enums.Category;
 import org.tenten.tentenbe.global.common.enums.Region;
 
@@ -24,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.tenten.tentenbe.global.common.constant.TopicConstant.TOUR_ITEM;
 
 @Slf4j
 @Service
@@ -32,17 +36,32 @@ public class TourService {
     private final TourItemRepository tourItemRepository;
     private final MemberRepository memberRepository;
     private final LikedItemRepository likedItemRepository;
+    private final RedisCache redisCache;
+    private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
     public Page<TourSimpleResponse> getTours(Long memberId, String regionName, Pageable pageable) {
-        return getTourSimpleResponsePage(memberId, regionName, pageable);
-    }
+        String topic = buildTopic(regionName, pageable);
 
-    private Page<TourSimpleResponse> getTourSimpleResponsePage(Long memberId, String regionName, Pageable pageable) {
-        if (regionName == null) {
-            return tourItemRepository.findPopularTourItems(memberId, pageable);
+        // Redis에서 데이터 가져오기
+        Object cachedData = redisCache.get(topic, String.valueOf(memberId));
+        if (cachedData != null) {
+            TourSimpleResponsePage tourSimpleResponsePage =
+                objectMapper.convertValue(cachedData, TourSimpleResponsePage.class);
+            return new PageImpl<>(
+                tourSimpleResponsePage.tourSimpleResponseList(), pageable, tourSimpleResponsePage.totalElements());
         }
-        return tourItemRepository.findPopularTourItems(Region.fromName(regionName).getAreaCode(), memberId, pageable);
+
+        // 캐시에 데이터가 없으면 DB에서 조회
+        Page<TourSimpleResponse> tourSimpleResponses = (regionName == null) ?
+            tourItemRepository.findPopularTourItems(memberId, pageable) :
+            tourItemRepository.findPopularTourItems(Region.fromName(regionName).getAreaCode(), memberId, pageable);
+
+        // 조회한 데이터를 Redis에 저장
+        TourSimpleResponsePage tourSimpleResponsePage =
+            new TourSimpleResponsePage(tourSimpleResponses.toList(), tourSimpleResponses.getTotalElements());
+        redisCache.save(topic, String.valueOf(memberId), tourSimpleResponsePage);
+        return tourSimpleResponses;
     }
 
     @Transactional(readOnly = true)
@@ -118,6 +137,15 @@ public class TourService {
     private String getFullAddress(String address, String detailedAddress) {
         if (detailedAddress == null) return address;
         return address + " " + detailedAddress;
+    }
+
+    private String buildTopic(String regionName, Pageable pageable) {
+        String baseTopic = TOUR_ITEM + " - ";
+        if (regionName == null) {
+            return baseTopic + pageable.toString();
+        } else {
+            return baseTopic + regionName + " - " + pageable.toString();
+        }
     }
 
 }
