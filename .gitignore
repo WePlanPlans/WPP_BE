@@ -7,8 +7,6 @@ build/
 
 *.yml
 *.env.json
-!application-prod.yml
-!application-ci.yml
 !deploy.yml
 
 ### STS ###
