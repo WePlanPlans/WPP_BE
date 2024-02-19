@@ -97,7 +97,7 @@ public class OpenApiComponent {
                 if (!(item.get("sigunguCode") == null) && !item.get("sigunguCode").isEmpty()) {
                     subAreaCode = Long.parseLong(item.get("sigunguCode"));
                 }
-                if (item.get("contentId") == null || item.get("contentId").isEmpty()) {
+                if (item.get("contentid") == null || item.get("contentid").isEmpty()) {
                     continue;
                 }
                 tourItems.add(
@@ -106,7 +106,7 @@ public class OpenApiComponent {
                         .detailedAddress(item.get("addr2"))
                         .tel(item.get("tel"))
                         .title(item.get("title"))
-                        .contentId(Long.parseLong(item.get("contentId")))
+                        .contentId(Long.parseLong(item.get("contentid")))
                         .contentTypeId(contentTypeId)
                         .areaCode(areaCode)
                         .subAreaCode(subAreaCode)
