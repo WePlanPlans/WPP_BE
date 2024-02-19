@@ -82,7 +82,8 @@ public class OpenApiComponent {
         try {
             Map<String, Object> objectMap = objectMapper.readValue(responseEntity.getBody(), new TypeReference<Map<String, Object>>() {
             });
-            Map<String, Object> bodyMap = (Map<String, Object>) objectMap.get("body");
+            Map<String, Object> responseMap = (Map<String, Object>) objectMap.get("response");
+            Map<String, Object> bodyMap = (Map<String, Object>) responseMap.get("body");
             Map<String, Object> itemMap = (Map<String, Object>) bodyMap.get("items");
             List<Map<String, String>> items = (List<Map<String, String>>) itemMap.get("item");
             List<TourItem> tourItems = new ArrayList<>();
