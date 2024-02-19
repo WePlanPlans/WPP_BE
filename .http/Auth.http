@@ -19,3 +19,13 @@ Origin: http://localhost:5173
     "tripStyle": "asdasdasdasdasd"
   }
 }
+
+### 로그인
+POST https://api.weplanplans.site/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "example@mail.com",
+  "password": "as@#SD23/&DFd%fs@a1"
+}
+

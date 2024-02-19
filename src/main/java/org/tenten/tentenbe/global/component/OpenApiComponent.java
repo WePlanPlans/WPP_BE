@@ -72,9 +72,9 @@ public class OpenApiComponent {
             .queryParam("MobileOS", "ETC")
             .queryParam("MobileApp", "TestApp")
             .queryParam("listYN", "Y")
-            .queryParam("contentTypeId", contentTypeId)
-            .queryParam("numOfRows", size)
-            .queryParam("pageNo", page)
+            .queryParam("contentTypeId", Long.toString(contentTypeId))
+            .queryParam("numOfRows", Long.toString(size))
+            .queryParam("pageNo", Long.toString(page))
             .build();
         HttpHeaders header = new HttpHeaders();
         HttpEntity request = new HttpEntity(header);
