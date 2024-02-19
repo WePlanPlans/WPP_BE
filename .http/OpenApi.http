@@ -23,7 +23,7 @@ GET https://apis.data.go.kr/B551011/KorService1/categoryCode1?serviceKey={{open-
 
 ### 지역기반 관광 정보 조회
 GET https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey={{open-api-key}}&_type=json&MobileOS=ETC&MobileApp=TestApp&listYN=Y
-    &contentTypeId=39
+    &contentTypeId=12
     &numOfRows=20
     &pageNo=1
 
