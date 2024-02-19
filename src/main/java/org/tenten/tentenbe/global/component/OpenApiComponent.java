@@ -78,7 +78,7 @@ public class OpenApiComponent {
             .build();
         HttpHeaders header = new HttpHeaders();
         HttpEntity request = new HttpEntity(header);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(uriComponents.toUri(), GET, request, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(uriComponents.toUriString(), GET, request, String.class);
         try {
             Map<String, Object> objectMap = objectMapper.readValue(responseEntity.getBody(), new TypeReference<Map<String, Object>>() {
             });
