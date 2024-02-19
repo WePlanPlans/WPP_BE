@@ -90,11 +90,15 @@ public class OpenApiComponent {
             for (Map<String, String> item : items) {
                 Long areaCode = null;
                 Long subAreaCode = null;
+                Long contentId = null;
                 if (!(item.get("areaCode") == null) && !item.get("areaCode").isEmpty()) {
                     areaCode = Long.parseLong(item.get("areaCode"));
                 }
                 if (!(item.get("sigunguCode") == null) && !item.get("sigunguCode").isEmpty()) {
                     subAreaCode = Long.parseLong(item.get("sigunguCode"));
+                }
+                if (item.get("contentId") == null || item.get("contentId").isEmpty()) {
+                    continue;
                 }
                 tourItems.add(
                     TourItem.builder()
@@ -103,7 +107,7 @@ public class OpenApiComponent {
                         .tel(item.get("tel"))
                         .title(item.get("title"))
                         .contentId(Long.parseLong(item.get("contentId")))
-                        .contentTypeId(Long.parseLong(item.get("contentTypeId")))
+                        .contentTypeId(contentTypeId)
                         .areaCode(areaCode)
                         .subAreaCode(subAreaCode)
                         .latitude(item.get("mapy"))
