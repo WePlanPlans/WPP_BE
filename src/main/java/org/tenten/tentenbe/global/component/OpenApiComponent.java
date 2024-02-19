@@ -93,7 +93,7 @@ public class OpenApiComponent {
                 if (!(item.get("areaCode") == null) && !item.get("areaCode").isEmpty()) {
                     areaCode = Long.parseLong(item.get("areaCode"));
                 }
-                if (!(item.get("sigunguCode") == null && !item.get("sigunguCode").isEmpty())) {
+                if (!(item.get("sigunguCode") == null) && !item.get("sigunguCode").isEmpty()) {
                     subAreaCode = Long.parseLong(item.get("sigunguCode"));
                 }
                 tourItems.add(
