@@ -72,28 +72,33 @@ public class OpenApiComponent {
             .queryParam("MobileOS", "ETC")
             .queryParam("MobileApp", "TestApp")
             .queryParam("listYN", "Y")
-            .queryParam("contentTypeId", contentTypeId)
-            .queryParam("numOfRows", size)
-            .queryParam("pageNo", page)
+            .queryParam("contentTypeId", Long.toString(contentTypeId))
+            .queryParam("numOfRows", Long.toString(size))
+            .queryParam("pageNo", Long.toString(page))
             .build();
         HttpHeaders header = new HttpHeaders();
         HttpEntity request = new HttpEntity(header);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(uriComponents.toUri(), GET, request, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(uriComponents.toUriString(), GET, request, String.class);
         try {
             Map<String, Object> objectMap = objectMapper.readValue(responseEntity.getBody(), new TypeReference<Map<String, Object>>() {
             });
-            Map<String, Object> bodyMap = (Map<String, Object>) objectMap.get("body");
+            Map<String, Object> responseMap = (Map<String, Object>) objectMap.get("response");
+            Map<String, Object> bodyMap = (Map<String, Object>) responseMap.get("body");
             Map<String, Object> itemMap = (Map<String, Object>) bodyMap.get("items");
             List<Map<String, String>> items = (List<Map<String, String>>) itemMap.get("item");
             List<TourItem> tourItems = new ArrayList<>();
             for (Map<String, String> item : items) {
                 Long areaCode = null;
                 Long subAreaCode = null;
-                if (!item.get("areaCode").isEmpty()) {
+                Long contentId = null;
+                if (!(item.get("areaCode") == null) && !item.get("areaCode").isEmpty()) {
                     areaCode = Long.parseLong(item.get("areaCode"));
                 }
-                if (!item.get("sigunguCode").isEmpty()) {
+                if (!(item.get("sigunguCode") == null) && !item.get("sigunguCode").isEmpty()) {
                     subAreaCode = Long.parseLong(item.get("sigunguCode"));
+                }
+                if (item.get("contentid") == null || item.get("contentid").isEmpty()) {
+                    continue;
                 }
                 tourItems.add(
                     TourItem.builder()
@@ -101,8 +106,8 @@ public class OpenApiComponent {
                         .detailedAddress(item.get("addr2"))
                         .tel(item.get("tel"))
                         .title(item.get("title"))
-                        .contentId(Long.parseLong(item.get("contentId")))
-                        .contentTypeId(Long.parseLong(item.get("contentTypeId")))
+                        .contentId(Long.parseLong(item.get("contentid")))
+                        .contentTypeId(contentTypeId)
                         .areaCode(areaCode)
                         .subAreaCode(subAreaCode)
                         .latitude(item.get("mapy"))
