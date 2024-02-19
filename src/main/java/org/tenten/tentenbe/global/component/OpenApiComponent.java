@@ -92,10 +92,10 @@ public class OpenApiComponent {
                 Long subAreaCode = null;
                 Long contentId = null;
                 if (!(item.get("areacode") == null) && !item.get("areacode").isEmpty()) {
-                    areaCode = Long.parseLong(item.get("areaCode"));
+                    areaCode = Long.parseLong(item.get("areacode"));
                 }
                 if (!(item.get("sigungucode") == null) && !item.get("sigungucode").isEmpty()) {
-                    subAreaCode = Long.parseLong(item.get("sigunguCode"));
+                    subAreaCode = Long.parseLong(item.get("sigungucode"));
                 }
                 if (item.get("contentid") == null || item.get("contentid").isEmpty()) {
                     continue;
