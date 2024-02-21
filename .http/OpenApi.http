@@ -23,19 +23,35 @@ GET https://apis.data.go.kr/B551011/KorService1/categoryCode1?serviceKey={{open-
 
 ### 지역기반 관광 정보 조회
 GET https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey={{open-api-key}}&_type=json&MobileOS=ETC&MobileApp=TestApp&listYN=Y
-    &contentTypeId=39&numOfRows=20&pageNo=1
+    &contentTypeId=12
+    &numOfRows=20
+    &pageNo=1
 
 ### 키워드 검색
 GET https://apis.data.go.kr/B551011/KorService1/searchKeyword1?serviceKey={{open-api-key}}&_type=json&MobileOS=ETC&MobileApp=TestApp&listYN=Y
-    &contentTypeId=32&keyword=신라&numOfRows=20&pageNo=1
+    &contentTypeId=32
+    &keyword=신라
+    &numOfRows=20&
+    pageNo=1
 
 ### 이미지 정보 조회
 GET https://apis.data.go.kr/B551011/KorService1/detailImage1?serviceKey={{open-api-key}}&_type=json&MobileOS=ETC&MobileApp=TestApp
-    &contentId=2716736&imageYN=Y&subImageYN=Y&numOfRows=20&pageNo=1
+    &contentId=2716736
+    &imageYN=Y
+    &subImageYN=Y
+    &numOfRows=20
+    &pageNo=1
 
 ### 공통 정보 조회
 GET https://apis.data.go.kr/B551011/KorService1/detailCommon1?serviceKey={{open-api-key}}&_type=json&MobileOS=ETC&MobileApp=TestApp
-    &contentId=2465071&contentTypeId=32&defaultYN=Y&firstImageYN=Y&areacodeYN=YoverviewYN=Y&numOfRows=20&pageNo=1
+    &contentId=2465071
+    &contentTypeId=32
+    &defaultYN=Y
+    &firstImageYN=Y
+    &areacodeYN=Y
+    &overviewYN=Y
+    &numOfRows=20
+    &pageNo=1
 
 ### 반복 정보 조회
 GET https://apis.data.go.kr/B551011/KorService1/detailInfo1?serviceKey={{open-api-key}}&_type=json&MobileOS=ETC&MobileApp=TestApp
