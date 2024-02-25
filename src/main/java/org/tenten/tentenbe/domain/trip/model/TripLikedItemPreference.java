@@ -19,9 +19,6 @@ public class TripLikedItemPreference {
     @Column(name = "tripLikedItemPreferenceId")
     private Long id;
 
-    @Version
-    private Long version;
-
     private Boolean prefer;
 
     private Boolean notPrefer;
