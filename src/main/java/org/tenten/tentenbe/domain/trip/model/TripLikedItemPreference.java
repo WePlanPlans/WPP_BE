@@ -20,6 +20,7 @@ public class TripLikedItemPreference {
     private Long id;
 
     private Boolean prefer;
+
     private Boolean notPrefer;
 
     @ManyToOne
