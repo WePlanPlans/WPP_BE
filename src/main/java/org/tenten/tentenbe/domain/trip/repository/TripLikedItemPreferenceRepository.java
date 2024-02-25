@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface TripLikedItemPreferenceRepository extends JpaRepository<TripLikedItemPreference, Long> {
 
     Optional<TripLikedItemPreference> findByTripMemberAndTripLikedItem(TripMember tripMember, TripLikedItem tripLikedItem);
+
+    long countByTripLikedItemIdAndPrefer(Long tripLikedItem_id, Boolean prefer);
 }
